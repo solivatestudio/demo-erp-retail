@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Download, Plus, Printer, Search, Upload } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Download, Pencil, Plus, Printer, Save, Search, Trash2, Upload, X } from "lucide-react";
 import { formatRupiah } from "../lib/utils/format";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -395,11 +395,76 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
   const [query, setQuery] = useState("");
   const [saved, setSaved] = useState(false);
   const config = useMemo(() => CONFIG[kind] ?? fallback, [kind]);
+  const [records, setRecords] = useState<Row[]>(config.rows);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [form, setForm] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    setRecords(config.rows);
+    setQuery("");
+    setSaved(false);
+    setEditorOpen(false);
+    setEditingIndex(null);
+    setForm({});
+  }, [config]);
+
   const rows = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return config.rows;
-    return config.rows.filter((row) => Object.values(row).some((value) => String(value).toLowerCase().includes(q)));
-  }, [config.rows, query]);
+    if (!q) return records;
+    return records.filter((row) => Object.values(row).some((value) => String(value).toLowerCase().includes(q)));
+  }, [records, query]);
+
+  const openCreate = () => {
+    const next: Record<string, string> = {};
+    config.columns.forEach((column) => {
+      if (column === "status") next[column] = "Aktif";
+      else if (["tanggal", "jatuhTempo"].includes(column)) next[column] = "31/08/2026";
+      else if (["total", "hpp", "ecer", "grosir", "jumlah", "nilai", "terbayar", "sisa", "sku", "jumlahSku"].includes(column)) next[column] = "0";
+      else next[column] = "";
+    });
+    const firstColumn = config.columns[0];
+    if (firstColumn && !next[firstColumn]) {
+      next[firstColumn] = `${firstColumn.toUpperCase()}-${String(records.length + 1).padStart(3, "0")}`;
+    }
+    setForm(next);
+    setEditingIndex(null);
+    setEditorOpen(true);
+  };
+
+  const openEdit = (row: Row) => {
+    const sourceIndex = records.findIndex((record) => record === row);
+    const next: Record<string, string> = {};
+    config.columns.forEach((column) => {
+      next[column] = String(row[column] ?? "");
+    });
+    setForm(next);
+    setEditingIndex(sourceIndex);
+    setEditorOpen(true);
+  };
+
+  const saveRecord = () => {
+    const nextRow: Row = {};
+    config.columns.forEach((column) => {
+      const raw = form[column] ?? "";
+      const original = editingIndex !== null ? records[editingIndex]?.[column] : undefined;
+      const shouldNumber = typeof original === "number" || ["total", "hpp", "ecer", "grosir", "jumlah", "nilai", "terbayar", "sisa", "sku", "jumlahSku"].includes(column);
+      nextRow[column] = shouldNumber ? Number(raw.replace(/[^\d.-]/g, "")) || 0 : raw;
+    });
+
+    setRecords((current) => {
+      if (editingIndex === null) return [nextRow, ...current];
+      return current.map((row, index) => index === editingIndex ? nextRow : row);
+    });
+    setEditorOpen(false);
+    setEditingIndex(null);
+    setSaved(true);
+  };
+
+  const deleteRecord = (row: Row) => {
+    setRecords((current) => current.filter((record) => record !== row));
+    setSaved(true);
+  };
 
   return (
     <div className="module-page">
@@ -410,7 +475,7 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
           <p>{description}</p>
         </div>
         <div className="header-actions">
-          <Button onClick={() => setSaved(true)}><Plus size={16} /> {config.primaryAction}</Button>
+          <Button onClick={openCreate}><Plus size={16} /> {config.primaryAction}</Button>
           <Button variant="outline"><Upload size={15} /> Import</Button>
           <Button variant="outline"><Download size={15} /> Export</Button>
         </div>
@@ -467,7 +532,12 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                           : formatCell(column, row[column] ?? "-")}
                       </td>
                     ))}
-                    <td className="right"><Button variant="ghost" size="sm">Detail</Button></td>
+                    <td className="right">
+                      <div className="row-actions">
+                        <Button variant="ghost" size="sm" onClick={() => openEdit(row)}><Pencil size={14} /> Edit</Button>
+                        <Button variant="ghost" size="sm" onClick={() => deleteRecord(row)}><Trash2 size={14} /> Hapus</Button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -485,6 +555,52 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
           </CardContent>
         </Card>
       </section>
+
+      {editorOpen && (
+        <div className="crud-overlay" onClick={() => setEditorOpen(false)}>
+          <div className="crud-dialog" onClick={(event) => event.stopPropagation()}>
+            <div className="crud-head">
+              <div>
+                <span>{editingIndex === null ? "Tambah Data" : "Edit Data"}</span>
+                <strong>{title || config.section}</strong>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setEditorOpen(false)} aria-label="Tutup">
+                <X size={16} />
+              </Button>
+            </div>
+
+            <div className="crud-form">
+              {config.columns.map((column) => (
+                <label key={column}>
+                  <span>{column}</span>
+                  {column === "status" ? (
+                    <select value={form[column] ?? ""} onChange={(event) => setForm((current) => ({ ...current, [column]: event.target.value }))}>
+                      <option>Aktif</option>
+                      <option>Draft</option>
+                      <option>Open</option>
+                      <option>Partial</option>
+                      <option>Posted</option>
+                      <option>Lunas</option>
+                      <option>Pending</option>
+                    </select>
+                  ) : (
+                    <input
+                      value={form[column] ?? ""}
+                      onChange={(event) => setForm((current) => ({ ...current, [column]: event.target.value }))}
+                      placeholder={`Isi ${column}`}
+                    />
+                  )}
+                </label>
+              ))}
+            </div>
+
+            <div className="crud-actions">
+              <Button variant="outline" onClick={() => setEditorOpen(false)}>Batal</Button>
+              <Button onClick={saveRecord}><Save size={15} /> Simpan</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
