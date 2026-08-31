@@ -1279,11 +1279,11 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                   <div className="warehouse-icon-badge">
                     <Warehouse size={18} />
                   </div>
-                  <div>
-                    <strong className="text-sm text-zinc-900 block">Lokasi persediaan</strong>
-                    <span className="text-xs text-zinc-500">
+                  <div className="warehouse-title-copy">
+                    <strong>Lokasi persediaan</strong>
+                    <p>
                       Pilih gudang untuk melihat saldo dan status persediaan di setiap lokasi.
-                    </span>
+                    </p>
                   </div>
                 </div>
                 <div className="warehouse-segmented-control">
