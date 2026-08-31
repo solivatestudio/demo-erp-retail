@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   ArrowRight,
   Boxes,
+  Building2,
   CheckCircle2,
   ChevronDown,
   Download,
@@ -19,8 +20,10 @@ import {
   Printer,
   Save,
   Search,
+  Store,
   Sliders,
   Trash2,
+  Truck,
   Upload,
   Warehouse,
   X,
@@ -696,9 +699,21 @@ const fallback: ModuleConfig = {
   sideItems: ["Pencarian data", "Filter status", "Export laporan", "Cetak dokumen"],
 };
 
-function formatCell(key: string, value: any) {
-  if (typeof value === "number" && ["total", "amount", "hpp", "ecer", "grosir", "subtotal", "jumlah", "terbayar", "sisa"].includes(key)) {
-    return formatRupiah(value);
+const monetaryFields = new Set(["total", "amount", "hpp", "ecer", "grosir", "subtotal", "terbayar", "sisa", "harga", "hargaBeli", "hargaJual"]);
+
+function isMonetaryField(kind: DemoKind, key: string) {
+  return monetaryFields.has(key) || (["cashIn", "cashOut"].includes(kind) && key === "jumlah") || (kind === "repack" && key === "nilai");
+}
+
+function formatThousands(value: unknown) {
+  const digits = String(value ?? "").replace(/\D/g, "");
+  if (!digits) return "";
+  return new Intl.NumberFormat("id-ID").format(Number(digits));
+}
+
+function formatCell(kind: DemoKind, key: string, value: any) {
+  if (isMonetaryField(kind, key) && value !== "" && value != null && Number.isFinite(Number(value))) {
+    return formatRupiah(Number(value));
   }
   return value ?? "-";
 }
@@ -1245,14 +1260,14 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
             </CardHeader>
             <CardContent>
               <Badge variant={stat.status === "warning" ? "warning" : "success"}>
-                {stat.status ? "Perhatian" : "Normal"}
+                {stat.status ? "Perlu ditinjau" : "Terkendali"}
               </Badge>
             </CardContent>
           </Card>
         ))}
       </section>
 
-      {saved && <div className="system-alert">Perubahan data berhasil disimpan secara lokal.</div>}
+      {saved && <div className="system-alert">Perubahan berhasil disimpan.</div>}
 
       {/* Multi-Warehouse Selector for Stock Module */}
       {kind === "stock" && (
@@ -1265,9 +1280,9 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                     <Warehouse size={18} />
                   </div>
                   <div>
-                    <strong className="text-sm text-zinc-900 block">Filter Lokasi Gudang & Multi-Warehouse</strong>
+                    <strong className="text-sm text-zinc-900 block">Lokasi persediaan</strong>
                     <span className="text-xs text-zinc-500">
-                      Pilih lokasi untuk melihat saldo fisik & kalkulasi threshold spesifik per cabang
+                      Pilih gudang untuk melihat saldo dan status persediaan di setiap lokasi.
                     </span>
                   </div>
                 </div>
@@ -1277,28 +1292,28 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                     className={`segmented-btn ${selectedWarehouse === "ALL" ? "active" : ""}`}
                     onClick={() => setSelectedWarehouse("ALL")}
                   >
-                    🏢 Semua Gudang ({stockProducts.reduce((acc, p) => acc + p.stockToko + p.stockGudang + p.stockCabang, 0)} total)
+                    <Building2 size={14} /> Semua ({stockProducts.reduce((acc, p) => acc + p.stockToko + p.stockGudang + p.stockCabang, 0)})
                   </button>
                   <button
                     type="button"
                     className={`segmented-btn ${selectedWarehouse === "TOKO" ? "active" : ""}`}
                     onClick={() => setSelectedWarehouse("TOKO")}
                   >
-                    🏪 Toko Utama
+                    <Store size={14} /> Toko Utama
                   </button>
                   <button
                     type="button"
                     className={`segmented-btn ${selectedWarehouse === "GUDANG" ? "active" : ""}`}
                     onClick={() => setSelectedWarehouse("GUDANG")}
                   >
-                    📦 Gudang Utama
+                    <Warehouse size={14} /> Gudang Utama
                   </button>
                   <button
                     type="button"
                     className={`segmented-btn ${selectedWarehouse === "CABANG" ? "active" : ""}`}
                     onClick={() => setSelectedWarehouse("CABANG")}
                   >
-                    🚚 Gudang Cabang
+                    <Truck size={14} /> Gudang Cabang
                   </button>
                 </div>
               </div>
@@ -1378,12 +1393,12 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                           ? "Gudang Utama"
                           : "Gudang Cabang"
                       }`
-                    : "Daftar Data"}
+                    : title || config.section}
                 </CardTitle>
                 <CardDescription>
                   {kind === "stock"
-                    ? `${filteredStockProducts.length} SKU terdaftar · Status real-time berdasarkan threshold`
-                    : `${rows.length} data ditampilkan`}
+                    ? `${filteredStockProducts.length} produk · Status diperbarui berdasarkan batas minimum stok`
+                    : `${rows.length} data tersedia`}
                 </CardDescription>
               </div>
               <div className="table-tools">
@@ -1540,7 +1555,7 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                               {row[column]}
                             </Badge>
                           ) : (
-                            formatCell(column, row[column])
+                            formatCell(kind, column, row[column])
                           )}
                         </td>
                       ))}
@@ -1571,7 +1586,7 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
         <Card className="module-side-card">
           <CardHeader>
             <CardTitle>{config.sideTitle}</CardTitle>
-            <CardDescription>Parameter & kaidah logika operasional modul.</CardDescription>
+            <CardDescription>Informasi penting untuk menjalankan proses dengan benar.</CardDescription>
           </CardHeader>
           <CardContent className="side-list">
             {config.sideItems.map((item) => (
@@ -1804,15 +1819,15 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                         </div>
                         <div className="analysis-card-body">
                           <div className="breakdown-row">
-                            <span>🏪 Toko Utama (Kasir/Display):</span>
+                            <span><Store size={14} /> Toko Utama (Kasir/Display):</span>
                             <b>{inspectingProduct.stockToko} {inspectingProduct.satuan}</b>
                           </div>
                           <div className="breakdown-row">
-                            <span>📦 Gudang Utama (Pusat Pembelian):</span>
+                            <span><Warehouse size={14} /> Gudang Utama (Pusat Pembelian):</span>
                             <b>{inspectingProduct.stockGudang} {inspectingProduct.satuan}</b>
                           </div>
                           <div className="breakdown-row">
-                            <span>🚚 Gudang Cabang (Transit & Buffer):</span>
+                            <span><Truck size={14} /> Gudang Cabang (Transit & Buffer):</span>
                             <b>{inspectingProduct.stockCabang} {inspectingProduct.satuan}</b>
                           </div>
                           <div className="breakdown-row total-row">
@@ -1975,10 +1990,16 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                           </select>
                         ) : (
                           <input
-                            type={["total", "hpp", "ecer", "grosir", "jumlah", "nilai", "terbayar", "sisa", "sku", "jumlahSku"].includes(column) ? "number" : "text"}
+                            type="text"
+                            inputMode={isMonetaryField(kind, column) || ["sku", "jumlahSku"].includes(column) ? "numeric" : undefined}
                             className="field-input"
-                            value={form[column] ?? ""}
-                            onChange={(event) => setForm((curr) => ({ ...curr, [column]: event.target.value }))}
+                            value={isMonetaryField(kind, column) ? formatThousands(form[column]) : form[column] ?? ""}
+                            onChange={(event) => {
+                              const value = isMonetaryField(kind, column)
+                                ? Number(event.target.value.replace(/\D/g, "")) || 0
+                                : event.target.value;
+                              setForm((curr) => ({ ...curr, [column]: value }));
+                            }}
                             placeholder={getFieldPlaceholder(kind, column)}
                           />
                         )}

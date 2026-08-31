@@ -168,8 +168,8 @@ export default function PosClient() {
               ))}
             </select>
             <select defaultValue="toko">
-              <option value="toko">🏪 Toko Utama</option>
-              <option value="gudang">📦 Gudang Utama</option>
+              <option value="toko">Toko Utama</option>
+              <option value="gudang">Gudang Utama</option>
             </select>
           </div>
         </div>
@@ -298,10 +298,10 @@ export default function PosClient() {
                   <span>Uang Diterima</span>
                   <div className="cart-pay-input-wrap">
                     <input
-                      type="number"
-                      min={0}
-                      value={paid || ""}
-                      onChange={(event) => setPaid(Number(event.target.value) || 0)}
+                      type="text"
+                      inputMode="numeric"
+                      value={paid ? new Intl.NumberFormat("id-ID").format(paid) : ""}
+                      onChange={(event) => setPaid(Number(event.target.value.replace(/\D/g, "")) || 0)}
                       placeholder="Rp 0"
                     />
                   </div>

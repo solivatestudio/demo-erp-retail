@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Boxes, ChevronDown, CircleDollarSign, ClipboardCheck, CreditCard, LayoutDashboard, PackageOpen, ReceiptText, Repeat2, Settings, ShoppingCart, Truck, Users, WalletCards, Warehouse } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { BarChart3, Boxes, ChevronDown, CircleDollarSign, ClipboardCheck, CreditCard, LayoutDashboard, Menu, PackageOpen, ReceiptText, Repeat2, Settings, ShoppingCart, Truck, Users, WalletCards, Warehouse } from "lucide-react";
 
 const GROUPS = [
   { label: "Operasional", items: [
@@ -25,16 +26,48 @@ const GROUPS = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const navRef = useRef<HTMLElement>(null);
   const isActive = (href: string) => pathname === href || (href !== "/" && Boolean(pathname?.startsWith(href + "/"))) || (href === "/" && pathname === "/dashboard");
+  const rememberScroll = () => {
+    if (navRef.current) sessionStorage.setItem("kelolain:sidebar-scroll", String(navRef.current.scrollTop));
+  };
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const savedPosition = Number(sessionStorage.getItem("kelolain:sidebar-scroll") || 0);
+    const restorePosition = () => {
+      nav.scrollTop = savedPosition;
+      nav.querySelector<HTMLAnchorElement>("a.active")?.scrollIntoView({ block: "nearest" });
+    };
+    restorePosition();
+    const restoreTimer = window.setTimeout(restorePosition, 50);
+    const rememberPosition = () => sessionStorage.setItem("kelolain:sidebar-scroll", String(nav.scrollTop));
+    nav.addEventListener("scroll", rememberPosition, { passive: true });
+    return () => {
+      window.clearTimeout(restoreTimer);
+      rememberPosition();
+      nav.removeEventListener("scroll", rememberPosition);
+    };
+  }, [pathname]);
   return (
     <aside className="app-sidebar">
       <Link href="/" className="sidebar-brand"><span>KA</span><div><strong>Kelolain</strong><small>Akurat dan Aktif</small></div></Link>
       <button className="sidebar-context" type="button"><span><small>Outlet aktif</small><strong>Semua Outlet</strong></span><ChevronDown size={15} /></button>
-      <nav className="sidebar-nav" aria-label="Navigasi aplikasi">
+      <nav ref={navRef} className="sidebar-nav" aria-label="Navigasi aplikasi">
         {GROUPS.map((group) => <div className="nav-group" key={group.label}>
           <span className="nav-group-label">{group.label}</span>
-          {group.items.map((item) => { const Icon = item.icon; return <Link key={item.href} href={item.href} className={`${isActive(item.href) ? "active" : ""} ${item.mobile ? "mobile-primary" : "mobile-secondary"}`}><Icon size={17} /><span>{item.label}</span></Link>; })}
+          {group.items.map((item) => { const Icon = item.icon; return <Link onClick={rememberScroll} key={item.href} href={item.href} className={`${isActive(item.href) ? "active" : ""} ${item.mobile ? "mobile-primary" : "mobile-secondary"}`}><Icon size={17} /><span>{item.label}</span></Link>; })}
         </div>)}
+      </nav>
+      <nav className="mobile-bottom-nav" aria-label="Navigasi utama mobile">
+        {[
+          { href: "/", label: "Home", icon: LayoutDashboard },
+          { href: "/pos", label: "POS", icon: ShoppingCart },
+          { href: "/inventory/stock", label: "Inventory", icon: Boxes },
+          { href: "/sales", label: "Transaksi", icon: ReceiptText },
+          { href: "/menu", label: "Menu", icon: Menu },
+        ].map((item) => { const Icon = item.icon; return <Link key={item.href} href={item.href} className={isActive(item.href) ? "active" : ""}><Icon /><span>{item.label}</span></Link>; })}
       </nav>
       <div className="sidebar-footer"><span className="avatar">OA</span><div><strong>Okky Aditya</strong><small>Owner</small></div></div>
     </aside>
