@@ -352,77 +352,98 @@ export default function PosClient() {
       {/* Nota / Receipt Print Preview Modal */}
       {receipt && (
         <div className="receipt-overlay" onClick={() => setReceipt(null)}>
-          <div className="nota-modal" onClick={(event) => event.stopPropagation()}>
-            <div className="nota-actions">
-              <Button variant="outline" onClick={() => window.print()}>
-                <Printer size={15} /> Cetak Nota
-              </Button>
+          <div className="nota-dialog" onClick={(event) => event.stopPropagation()}>
+            {/* Header Modal */}
+            <div className="nota-dialog-header">
+              <div className="flex items-center gap-2.5">
+                <div className="receipt-header-icon">
+                  <ReceiptText size={18} />
+                </div>
+                <div>
+                  <strong className="text-base font-bold text-zinc-900 block">Preview Nota Transaksi</strong>
+                  <span className="text-xs text-zinc-500">No: {receipt.number} · {receipt.date}</span>
+                </div>
+              </div>
               <Button variant="ghost" size="icon" onClick={() => setReceipt(null)} aria-label="Tutup">
-                <X size={16} />
+                <X size={18} />
               </Button>
             </div>
-            <div className="nota-paper">
-              <header className="nota-header">
-                <strong>Kelolain · Retail & Wholesale</strong>
-                <span>Pusat Packaging, Plastik & Perlengkapan Usaha</span>
-                <span>Telp/WA: 0877-4426-2104</span>
-              </header>
-              <section className="nota-meta">
-                <div>
-                  <span>No Nota:</span>
-                  <b>{receipt.number}</b>
-                </div>
-                <div>
-                  <span>Tanggal:</span>
-                  <b>{receipt.date}</b>
-                </div>
-                <div>
-                  <span>Pelanggan:</span>
-                  <b>{receipt.customer}</b>
-                </div>
-                <div>
-                  <span>Grup Harga:</span>
-                  <b>{receipt.customerGroup}</b>
-                </div>
-                <div>
-                  <span>Gudang:</span>
-                  <b>{receipt.warehouse}</b>
-                </div>
-                <div>
-                  <span>Kasir:</span>
-                  <b>{receipt.cashier}</b>
-                </div>
-              </section>
-              <div className="receipt-lines">
-                {receipt.lines.map((item) => (
-                  <div key={item.sku}>
-                    <span>{item.name}</span>
-                    <em>
-                      {item.qty} {item.unit} × {formatRupiah(item.price)}
-                    </em>
-                    <b>{formatRupiah(item.subtotal)}</b>
+
+            {/* Scrollable Receipt Paper */}
+            <div className="nota-dialog-body">
+              <div className="nota-paper">
+                <header className="nota-header">
+                  <strong>Kelolain · Retail & Wholesale</strong>
+                  <span>Pusat Packaging, Plastik & Perlengkapan Usaha</span>
+                  <span>Jl. Irian No.8, Klaten Tengah · Telp/WA: 0877-4426-2104</span>
+                </header>
+                <section className="nota-meta">
+                  <div>
+                    <span>No Nota:</span>
+                    <b>{receipt.number}</b>
                   </div>
-                ))}
+                  <div>
+                    <span>Tanggal:</span>
+                    <b>{receipt.date}</b>
+                  </div>
+                  <div>
+                    <span>Pelanggan:</span>
+                    <b>{receipt.customer}</b>
+                  </div>
+                  <div>
+                    <span>Grup Harga:</span>
+                    <b>{receipt.customerGroup}</b>
+                  </div>
+                  <div>
+                    <span>Gudang:</span>
+                    <b>{receipt.warehouse}</b>
+                  </div>
+                  <div>
+                    <span>Kasir:</span>
+                    <b>{receipt.cashier}</b>
+                  </div>
+                </section>
+                <div className="receipt-lines">
+                  {receipt.lines.map((item) => (
+                    <div key={item.sku}>
+                      <span>{item.name}</span>
+                      <em>
+                        {item.qty} {item.unit} × {formatRupiah(item.price)}
+                      </em>
+                      <b>{formatRupiah(item.subtotal)}</b>
+                    </div>
+                  ))}
+                </div>
+                <section className="nota-total">
+                  <div>
+                    <span>Total Tagihan:</span>
+                    <b>{formatRupiah(receipt.total)}</b>
+                  </div>
+                  <div>
+                    <span>Tunai / Bayar:</span>
+                    <b>{formatRupiah(receipt.paid)}</b>
+                  </div>
+                  <div>
+                    <span>Kembalian:</span>
+                    <b>{formatRupiah(receipt.change)}</b>
+                  </div>
+                </section>
+                <footer className="nota-footer">
+                  Terima kasih atas kunjungan Anda.
+                  <br />
+                  Barang yang sudah dibeli dapat ditukar sesuai kebijakan toko.
+                </footer>
               </div>
-              <section className="nota-total">
-                <div>
-                  <span>Total Tagihan:</span>
-                  <b>{formatRupiah(receipt.total)}</b>
-                </div>
-                <div>
-                  <span>Tunai / Bayar:</span>
-                  <b>{formatRupiah(receipt.paid)}</b>
-                </div>
-                <div>
-                  <span>Kembalian:</span>
-                  <b>{formatRupiah(receipt.change)}</b>
-                </div>
-              </section>
-              <footer className="nota-footer">
-                Terima kasih atas kunjungan Anda.
-                <br />
-                Barang yang sudah dibeli dapat ditukar sesuai kebijakan toko.
-              </footer>
+            </div>
+
+            {/* Bottom Actions Sticky Footer */}
+            <div className="nota-dialog-footer">
+              <Button variant="outline" onClick={() => setReceipt(null)}>
+                Tutup Preview
+              </Button>
+              <Button onClick={() => window.print()}>
+                <Printer size={16} /> Cetak Nota (Print)
+              </Button>
             </div>
           </div>
         </div>

@@ -1663,25 +1663,64 @@ a:focus-visible {
 .receipt-total { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; }
 .receipt-total b { font-size: 16px; }
 
-.nota-modal {
-  width: min(520px, calc(100vw - 32px));
-  max-height: calc(100vh - 32px);
-  overflow: auto;
+.nota-dialog {
+  width: min(540px, calc(100vw - 32px));
+  max-height: min(90vh, 880px);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
 }
 
-.nota-actions {
+.nota-dialog-header {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.receipt-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f4f4f5;
+  color: #18181b;
+  display: grid;
+  place-items: center;
+}
+
+.nota-dialog-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px 20px;
+  background: #f4f4f5;
+}
+
+.nota-dialog-footer {
+  display: flex;
+  align-items: center;
   justify-content: flex-end;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 12px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  background: #ffffff;
+  flex-shrink: 0;
 }
 
 .nota-paper {
-  background: #fff;
+  background: #ffffff;
   color: #18181b;
-  border-radius: 14px;
-  padding: 24px;
-  box-shadow: var(--shadow);
+  border-radius: 12px;
+  padding: 22px;
+  border: 1px solid #e4e4e7;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
 }
 
 .nota-header {
