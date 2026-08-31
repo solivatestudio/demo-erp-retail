@@ -11,6 +11,7 @@ import {
   PackageOpen,
   ReceiptText,
   Repeat2,
+  Printer,
   ShoppingCart,
   Truck,
   WalletCards,
@@ -28,8 +29,9 @@ const NAV = [
   { href: "/payables", label: "Hutang", icon: WalletCards },
   { href: "/master/products", label: "Produk & Harga", icon: Boxes },
   { href: "/inventory/repack", label: "Repack", icon: Repeat2 },
+  { href: "/reprints", label: "Cetak Nota", icon: Printer },
   { href: "/reports", label: "Laporan", icon: BarChart3 },
-  { href: "/settings/demo", label: "Checklist Demo", icon: ClipboardList },
+  { href: "/settings/demo", label: "Pengaturan", icon: ClipboardList },
 ];
 
 export default function Sidebar() {

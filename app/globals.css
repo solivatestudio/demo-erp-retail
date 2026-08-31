@@ -415,7 +415,7 @@ a:focus-visible {
   padding: 18px;
 }
 
-.pos-workspace {
+.pos-catalog {
   min-width: 0;
   display: flex;
   flex-direction: column;

@@ -103,7 +103,7 @@ export default function PosClient() {
 
   return (
     <div className="pos-page">
-      <section className="pos-workspace">
+      <section className="pos-catalog">
         <div className="pos-toolbar">
           <div>
             <Badge variant={isWholesale ? "warning" : "success"}>{isWholesale ? "Harga grosir/tempo" : "Harga retail"}</Badge>

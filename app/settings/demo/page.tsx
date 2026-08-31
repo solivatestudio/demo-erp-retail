@@ -4,7 +4,7 @@ import DemoModulePage from "../../../components/DemoModulePage";
 export default function Page() {
   return (
     <AppShell>
-      <DemoModulePage kind="settings" title="Pengaturan Demo" description="Reset workspace demo dan akses cepat ke alur yang perlu dicoba." />
+      <DemoModulePage kind="settings" title="Pengaturan Toko" description="Kustomisasi identitas toko: header nama, alamat, no. telp, dan footer nota." />
     </AppShell>
   );
 }
