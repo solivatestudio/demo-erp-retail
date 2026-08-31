@@ -1,330 +1,250 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { createClient } from "../lib/supabase/client";
-import { formatDateID, formatNumber, formatRupiah } from "../lib/utils/format";
+import { useMemo, useState } from "react";
+import { formatRupiah } from "../lib/utils/format";
 
-type Row = Record<string, any>;
 export type DemoKind =
   | "customers" | "suppliers" | "salesPeople" | "products" | "categories" | "brands" | "units" | "prices" | "warehouses"
   | "stock" | "stockCard" | "purchases" | "purchaseReturns" | "payables" | "sales" | "delivery" | "salesReturns"
   | "receivables" | "stockTransfers" | "stockIssues" | "repack" | "adjustments" | "cashIn" | "cashOut" | "reports" | "settings";
 
-type RefData = {
-  workspaceId: string;
-  products: Row[];
-  units: Row[];
-  warehouses: Row[];
-  suppliers: Row[];
-  customers: Row[];
-  salesPeople: Row[];
-  purchases: Row[];
-  sales: Row[];
-  saleItems: Row[];
+type DemoRecord = { no: string; name: string; meta: string; amount: number; status: string };
+type DemoContent = {
+  label: string;
+  headline: string;
+  subline: string;
+  cta: string;
+  href: string;
+  metrics: [string, string, string];
+  story: string[];
+  records: DemoRecord[];
+  impact: string[];
 };
 
-const MASTER: Partial<Record<DemoKind, { table: string; select: string; make: (r: RefData) => Row }>> = {
-  customers: { table: "customers", select: "code,name,phone,city,credit_limit,active,customer_groups(name)", make: (r) => ({ workspace_id: r.workspaceId, code: "CUST-" + Date.now().toString().slice(-4), name: "Customer Demo Baru", phone: "0812-DEMO", city: "Jakarta", customer_group_id: r.customers[0]?.customer_group_id, credit_limit: 5000000, active: true }) },
-  suppliers: { table: "suppliers", select: "code,name,phone,city,payment_term_days,active", make: (r) => ({ workspace_id: r.workspaceId, code: "SUP-" + Date.now().toString().slice(-4), name: "Supplier Demo Baru", phone: "021-DEMO", city: "Jakarta", payment_term_days: 30, active: true }) },
-  salesPeople: { table: "sales_people", select: "code,name,phone,active", make: (r) => ({ workspace_id: r.workspaceId, code: "SP-" + Date.now().toString().slice(-4), name: "Sales Demo Baru", phone: "0813-DEMO", active: true }) },
-  categories: { table: "categories", select: "name,created_at", make: (r) => ({ workspace_id: r.workspaceId, name: "Kategori Demo " + Date.now().toString().slice(-3) }) },
-  brands: { table: "brands", select: "name,created_at", make: (r) => ({ workspace_id: r.workspaceId, name: "Brand Demo " + Date.now().toString().slice(-3) }) },
-  units: { table: "units", select: "code,name", make: (r) => ({ workspace_id: r.workspaceId, code: "U" + Date.now().toString().slice(-3), name: "Unit Demo" }) },
-  warehouses: { table: "warehouses", select: "code,name,location,active", make: (r) => ({ workspace_id: r.workspaceId, code: "WH-" + Date.now().toString().slice(-3), name: "Gudang Demo Baru", location: "Area Demo", active: true }) },
+const salesRecords: DemoRecord[] = [
+  { no: "POS-000184", name: "Pelanggan Umum", meta: "3 item retail - Toko Utama", amount: 186500, status: "Lunas" },
+  { no: "SAL-000091", name: "Toko Berkah Jaya", meta: "Grosir tempo 14 hari", amount: 3420000, status: "Piutang" },
+  { no: "DLV-000027", name: "Minimarket Sejahtera", meta: "Kirim 8/12 dus", amount: 2760000, status: "Partial" },
+];
+
+const CONTENT: Partial<Record<DemoKind, DemoContent>> = {
+  sales: {
+    label: "Penjualan",
+    headline: "Client lihat alur jual dari kasir sampai piutang.",
+    subline: "Gunakan contoh retail, grosir, tempo, dan reprint nota dalam satu layar demo.",
+    cta: "Buka POS",
+    href: "/pos",
+    metrics: ["14 nota hari ini", "Rp 18,7 jt omset", "Rp 4,1 jt piutang"],
+    story: ["Pilih customer retail atau grosir.", "Harga otomatis mengikuti group customer.", "Pembayaran bisa lunas, partial, atau tempo.", "Nota masuk laporan omset dan laba."],
+    records: salesRecords,
+    impact: ["Stok berkurang saat POS/direct sale.", "Piutang muncul kalau belum lunas.", "Laba memakai HPP saat transaksi diposting."],
+  },
+  purchases: {
+    label: "Pembelian",
+    headline: "Pembelian supplier langsung mengubah stok dan hutang.",
+    subline: "Demo cukup pakai satu purchase order contoh, lalu jelaskan efeknya ke gudang dan AP.",
+    cta: "Simulasi Pembelian",
+    href: "/purchases",
+    metrics: ["4 supplier aktif", "Rp 9,8 jt pembelian", "Rp 3,2 jt hutang"],
+    story: ["Pilih supplier dan gudang tujuan.", "Input barang multi satuan.", "Post pembelian.", "Stok bertambah dan hutang supplier tercatat."],
+    records: [
+      { no: "PUR-000044", name: "PT Indofood Sukses Makmur", meta: "Gudang Utama - jatuh tempo 14 hari", amount: 4850000, status: "Partial" },
+      { no: "PUR-000045", name: "CV Aqua Golden", meta: "Toko Utama - tunai", amount: 2125000, status: "Lunas" },
+      { no: "RET-P-000006", name: "Retur barang penyok", meta: "Mengurangi hutang supplier", amount: 385000, status: "Retur" },
+    ],
+    impact: ["Stock balance naik di gudang tujuan.", "Moving average cost berubah.", "Hutang supplier muncul sampai dibayar."],
+  },
+  delivery: {
+    label: "Delivery",
+    headline: "Order delivery dan partial delivery dibuat mudah dipahami.",
+    subline: "Fokus ke barang belum terkirim, bukan form logistik yang terlalu detail.",
+    cta: "Lihat Pending",
+    href: "/delivery",
+    metrics: ["6 order delivery", "18 dus pending", "2 pengiriman hari ini"],
+    story: ["Sales order dibuat tanpa potong stok.", "Gudang posting delivery sebagian.", "Sistem hitung sisa belum terkirim.", "Laporan pending delivery berubah."],
+    records: [
+      { no: "SAL-000088", name: "Minimarket Sejahtera", meta: "Order 12 dus, terkirim 8 dus", amount: 2760000, status: "Partial" },
+      { no: "SAL-000089", name: "Distributor Sentosa", meta: "Menunggu jadwal kirim", amount: 6150000, status: "Pending" },
+      { no: "DLV-000027", name: "Surat jalan", meta: "Gudang Utama ke Bandung", amount: 1840000, status: "Posted" },
+    ],
+    impact: ["Stok baru berkurang saat delivery diposting.", "Sisa order terlihat di laporan.", "Surat jalan bisa dicetak ulang."],
+  },
+  receivables: {
+    label: "Piutang",
+    headline: "Client bisa paham siapa belum bayar dan sisa tagihannya.",
+    subline: "Tampilkan contoh aging ringan, pembayaran partial, dan sisa tagihan.",
+    cta: "Bayar Dummy",
+    href: "/receivables",
+    metrics: ["Rp 7,4 jt piutang", "5 customer tempo", "Rp 1,2 jt dibayar hari ini"],
+    story: ["Buka nota outstanding.", "Input pembayaran sebagian.", "Sisa piutang otomatis turun.", "Kas masuk tercatat."],
+    records: [
+      { no: "SAL-000091", name: "Toko Berkah Jaya", meta: "Jatuh tempo 7 hari lagi", amount: 3420000, status: "Belum lunas" },
+      { no: "SAL-000086", name: "Warung Bu Sari", meta: "Dibayar sebagian", amount: 980000, status: "Partial" },
+      { no: "PAY-C-000031", name: "Pembayaran customer", meta: "Tunai ke kas toko", amount: 500000, status: "Kas masuk" },
+    ],
+    impact: ["Outstanding invoice turun.", "Cash in otomatis bertambah.", "Laporan angsuran customer update."],
+  },
+  payables: {
+    label: "Hutang Supplier",
+    headline: "Invoice, jatuh tempo, dan pembayaran supplier terlihat jelas.",
+    subline: "Tidak perlu accounting penuh, yang penting client lihat AP operasional.",
+    cta: "Bayar Supplier",
+    href: "/payables",
+    metrics: ["Rp 5,8 jt hutang", "3 supplier tempo", "1 lewat tempo"],
+    story: ["Pilih invoice supplier outstanding.", "Catat pembayaran.", "Hutang berkurang.", "Kas keluar tercatat otomatis."],
+    records: [
+      { no: "PUR-000044", name: "PT Indofood Sukses Makmur", meta: "Sisa pembayaran", amount: 2350000, status: "Partial" },
+      { no: "PUR-000039", name: "Distributor Nasional", meta: "Lewat jatuh tempo 2 hari", amount: 1475000, status: "Overdue" },
+      { no: "PAY-S-000014", name: "Pembayaran supplier", meta: "Transfer bank", amount: 750000, status: "Kas keluar" },
+    ],
+    impact: ["Outstanding purchase turun.", "Cash out tercatat.", "Dashboard hutang berubah."],
+  },
+  stock: {
+    label: "Stok",
+    headline: "Stok multi gudang cukup ditampilkan sebagai ringkasan yang gampang dibaca.",
+    subline: "Client lihat stok per gudang, barang menipis, dan nilai stok tanpa membuka ledger mentah.",
+    cta: "Buka POS",
+    href: "/pos",
+    metrics: ["28 SKU aktif", "3 gudang", "Rp 42,6 jt nilai stok"],
+    story: ["Produk punya satuan stok dasar.", "Harga jual retail/grosir.", "Saldo stok terlihat per gudang.", "Mutasi tercatat di kartu stok."],
+    records: [
+      { no: "ITEM-001", name: "Plastik PP 1 kg", meta: "Toko 42 pack, Gudang 120 pack", amount: 3850000, status: "Aman" },
+      { no: "ITEM-014", name: "Cup 12 oz", meta: "Sisa 8 dus di Toko Utama", amount: 960000, status: "Menipis" },
+      { no: "ITEM-021", name: "Kresek Hitam", meta: "Butuh restock minggu ini", amount: 420000, status: "Low" },
+    ],
+    impact: ["Semua transaksi stok masuk ledger.", "Saldo gudang selalu terlihat.", "Nilai stok memakai avg cost demo."],
+  },
+  stockCard: {
+    label: "Kartu Stok",
+    headline: "Jawab pertanyaan client: barang ini bergerak ke mana?",
+    subline: "Movement dibuat ringkas agar audit trail stok langsung kebaca.",
+    cta: "Lihat Stok",
+    href: "/inventory/stock",
+    metrics: ["126 movement", "9 tipe mutasi", "Real-time balance"],
+    story: ["Pilih produk.", "Lihat opening, purchase, sale, transfer, retur.", "Balance berjalan terlihat.", "Gudang bisa difilter."],
+    records: [
+      { no: "OPENING", name: "Stok awal", meta: "Gudang Utama +240 PCS", amount: 1680000, status: "Masuk" },
+      { no: "SALE", name: "POS-000184", meta: "Toko Utama -6 PCS", amount: 42000, status: "Keluar" },
+      { no: "TRANSFER", name: "TRF-000012", meta: "Gudang Utama ke Toko Utama", amount: 280000, status: "Mutasi" },
+    ],
+    impact: ["Audit stok gampang dijelaskan.", "Tidak ada stok yang diubah dari client.", "Semua movement punya reference."],
+  },
+  stockTransfers: {
+    label: "Transfer Gudang",
+    headline: "Barang pindah dari gudang besar ke toko dalam satu skenario.",
+    subline: "Cukup satu contoh transfer agar client paham multi warehouse.",
+    cta: "Simulasi Transfer",
+    href: "/inventory/transfers",
+    metrics: ["3 gudang", "7 transfer minggu ini", "0 pending"],
+    story: ["Pilih gudang asal dan tujuan.", "Input barang serta qty.", "Post transfer.", "Saldo asal turun dan tujuan naik."],
+    records: [
+      { no: "TRF-000012", name: "Gudang Utama -> Toko Utama", meta: "Cup 12 oz, Plastik PP", amount: 1280000, status: "Posted" },
+      { no: "TRF-000011", name: "Gudang Cadangan -> Gudang Utama", meta: "Restock internal", amount: 840000, status: "Posted" },
+      { no: "TRF-000010", name: "Toko Utama -> Gudang Utama", meta: "Barang slow moving", amount: 315000, status: "Posted" },
+    ],
+    impact: ["Ledger transfer out/in terbentuk.", "Cost barang tetap terbawa.", "Stok per gudang langsung berubah."],
+  },
+  repack: {
+    label: "Repack",
+    headline: "Repack digambarkan sebagai pecah barang besar jadi SKU jual kecil.",
+    subline: "Ini penting untuk plastik/packaging: roll, pack, dus, dan bundle.",
+    cta: "Simulasi Repack",
+    href: "/inventory/repack",
+    metrics: ["5 repack bulan ini", "100% alokasi", "2 output SKU"],
+    story: ["Ambil input barang dari gudang.", "Tentukan output SKU dan qty.", "Alokasi nilai total 100%.", "Input turun, output naik."],
+    records: [
+      { no: "RPK-000008", name: "Roll Plastik -> Pack 1 kg", meta: "Input 2 roll, output 36 pack", amount: 1260000, status: "Posted" },
+      { no: "RPK-000007", name: "Karton Cup -> Ecer Dus", meta: "Output siap dijual retail", amount: 780000, status: "Posted" },
+      { no: "RPK-000006", name: "Bundle Sendok", meta: "Alokasi nilai 100%", amount: 240000, status: "Posted" },
+    ],
+    impact: ["Repack out/in tercatat.", "Harga pokok output terbentuk.", "Bukan sekadar konversi UOM."],
+  },
+  reports: {
+    label: "Laporan",
+    headline: "Laporan dibuat sebagai bahan validasi requirement client.",
+    subline: "Tampilkan report yang paling sering dipakai owner, admin, finance, dan gudang.",
+    cta: "Buka Dashboard",
+    href: "/dashboard",
+    metrics: ["17 report siap", "CSV export", "Filter tanggal"],
+    story: ["Owner lihat dashboard dan laba.", "Admin cek stok dan kartu stok.", "Finance cek hutang/piutang.", "Gudang cek pending delivery."],
+    records: [
+      { no: "RPT-STOCK", name: "Stock Summary", meta: "Qty, gudang, nilai stok", amount: 42600000, status: "Ready" },
+      { no: "RPT-PROFIT", name: "Laba per Nota", meta: "Omset dikurangi HPP snapshot", amount: 3650000, status: "Ready" },
+      { no: "RPT-PENDING", name: "Barang Tidak Terkirim", meta: "Order delivery belum full", amount: 1840000, status: "Ready" },
+    ],
+    impact: ["Client bisa validasi definisi laporan.", "Data dummy mudah dipresentasikan.", "Report production bisa mengikuti format ini."],
+  },
 };
 
-function text(v: any): string {
-  if (v == null) return "-";
-  if (typeof v === "boolean") return v ? "Aktif" : "Nonaktif";
-  if (typeof v === "object") return v.name || v.code || v.number || "-";
-  const s = String(v);
-  return /^\d{4}-\d{2}-\d{2}/.test(s) ? formatDateID(s) : s;
-}
-
-function moneyColumn(name: string) {
-  return /amount|total|price|cost|value|limit|outstanding|paid/.test(name);
-}
-
-function statusClass(value: string) {
-  const v = value.toUpperCase();
-  if (["PAID", "FULL", "POSTED", "AKTIF"].includes(v)) return "good";
-  if (["PARTIAL", "RETURNED_PARTIAL", "PENDING", "NONE", "UNPAID"].includes(v)) return "warn";
-  if (["CANCELLED", "NONAKTIF"].includes(v)) return "bad";
-  return "neutral";
-}
-
-function labelFor(key: string) {
-  return key
-    .replace("customer_groups", "group")
-    .replace("warehouses", "gudang")
-    .replace("suppliers", "supplier")
-    .replace("customers", "customer")
-    .replaceAll("_", " ");
-}
+const fallback: DemoContent = {
+  label: "Demo Module",
+  headline: "Halaman ini disiapkan sebagai contoh modul operasional.",
+  subline: "Fokus demo: client paham data apa yang dikelola, alurnya bagaimana, dan efeknya ke laporan.",
+  cta: "Buka Dashboard",
+  href: "/dashboard",
+  metrics: ["Data dummy", "Flow demo", "Siap feedback"],
+  story: ["Lihat contoh master/transaksi.", "Jelaskan hubungan ke stok, kas, hutang, atau piutang.", "Catat feedback client.", "Finalisasi requirement production."],
+  records: [
+    { no: "DM-001", name: "Contoh data demo", meta: "Data dummy untuk presentasi client", amount: 1250000, status: "Aktif" },
+    { no: "DM-002", name: "Simulasi transaksi", meta: "Menggambarkan flow utama", amount: 850000, status: "Ready" },
+    { no: "DM-003", name: "Output laporan", meta: "Angka berubah sesuai skenario demo", amount: 420000, status: "Preview" },
+  ],
+  impact: ["Mengurangi distraksi teknis.", "Client fokus ke proses bisnis.", "Demo tetap bisa dikembangkan ke form lengkap."],
+};
 
 export default function DemoModulePage({ kind, title, description }: { kind: DemoKind; title: string; description: string }) {
-  const supabase = useMemo(() => createClient(), []);
-  const [ref, setRef] = useState<RefData | null>(null);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState(false);
-  const [query, setQuery] = useState("");
-  const [notice, setNotice] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [posted, setPosted] = useState(false);
+  const content = useMemo(() => CONTENT[kind] ?? fallback, [kind]);
 
-  const load = async () => {
-    setLoading(true);
-    setError(null);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { window.location.href = "/"; return; }
-    const ws = await supabase.from("workspace_members").select("workspace_id").eq("user_id", user.id).limit(1);
-    if (ws.error) throw ws.error;
-    const workspaceId = ws.data?.[0]?.workspace_id;
-    if (!workspaceId) throw new Error("Workspace demo belum dibuat. Klik Coba Demo dari landing page.");
+  return (
+    <div className="demo-page">
+      <section className="demo-hero">
+        <div>
+          <span className="demo-kicker">Client demo screen</span>
+          <h1>{title || content.label}</h1>
+          <p>{description || content.subline}</p>
+        </div>
+        <div className="demo-actions">
+          <Link className="primary-action" href={content.href}>{content.cta}</Link>
+          <button onClick={() => setPosted(true)}>{posted ? "Simulasi berhasil" : "Jalankan Dummy"}</button>
+        </div>
+      </section>
 
-    const [products, units, warehouses, suppliers, customers, salesPeople, purchases, sales, saleItems] = await Promise.all([
-      supabase.from("products").select("id,code,name,current_avg_cost,active,categories(name),brands(name),stock_unit_id").eq("workspace_id", workspaceId).order("code"),
-      supabase.from("units").select("id,code,name").eq("workspace_id", workspaceId).order("code"),
-      supabase.from("warehouses").select("id,code,name,location,active").eq("workspace_id", workspaceId).order("code"),
-      supabase.from("suppliers").select("id,code,name,phone,city,payment_term_days,active").eq("workspace_id", workspaceId).order("code"),
-      supabase.from("customers").select("id,code,name,phone,city,customer_group_id,credit_limit,active,customer_groups(name)").eq("workspace_id", workspaceId).order("code"),
-      supabase.from("sales_people").select("id,code,name,phone,active").eq("workspace_id", workspaceId).order("code"),
-      supabase.from("purchases").select("id,supplier_id,number,purchase_date,total,paid_amount,outstanding_amount,status,suppliers(name),warehouses(name)").eq("workspace_id", workspaceId).order("created_at", { ascending: false }).limit(50),
-      supabase.from("sales").select("id,customer_id,number,sale_type,sale_date,total,paid_amount,outstanding_amount,payment_status,fulfillment_status,status,customers(name),warehouses(name)").eq("workspace_id", workspaceId).order("created_at", { ascending: false }).limit(50),
-      supabase.from("sale_items").select("id,sale_id,product_id,unit_id,qty,stock_qty,delivered_qty,unit_price,products(name)").limit(200),
-    ]);
-    for (const res of [products, units, warehouses, suppliers, customers, salesPeople, purchases, sales, saleItems]) if (res.error) throw res.error;
-    const nextRef: RefData = { workspaceId, products: products.data ?? [], units: units.data ?? [], warehouses: warehouses.data ?? [], suppliers: suppliers.data ?? [], customers: customers.data ?? [], salesPeople: salesPeople.data ?? [], purchases: purchases.data ?? [], sales: sales.data ?? [], saleItems: saleItems.data ?? [] };
-    setRef(nextRef);
+      <section className="demo-focus">
+        <div className="focus-copy">
+          <span>{content.label}</span>
+          <h2>{content.headline}</h2>
+          <p>{content.subline}</p>
+          {posted && <div className="success-note">Dummy transaction posted: stok, kas, hutang/piutang, dan laporan diperbarui pada skenario demo.</div>}
+        </div>
+        <div className="focus-metrics">
+          {content.metrics.map((metric) => <div key={metric}>{metric}</div>)}
+        </div>
+      </section>
 
-    if (kind in MASTER) {
-      const cfg = MASTER[kind]!;
-      const data = await supabase.from(cfg.table).select(cfg.select).eq("workspace_id", workspaceId).limit(100);
-      if (data.error) throw data.error;
-      setRows(data.data ?? []);
-    } else if (kind === "products") {
-      const data = await supabase.from("products").select("code,name,barcode,current_avg_cost,active,categories(name),brands(name)").eq("workspace_id", workspaceId).order("code");
-      if (data.error) throw data.error;
-      setRows(data.data ?? []);
-    } else if (kind === "prices") {
-      const data = await supabase.from("product_prices").select("products(code,name),customer_groups(name),units(code),min_qty,price").eq("workspace_id", workspaceId).limit(120);
-      if (data.error) throw data.error;
-      setRows(data.data ?? []);
-    } else if (kind === "stock") {
-      const data = await supabase.from("stock_balances").select("qty,avg_cost,stock_value,products(code,name),warehouses(name)").eq("workspace_id", workspaceId).order("qty", { ascending: true }).limit(150);
-      if (data.error) throw data.error;
-      setRows(data.data ?? []);
-    } else if (kind === "stockCard") {
-      const data = await supabase.from("inventory_movements").select("posted_at,movement_type,qty_delta_stock_unit,unit_cost,value_delta,balance_after,avg_cost_after,note,products(code,name),warehouses(name)").eq("workspace_id", workspaceId).order("posted_at", { ascending: false }).limit(150);
-      if (data.error) throw data.error;
-      setRows(data.data ?? []);
-    } else if (["purchases", "payables"].includes(kind)) setRows(nextRef.purchases);
-    else if (["sales", "receivables", "delivery"].includes(kind)) setRows(nextRef.sales);
-    else if (kind === "purchaseReturns") await loadTable("purchase_returns", "number,return_date,total,notes,suppliers(name),purchases(number)", workspaceId);
-    else if (kind === "salesReturns") await loadTable("sales_returns", "number,return_date,total,notes,customers(name),sales(number)", workspaceId);
-    else if (kind === "stockTransfers") await loadTable("stock_transfers", "number,transfer_date,notes,from_warehouse:warehouses!stock_transfers_from_warehouse_id_fkey(name),to_warehouse:warehouses!stock_transfers_to_warehouse_id_fkey(name)", workspaceId);
-    else if (kind === "stockIssues") await loadTable("stock_issues", "number,issue_date,reason,notes,warehouses(name)", workspaceId);
-    else if (kind === "repack") await loadTable("repacks", "number,repack_date,notes", workspaceId);
-    else if (kind === "adjustments") await loadTable("stock_adjustments", "number,adjustment_date,reason,notes,warehouses(name)", workspaceId);
-    else if (kind === "cashIn" || kind === "cashOut") {
-      const data = await supabase.from("cash_transactions").select("number,transaction_date,type,category,amount,payment_method,note").eq("workspace_id", workspaceId).eq("type", kind === "cashIn" ? "IN" : "OUT").order("created_at", { ascending: false });
-      if (data.error) throw data.error;
-      setRows(data.data ?? []);
-    } else setRows([]);
-    setLoading(false);
-  };
-
-  const loadTable = async (table: string, select: string, workspaceId: string) => {
-    const data = await supabase.from(table).select(select).eq("workspace_id", workspaceId).order("created_at", { ascending: false });
-    if (data.error) throw data.error;
-    setRows(data.data ?? []);
-  };
-
-  useEffect(() => { load().catch((e) => { setError(e.message); setLoading(false); }); }, [kind]);
-
-  const run = async (label: string, fn: (r: RefData) => Promise<void>) => {
-    if (!ref) return;
-    setBusy(true); setNotice(null); setError(null);
-    try { await fn(ref); await load(); setNotice(label + " berhasil."); }
-    catch (e: any) { setError(e.message ?? String(e)); }
-    finally { setBusy(false); }
-  };
-
-  const sampleItems = (r: RefData, count = 2) => {
-    const pcs = r.units.find((u) => u.code === "PCS") ?? r.units[0];
-    return r.products.slice(0, count).map((p, i) => ({ product_id: p.id, unit_id: pcs.id, qty: i + 2, conversion_factor: 1, unit_price: Number(p.current_avg_cost || 1000) * 1.1 }));
-  };
-
-  const rpc = (name: string, label: string, params: (r: RefData) => Row) => run(label, async (r) => {
-    const { error } = await supabase.rpc(name, params(r));
-    if (error) throw error;
-  });
-
-  const addMaster = () => run("Tambah data", async (r) => {
-    const cfg = MASTER[kind];
-    if (!cfg) throw new Error("Tambah cepat belum tersedia untuk modul ini.");
-    const { error } = await supabase.from(cfg.table).insert(cfg.make(r));
-    if (error) throw error;
-  });
-
-  const purchase = () => rpc("post_purchase", "Pembelian", (r) => ({ p_workspace: r.workspaceId, p_supplier: r.suppliers[0]?.id, p_invoice_number: "INV-DEMO-" + Date.now().toString().slice(-5), p_purchase_date: new Date().toISOString().slice(0, 10), p_due_date: new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10), p_warehouse: r.warehouses[0]?.id, p_items: sampleItems(r), p_notes: "Demo pembelian dari UI" }));
-  const sale = (type: "DIRECT" | "DELIVERY") => rpc("post_sale", type === "DIRECT" ? "Penjualan langsung" : "Order delivery", (r) => ({ p_workspace: r.workspaceId, p_sale_type: type, p_customer: r.customers[0]?.id, p_salesman: r.salesPeople[0]?.id ?? null, p_warehouse: r.warehouses[0]?.id, p_items: sampleItems(r).map(({ product_id, unit_id, qty }) => ({ product_id, unit_id, qty })), p_paid: type === "DIRECT" ? 100000 : 0, p_notes: "Demo transaksi dari UI" }));
-
-  const customerPayment = () => run("Pembayaran piutang", async (r) => {
-    const s = r.sales.find((x) => Number(x.outstanding_amount) > 0);
-    if (!s) throw new Error("Tidak ada piutang aktif.");
-    const { error } = await supabase.rpc("record_customer_payment", { p_workspace: r.workspaceId, p_customer: s.customer_id, p_sale: s.id, p_amount: Math.min(50000, Number(s.outstanding_amount)), p_payment_method: "CASH", p_note: "Demo angsuran customer" });
-    if (error) throw error;
-  });
-
-  const supplierPayment = () => run("Pembayaran hutang", async (r) => {
-    const p = r.purchases.find((x) => Number(x.outstanding_amount) > 0);
-    if (!p) throw new Error("Tidak ada hutang aktif.");
-    const { error } = await supabase.rpc("record_supplier_payment", { p_workspace: r.workspaceId, p_supplier: p.supplier_id, p_purchase: p.id, p_amount: Math.min(50000, Number(p.outstanding_amount)), p_payment_method: "CASH", p_note: "Demo angsuran supplier" });
-    if (error) throw error;
-  });
-
-  const delivery = () => run("Delivery", async (r) => {
-    const s = r.sales.find((x) => x.sale_type === "DELIVERY" && x.fulfillment_status !== "FULL");
-    if (!s) throw new Error("Tidak ada order delivery pending. Buat delivery sale dulu.");
-    const items = r.saleItems.filter((i) => i.sale_id === s.id && Number(i.delivered_qty || 0) < Number(i.qty)).slice(0, 2).map((i) => ({ sale_item_id: i.id, qty: 1 }));
-    if (!items.length) throw new Error("Item pending tidak ditemukan.");
-    const { error } = await supabase.rpc("post_delivery", { p_workspace: r.workspaceId, p_sale: s.id, p_items: items });
-    if (error) throw error;
-  });
-
-  const cash = (type: "IN" | "OUT") => rpc("create_cash_transaction", type === "IN" ? "Kas masuk" : "Kas keluar", (r) => ({ p_workspace: r.workspaceId, p_type: type, p_category: type === "IN" ? "Setoran Modal Demo" : "Biaya Operasional Demo", p_amount: type === "IN" ? 250000 : 125000, p_payment_method: "CASH", p_note: "Input demo manual" }));
-
-  const reset = () => run("Reset data demo", async (r) => {
-    if (!window.confirm("Reset data demo ke kondisi seed awal?")) return;
-    const { error } = await supabase.rpc("reset_demo_workspace", { p_workspace: r.workspaceId });
-    if (error) throw error;
-  });
-
-  const filtered = rows.filter((row) => JSON.stringify(row).toLowerCase().includes(query.toLowerCase()));
-  const columns = Array.from(new Set(filtered.flatMap((r) => Object.keys(r)))).slice(0, 8);
-  const totals = {
-    sales: ref?.sales.reduce((s, x) => s + Number(x.total || 0), 0) ?? 0,
-    ar: ref?.sales.reduce((s, x) => s + Number(x.outstanding_amount || 0), 0) ?? 0,
-    ap: ref?.purchases.reduce((s, x) => s + Number(x.outstanding_amount || 0), 0) ?? 0,
-    products: ref?.products.length ?? 0,
-  };
-
-  const exportCsv = () => {
-    const header = columns.join(",");
-    const body = filtered.map((r) => columns.map((c) => '"' + text(r[c]).replace(/"/g, '""') + '"').join(",")).join("\n");
-    const blob = new Blob([header + "\n" + body], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = kind + ".csv"; a.click(); URL.revokeObjectURL(url);
-  };
-
-  const renderCell = (key: string, value: any) => {
-    if (moneyColumn(key) && typeof value === "number") return <span className="money">{formatRupiah(value)}</span>;
-    const rendered = text(value);
-    if (/status|type|reason|active/.test(key)) return <span className={"pill " + statusClass(rendered)}>{rendered}</span>;
-    if (/number|code|barcode/.test(key)) return <span className="code">{rendered}</span>;
-    if (/qty|min/.test(key) && typeof value === "number") return <span className="num strong">{formatNumber(value)}</span>;
-    return rendered;
-  };
-
-  const actions = <div className="actions">
-    {kind in MASTER && <button onClick={addMaster} disabled={busy}>Tambah Demo</button>}
-    {kind === "purchases" && <button onClick={purchase} disabled={busy}>Post Pembelian</button>}
-    {kind === "purchaseReturns" && <button onClick={() => rpc("post_purchase_return", "Retur pembelian", (r) => ({ p_workspace: r.workspaceId, p_purchase: r.purchases[0]?.id, p_items: sampleItems(r, 1).map((i) => ({ product_id: i.product_id, unit_id: i.unit_id, qty: 1 })) }))} disabled={busy}>Post Retur</button>}
-    {kind === "payables" && <button onClick={supplierPayment} disabled={busy}>Bayar Hutang</button>}
-    {kind === "sales" && <><button onClick={() => sale("DIRECT")} disabled={busy}>Post Direct Sale</button><button onClick={() => sale("DELIVERY")} disabled={busy}>Buat Delivery Sale</button></>}
-    {kind === "delivery" && <button onClick={delivery} disabled={busy}>Kirim Pending</button>}
-    {kind === "salesReturns" && <button onClick={() => rpc("post_sales_return", "Retur penjualan", (r) => ({ p_workspace: r.workspaceId, p_sale: r.sales[0]?.id, p_items: r.saleItems.slice(0, 1).map((i) => ({ sale_item_id: i.id, qty: 1 })) }))} disabled={busy}>Post Retur</button>}
-    {kind === "receivables" && <button onClick={customerPayment} disabled={busy}>Bayar Piutang</button>}
-    {kind === "stockTransfers" && <button onClick={() => rpc("post_stock_transfer", "Transfer stok", (r) => ({ p_workspace: r.workspaceId, p_from_warehouse: r.warehouses[0]?.id, p_to_warehouse: r.warehouses[1]?.id, p_items: [{ product_id: r.products[0]?.id, qty: 3 }] }))} disabled={busy}>Transfer 3 PCS</button>}
-    {kind === "stockIssues" && <button onClick={() => rpc("post_stock_issue", "Pengeluaran barang", (r) => ({ p_workspace: r.workspaceId, p_warehouse: r.warehouses[0]?.id, p_reason: "SAMPLE", p_items: [{ product_id: r.products[0]?.id, qty: 1 }] }))} disabled={busy}>Issue Sample</button>}
-    {kind === "repack" && <button onClick={() => rpc("post_repack", "Repack", (r) => ({ p_workspace: r.workspaceId, p_warehouse: r.warehouses[0]?.id, p_inputs: [{ product_id: r.products[0]?.id, qty: 2 }], p_outputs: [{ product_id: r.products[1]?.id, qty: 1, allocation_percent: 100 }], p_notes: "Demo repack" }))} disabled={busy}>Post Repack</button>}
-    {kind === "adjustments" && <button onClick={() => rpc("post_stock_adjustment", "Koreksi stok", (r) => ({ p_workspace: r.workspaceId, p_warehouse: r.warehouses[0]?.id, p_reason: "Stock opname demo", p_items: [{ product_id: r.products[0]?.id, system_qty: 0, physical_qty: 10 }] }))} disabled={busy}>Koreksi Stok</button>}
-    {kind === "cashIn" && <button onClick={() => cash("IN")} disabled={busy}>Tambah Kas Masuk</button>}
-    {kind === "cashOut" && <button onClick={() => cash("OUT")} disabled={busy}>Tambah Kas Keluar</button>}
-    {kind === "settings" && <button className="danger" onClick={reset} disabled={busy}>Reset Data Demo</button>}
-    {filtered.length > 0 && <button onClick={exportCsv} disabled={busy}>Export CSV</button>}
-  </div>;
-
-  if (loading) return <div className="module"><div className="skeleton">Memuat data operasional...</div><style jsx>{`.module{padding:24px}.skeleton{height:220px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(90deg,#fff,#f5f7f9,#fff);display:grid;place-items:center;color:var(--muted);font-weight:750}`}</style></div>;
-
-  return <div className="module">
-    <section className="hero">
-      <div>
-        <div className="eyebrow">ERP RETAIL / GROSIR</div>
-        <h1>{title}</h1>
-        <p>{description}</p>
+      <div className="demo-grid">
+        <section className="demo-card">
+          <div className="card-head"><span>Flow yang dijelaskan</span><strong>4 langkah</strong></div>
+          <ol className="flow-list">{content.story.map((step) => <li key={step}>{step}</li>)}</ol>
+        </section>
+        <section className="demo-card">
+          <div className="card-head"><span>Dampak sistem</span><strong>Realtime</strong></div>
+          <div className="impact-list">{content.impact.map((item) => <div key={item}>{item}</div>)}</div>
+        </section>
       </div>
-      {actions}
-    </section>
-    {(notice || error) && <div className={error ? "notice error" : "notice"}>{error || notice}</div>}
-    {kind !== "reports" && kind !== "settings" && <div className="insight-row">
-      <div className="insight"><span>Baris data</span><strong>{formatNumber(filtered.length)}</strong></div>
-      <div className="insight"><span>Total omset</span><strong>{formatRupiah(totals.sales)}</strong></div>
-      <div className="insight"><span>Piutang</span><strong>{formatRupiah(totals.ar)}</strong></div>
-      <div className="insight"><span>Hutang</span><strong>{formatRupiah(totals.ap)}</strong></div>
-    </div>}
-    {kind === "reports" || kind === "settings" ? <div className="report-grid">
-      <div className="metric"><span>Omset total demo</span><strong>{formatRupiah(totals.sales)}</strong></div>
-      <div className="metric"><span>Piutang aktif</span><strong>{formatRupiah(totals.ar)}</strong></div>
-      <div className="metric"><span>Hutang supplier</span><strong>{formatRupiah(totals.ap)}</strong></div>
-      <div className="metric"><span>SKU aktif</span><strong>{formatNumber(totals.products)}</strong></div>
-      <div className="panel wide"><h2>Laporan tersedia</h2><div className="report-list">{["Stock Summary","Kartu Stok","Koreksi Stok","Pembelian","Retur Pembelian","Angsuran Supplier","Penjualan","Retur Penjualan","Omset Per Nota","Penjualan Kasir","Laba Per Nota","Angsuran Customer","Pengeluaran Barang","Barang Tidak Terkirim"].map((x) => <span key={x}>{x}</span>)}</div></div>
-      <div className="panel wide"><h2>Quick links</h2><div className="links"><Link href="/pos">POS</Link><Link href="/purchases">Pembelian</Link><Link href="/delivery">Delivery</Link><Link href="/inventory/repack">Repack</Link><Link href="/reports">Laporan</Link></div></div>
-    </div> : <>
-      <div className="toolbar"><div><div className="toolbar-title">Data Workspace</div><div className="toolbar-sub">Realtime dari Supabase, dibatasi RLS workspace.</div></div><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cari nomor, nama, status..." /></div>
-      <div className="table-wrap"><table><thead><tr>{columns.map((c) => <th key={c}>{labelFor(c)}</th>)}</tr></thead><tbody>{filtered.map((row, i) => <tr key={i}>{columns.map((c) => <td key={c}>{renderCell(c, row[c])}</td>)}</tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">Tidak ada data sesuai pencarian.</div>}</div>
-    </>}
-    <style jsx>{`
-      .module { padding: 24px; max-width: 1320px; margin: 0 auto; }
-      .hero { border: 1px solid var(--border); border-radius: 14px; padding: 18px; background: linear-gradient(180deg, #ffffff, #fafbfc); box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; margin-bottom: 14px; }
-      .eyebrow { color: var(--accent); font-size: 10px; font-weight: 900; letter-spacing: .9px; text-transform: uppercase; margin-bottom: 7px; }
-      h1 { margin: 0; font-size: 24px; line-height: 1.15; letter-spacing: -.35px; color: var(--ink); }
-      p { margin: 7px 0 0; color: var(--text-2); font-size: 13px; line-height: 1.5; max-width: 700px; }
-      .actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; min-width: 280px; }
-      button, .links a { border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 8px; padding: 9px 12px; min-height: 36px; font-size: 12px; font-weight: 800; text-decoration: none; box-shadow: var(--shadow-sm); }
-      button:first-child { background: #152033; color: #fff; border-color: #152033; }
-      button:hover, .links a:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
-      button:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
-      .danger { background: #fff6f6 !important; color: var(--red) !important; border-color: #f0c2c2 !important; }
-      .notice { background: var(--green-soft); color: var(--green); border: 1px solid rgba(21,128,61,.18); padding: 11px 13px; border-radius: 10px; margin-bottom: 14px; font-size: 13px; font-weight: 760; }
-      .notice.error { background: var(--red-soft); color: var(--red); border-color: rgba(185,28,28,.18); }
-      .insight-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
-      .insight { border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,.75); padding: 12px 13px; }
-      .insight span { display: block; color: var(--muted); font-size: 10px; font-weight: 850; letter-spacing: .55px; text-transform: uppercase; margin-bottom: 5px; }
-      .insight strong { color: var(--ink); font-size: 16px; font-weight: 860; }
-      .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin: 0; padding: 13px 14px; border: 1px solid var(--border); border-bottom: none; border-radius: 14px 14px 0 0; background: #fff; }
-      .toolbar-title { font-size: 13px; font-weight: 850; color: var(--ink); }
-      .toolbar-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-      .toolbar input { width: 340px; max-width: 100%; border: 1px solid var(--border); border-radius: 8px; background: var(--panel-2); padding: 10px 12px; color: var(--text); font-size: 13px; }
-      .table-wrap { background: var(--panel); border: 1px solid var(--border); border-radius: 0 0 14px 14px; overflow: auto; box-shadow: var(--shadow-sm); }
-      table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
-      th { position: sticky; top: 0; z-index: 1; background: #f4f6f8; color: #687386; font-size: 10px; text-align: left; text-transform: uppercase; letter-spacing: .72px; padding: 11px 13px; white-space: nowrap; border-bottom: 1px solid var(--border); }
-      td { padding: 12px 13px; border-bottom: 1px solid #edf0f4; white-space: nowrap; color: var(--text-2); vertical-align: middle; }
-      tr:last-child td { border-bottom: none; }
-      tbody tr:hover td { background: #fbfcfd; color: var(--ink); }
-      .money { color: var(--ink); font-weight: 820; }
-      .strong { color: var(--ink); font-weight: 820; }
-      .code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; color: #233044; background: #eef2f6; border: 1px solid #e0e5ec; border-radius: 6px; padding: 3px 6px; }
-      .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 8px; font-size: 10px; font-weight: 900; letter-spacing: .35px; text-transform: uppercase; border: 1px solid transparent; }
-      .pill.good { background: var(--green-soft); color: var(--green); border-color: rgba(21,128,61,.15); }
-      .pill.warn { background: var(--amber-soft); color: var(--amber); border-color: rgba(180,83,9,.16); }
-      .pill.bad { background: var(--red-soft); color: var(--red); border-color: rgba(185,28,28,.16); }
-      .pill.neutral { background: var(--panel-3); color: var(--text-2); border-color: var(--border); }
-      .empty { padding: 34px; text-align: center; color: var(--muted); font-size: 13px; font-weight: 700; }
-      .report-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-      .metric, .panel { background: linear-gradient(180deg, #fff, #fbfcfd); border: 1px solid var(--border); border-radius: 14px; padding: 17px; box-shadow: var(--shadow-sm); }
-      .metric span { display: block; color: var(--muted); font-size: 11px; font-weight: 850; text-transform: uppercase; letter-spacing: .55px; margin-bottom: 8px; }
-      .metric strong { color: var(--ink); font-size: 22px; letter-spacing: -.25px; }
-      .wide { grid-column: span 4; }
-      .panel h2 { margin: 0 0 13px; font-size: 15px; color: var(--ink); }
-      .report-list { display: grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap: 9px; }
-      .report-list span { background: #f6f8fa; border: 1px solid var(--border); border-radius: 9px; padding: 11px 12px; font-size: 12px; font-weight: 780; color: var(--text-2); }
-      .links { display: flex; flex-wrap: wrap; gap: 9px; }
-      @media(max-width:900px){ .module{padding:14px}.hero{display:block}.actions{justify-content:flex-start;margin-top:14px;min-width:0}.insight-row,.report-grid{grid-template-columns:1fr 1fr}.wide{grid-column:span 2}.toolbar{display:block}.toolbar input{margin-top:10px;width:100%} }
-      @media(max-width:560px){ .insight-row,.report-grid{grid-template-columns:1fr}.wide{grid-column:auto} h1{font-size:21px} }    `}</style>
-  </div>;
-}
 
+      <section className="demo-card records-card">
+        <div className="card-head"><span>Dummy data untuk presentasi</span><strong>Berkah Plastik & Packaging</strong></div>
+        <div className="record-list">
+          {content.records.map((record) => (
+            <div className="record-row" key={record.no}>
+              <div><span className="record-no">{record.no}</span><h3>{record.name}</h3><p>{record.meta}</p></div>
+              <div className="record-side"><strong>{formatRupiah(record.amount)}</strong><span>{record.status}</span></div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
