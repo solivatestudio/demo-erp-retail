@@ -899,6 +899,118 @@ a:focus-visible {
 .receipt-total { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; }
 .receipt-total b { font-size: 16px; }
 
+.nota-modal {
+  width: min(520px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+}
+
+.nota-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.nota-paper {
+  background: #fff;
+  color: #18181b;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.nota-header {
+  display: grid;
+  gap: 3px;
+  text-align: center;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 12px;
+}
+
+.nota-header strong { font-size: 20px; }
+.nota-header span { color: var(--muted-foreground); font-size: 12px; }
+
+.nota-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 14px;
+  border-bottom: 1px dashed var(--border);
+  padding: 14px 0;
+}
+
+.nota-meta div,
+.nota-total div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nota-meta span,
+.nota-total span {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+
+.nota-meta b,
+.nota-total b {
+  text-align: right;
+  font-size: 12px;
+}
+
+.nota-paper .receipt-lines {
+  border-bottom: 1px dashed var(--border);
+  border-top: 0;
+  margin: 0;
+}
+
+.nota-paper .receipt-lines div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3px 12px;
+  align-items: start;
+}
+
+.nota-paper .receipt-lines span { font-size: 13px; font-weight: 750; }
+.nota-paper .receipt-lines em { color: var(--muted-foreground); font-size: 12px; font-style: normal; }
+.nota-paper .receipt-lines b { grid-row: span 2; font-size: 13px; }
+
+.nota-total {
+  display: grid;
+  gap: 8px;
+  padding-top: 14px;
+}
+
+.nota-total div:first-child b,
+.nota-total div:first-child span {
+  color: var(--foreground);
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.nota-footer {
+  margin-top: 16px;
+  border-top: 1px dashed var(--border);
+  padding-top: 12px;
+  color: var(--muted-foreground);
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+@media print {
+  body * { visibility: hidden; }
+  .nota-paper,
+  .nota-paper * { visibility: visible; }
+  .nota-paper {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    box-shadow: none;
+    border-radius: 0;
+  }
+}
+
 @media (max-width: 980px) {
   .app-shell { grid-template-columns: 1fr; height: auto; min-height: 100vh; overflow: visible; }
   .app-sidebar {

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Download, Pencil, Plus, Printer, Save, Search, Trash2, Upload, X } from "lucide-react";
 import { formatRupiah } from "../lib/utils/format";
+import { getSalesReceipts, getStockSnapshot } from "../lib/demoFlow";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
@@ -401,13 +402,31 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
   const [form, setForm] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    setRecords(config.rows);
+    if (kind === "reprints") {
+      const receipts = getSalesReceipts().map((receipt) => ({
+        no: receipt.number,
+        tanggal: receipt.date,
+        tipe: "Nota Penjualan",
+        partner: receipt.customer,
+        total: receipt.total,
+        status: "Printable",
+      }));
+      setRecords([...receipts, ...config.rows]);
+    } else if (kind === "stock") {
+      const savedStock = getStockSnapshot();
+      setRecords(config.rows.map((row) => {
+        const kode = String(row.kode ?? "");
+        return savedStock[kode] !== undefined ? { ...row, toko: `${savedStock[kode]} unit` } : row;
+      }));
+    } else {
+      setRecords(config.rows);
+    }
     setQuery("");
     setSaved(false);
     setEditorOpen(false);
     setEditingIndex(null);
     setForm({});
-  }, [config]);
+  }, [config, kind]);
 
   const rows = useMemo(() => {
     const q = query.trim().toLowerCase();

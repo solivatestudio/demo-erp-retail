@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Minus, Plus, ReceiptText, Search, ShoppingCart, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Minus, Plus, Printer, ReceiptText, Search, ShoppingCart, Trash2, X } from "lucide-react";
 import { formatRupiah } from "../lib/utils/format";
+import { getStockSnapshot, SalesReceipt, saveSalesReceipt, saveStockSnapshot } from "../lib/demoFlow";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
@@ -43,7 +44,16 @@ export default function PosClient() {
   const [category, setCategory] = useState("Semua");
   const [query, setQuery] = useState("");
   const [paid, setPaid] = useState(0);
-  const [receipt, setReceipt] = useState<{ number: string; total: number; paid: number; lines: CartLine[] } | null>(null);
+  const [receipt, setReceipt] = useState<SalesReceipt | null>(null);
+
+  useEffect(() => {
+    const savedStock = getStockSnapshot();
+    if (Object.keys(savedStock).length === 0) return;
+    setProducts((current) => current.map((product) => ({
+      ...product,
+      stockToko: savedStock[product.sku] ?? product.stockToko,
+    })));
+  }, []);
 
   const customer = customers.find((item) => item.id === customerId) ?? customers[0];
   const isWholesale = customer.group !== "Retail";
@@ -85,18 +95,34 @@ export default function PosClient() {
 
   const checkout = () => {
     if (cart.length === 0) return;
-    setProducts((current) =>
-      current.map((product) => {
+    const paidAmount = paid || total;
+    const nextProducts = products.map((product) => {
         const line = cart.find((item) => item.id === product.id);
         return line ? { ...product, stockToko: Math.max(0, product.stockToko - line.qty) } : product;
-      })
-    );
-    setReceipt({
-      number: `POS-${String(Math.floor(180 + Math.random() * 40)).padStart(6, "0")}`,
+      });
+    const nextReceipt: SalesReceipt = {
+      number: `POS-${String(Date.now()).slice(-6)}`,
+      date: new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(new Date()),
+      cashier: "Admin Toko",
+      customer: customer.name,
+      customerGroup: customer.group,
+      warehouse: "Toko Utama",
       total,
-      paid,
-      lines: cart,
-    });
+      paid: paidAmount,
+      change: Math.max(0, paidAmount - total),
+      lines: cart.map((item) => ({
+        sku: item.sku,
+        name: item.name,
+        unit: item.unit,
+        qty: item.qty,
+        price: item.price,
+        subtotal: item.qty * item.price,
+      })),
+    };
+    setProducts(nextProducts);
+    saveStockSnapshot(Object.fromEntries(nextProducts.map((product) => [product.sku, product.stockToko])));
+    saveSalesReceipt(nextReceipt);
+    setReceipt(nextReceipt);
     setCart([]);
     setPaid(0);
   };
@@ -218,22 +244,41 @@ export default function PosClient() {
 
       {receipt && (
         <div className="receipt-overlay" onClick={() => setReceipt(null)}>
-          <div className="receipt-modal" onClick={(event) => event.stopPropagation()}>
-            <strong>RetailOS</strong>
-            <span>{receipt.number}</span>
+          <div className="nota-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="nota-actions">
+              <Button variant="outline" onClick={() => window.print()}><Printer size={15} /> Cetak</Button>
+              <Button variant="ghost" size="icon" onClick={() => setReceipt(null)} aria-label="Tutup"><X size={16} /></Button>
+            </div>
+            <div className="nota-paper">
+              <header className="nota-header">
+                <strong>RetailOS</strong>
+                <span>Jl. Operasional No. 10, Jakarta</span>
+                <span>Telp/WA 0812-0000-1234</span>
+              </header>
+              <section className="nota-meta">
+                <div><span>No Nota</span><b>{receipt.number}</b></div>
+                <div><span>Tanggal</span><b>{receipt.date}</b></div>
+                <div><span>Pelanggan</span><b>{receipt.customer}</b></div>
+                <div><span>Grup</span><b>{receipt.customerGroup}</b></div>
+                <div><span>Gudang</span><b>{receipt.warehouse}</b></div>
+                <div><span>Kasir</span><b>{receipt.cashier}</b></div>
+              </section>
             <div className="receipt-lines">
               {receipt.lines.map((item) => (
-                <div key={item.id}>
-                  <span>{item.name} × {item.qty}</span>
-                  <b>{formatRupiah(item.qty * item.price)}</b>
+                <div key={item.sku}>
+                  <span>{item.name}</span>
+                  <em>{item.qty} {item.unit} × {formatRupiah(item.price)}</em>
+                  <b>{formatRupiah(item.subtotal)}</b>
                 </div>
               ))}
             </div>
-            <div className="receipt-total">
-              <span>Total</span>
-              <b>{formatRupiah(receipt.total)}</b>
+              <section className="nota-total">
+                <div><span>Total</span><b>{formatRupiah(receipt.total)}</b></div>
+                <div><span>Tunai</span><b>{formatRupiah(receipt.paid)}</b></div>
+                <div><span>Kembali</span><b>{formatRupiah(receipt.change)}</b></div>
+              </section>
+              <footer className="nota-footer">Barang yang sudah dibeli dapat ditukar sesuai kebijakan toko dengan membawa nota.</footer>
             </div>
-            <Button onClick={() => setReceipt(null)}>Tutup struk</Button>
           </div>
         </div>
       )}
