@@ -1,93 +1,164 @@
 "use client";
 
 import Link from "next/link";
+import {
+  ArrowRight,
+  Boxes,
+  PackageCheck,
+  ReceiptText,
+  ShoppingCart,
+  Truck,
+  WalletCards,
+} from "lucide-react";
 import { formatRupiah } from "../lib/utils/format";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 
 const kpis = [
-  ["Omset hari ini", 18750000, "+14 nota"],
-  ["Laba kotor", 3650000, "19,4% margin"],
-  ["Piutang aktif", 7420000, "5 customer"],
-  ["Hutang supplier", 5860000, "3 jatuh tempo"],
+  { label: "Omset hari ini", value: 18750000, note: "14 nota", tone: "success" },
+  { label: "Transaksi POS", value: 42, note: "kasir aktif", tone: "default" },
+  { label: "Stok menipis", value: 8, note: "perlu restock", tone: "warning" },
+  { label: "Piutang aktif", value: 7420000, note: "5 customer", tone: "secondary" },
 ];
 
-const flows = [
-  { title: "POS retail", desc: "Pelanggan umum bayar tunai, stok toko langsung berkurang.", href: "/pos" },
-  { title: "Sales grosir", desc: "Customer grosir dapat harga khusus dan bisa tempo.", href: "/sales" },
-  { title: "Pembelian", desc: "Barang masuk gudang, HPP rata-rata bergerak, hutang tercatat.", href: "/purchases" },
-  { title: "Delivery partial", desc: "Order belum potong stok sampai surat jalan diposting.", href: "/delivery" },
-  { title: "Repack", desc: "Roll besar dipecah jadi pack kecil dengan alokasi nilai.", href: "/inventory/repack" },
-  { title: "Laporan", desc: "Owner cek stok, laba nota, angsuran, dan pending delivery.", href: "/reports" },
+const quickFlows = [
+  { title: "POS kasir", desc: "Tambah item, pilih customer, bayar, stok toko berkurang.", href: "/pos", icon: ShoppingCart },
+  { title: "Kelola stok gudang", desc: "Pantau stok per gudang, barang low stock, dan nilai persediaan.", href: "/inventory/stock", icon: Boxes },
+  { title: "Dashboard toko", desc: "Owner lihat omset, piutang, pending delivery, dan transaksi terbaru.", href: "/", icon: ReceiptText },
+  { title: "Delivery partial", desc: "Order terkirim sebagian dan sisa yang belum jalan tetap terlihat.", href: "/delivery", icon: Truck },
 ];
 
-const activities = [
-  ["POS-000184", "Pelanggan Umum", "Lunas", 186500],
-  ["SAL-000091", "Toko Berkah Jaya", "Piutang", 3420000],
-  ["PUR-000044", "PT Indofood", "Partial", 4850000],
-  ["DLV-000027", "Minimarket Sejahtera", "8/12 dus", 1840000],
+const stockRows = [
+  { sku: "ITEM-001", item: "Plastik PP 1 kg", toko: 42, gudang: 120, status: "Aman" },
+  { sku: "ITEM-014", item: "Cup 12 oz", toko: 8, gudang: 36, status: "Low" },
+  { sku: "ITEM-021", item: "Kresek Hitam 24", toko: 12, gudang: 4, status: "Restock" },
+];
+
+const transactions = [
+  { no: "POS-000184", name: "Pelanggan Umum", type: "POS", amount: 186500, status: "Lunas" },
+  { no: "SAL-000091", name: "Toko Berkah Jaya", type: "Grosir", amount: 3420000, status: "Piutang" },
+  { no: "PUR-000044", name: "PT Sumber Plastik", type: "Pembelian", amount: 4850000, status: "Partial" },
+  { no: "DLV-000027", name: "Minimarket Sejahtera", type: "Delivery", amount: 1840000, status: "8/12 dus" },
 ];
 
 export default function DashboardClient() {
   return (
-    <div className="client-dashboard">
-      <section className="dash-intro">
+    <div className="dashboard-page">
+      <section className="dashboard-hero">
         <div>
-          <span>Demo workspace</span>
-          <h1>Berkah Plastik & Packaging</h1>
-          <p>Dashboard ini pakai dummy scenario agar client langsung paham alur: jual, beli, stok, delivery, hutang/piutang, repack, dan laporan.</p>
+          <Badge variant="success">langsung masuk app</Badge>
+          <h1>Dashboard Kelola Toko</h1>
+          <p>
+            Fokus demo: POS, stok gudang, penjualan, pembelian, delivery,
+            piutang/hutang, dan laporan owner. Semua angka pakai dummy data.
+          </p>
         </div>
-        <Link href="/pos">Mulai dari POS</Link>
+        <div className="hero-actions">
+          <Button asChild size="lg">
+            <Link href="/pos">
+              Coba POS <ArrowRight size={16} />
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="lg">
+            <Link href="/inventory/stock">Lihat Stok</Link>
+          </Button>
+        </div>
       </section>
 
-      <section className="demo-kpis">
-        {kpis.map(([label, value, note]) => (
-          <div key={String(label)}>
-            <span>{label}</span>
-            <strong>{formatRupiah(Number(value))}</strong>
-            <small>{note}</small>
-          </div>
+      <section className="kpi-grid">
+        {kpis.map((kpi) => (
+          <Card key={kpi.label} className="kpi-card">
+            <CardHeader>
+              <CardDescription>{kpi.label}</CardDescription>
+              <CardTitle>
+                {kpi.label.includes("Omset") || kpi.label.includes("Piutang")
+                  ? formatRupiah(kpi.value)
+                  : kpi.value}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Badge variant={kpi.tone as "success" | "default" | "warning" | "secondary"}>{kpi.note}</Badge>
+            </CardContent>
+          </Card>
         ))}
       </section>
 
-      <section className="story-panel">
-        <div className="story-copy">
-          <span>Alur presentasi 7 menit</span>
-          <h2>Dari kasir ke laporan owner</h2>
-          <p>Jalankan demo dari POS, lanjut ke pembelian, tunjukkan perubahan stok, lalu tutup dengan piutang, hutang, delivery partial, dan laporan.</p>
-        </div>
-        <div className="story-steps">
-          {flows.map((flow, index) => (
-            <Link href={flow.href} key={flow.title}>
-              <b>{String(index + 1).padStart(2, "0")}</b>
-              <strong>{flow.title}</strong>
-              <span>{flow.desc}</span>
-            </Link>
-          ))}
-        </div>
+      <section className="dashboard-grid">
+        <Card className="span-7">
+          <CardHeader>
+            <CardTitle>Alur demo yang ditunjukkan ke client</CardTitle>
+            <CardDescription>Empat layar utama cukup untuk menjelaskan MVP.</CardDescription>
+          </CardHeader>
+          <CardContent className="flow-grid">
+            {quickFlows.map((flow) => {
+              const Icon = flow.icon;
+              return (
+                <Link href={flow.href} className="flow-card" key={flow.title}>
+                  <div className="flow-icon"><Icon size={18} /></div>
+                  <strong>{flow.title}</strong>
+                  <span>{flow.desc}</span>
+                </Link>
+              );
+            })}
+          </CardContent>
+        </Card>
+
+        <Card className="span-5">
+          <CardHeader>
+            <CardTitle>Ringkasan stok gudang</CardTitle>
+            <CardDescription>Dummy stok per lokasi untuk bahan diskusi.</CardDescription>
+          </CardHeader>
+          <CardContent className="stock-list">
+            {stockRows.map((row) => (
+              <div className="stock-row" key={row.sku}>
+                <div>
+                  <span>{row.sku}</span>
+                  <strong>{row.item}</strong>
+                </div>
+                <div className="stock-numbers">
+                  <span>Toko {row.toko}</span>
+                  <span>Gudang {row.gudang}</span>
+                </div>
+                <Badge variant={row.status === "Aman" ? "success" : "warning"}>{row.status}</Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       </section>
 
       <section className="dashboard-grid">
-        <div className="demo-card">
-          <div className="card-head"><span>Dummy transaksi hari ini</span><strong>Live sample</strong></div>
-          <div className="activity-list">
-            {activities.map(([no, name, status, amount]) => (
-              <div key={String(no)} className="activity-row">
-                <div><b>{no}</b><span>{name}</span></div>
-                <em>{status}</em>
-                <strong>{formatRupiah(Number(amount))}</strong>
+        <Card className="span-7">
+          <CardHeader>
+            <CardTitle>Transaksi terbaru</CardTitle>
+            <CardDescription>Sample data untuk menggambarkan kondisi toko hari ini.</CardDescription>
+          </CardHeader>
+          <CardContent className="transaction-list">
+            {transactions.map((trx) => (
+              <div className="transaction-row" key={trx.no}>
+                <div>
+                  <span>{trx.no} · {trx.type}</span>
+                  <strong>{trx.name}</strong>
+                </div>
+                <Badge variant={trx.status === "Lunas" ? "success" : "outline"}>{trx.status}</Badge>
+                <b>{formatRupiah(trx.amount)}</b>
               </div>
             ))}
-          </div>
-        </div>
-        <div className="demo-card">
-          <div className="card-head"><span>Yang client perlu lihat</span><strong>Checklist</strong></div>
-          <div className="impact-list">
-            <div>Harga retail/grosir otomatis beda.</div>
-            <div>Stok berkurang saat jual dan bertambah saat beli.</div>
-            <div>Piutang/hutang bisa dicicil.</div>
-            <div>Delivery mendukung kirim sebagian.</div>
-            <div>Report mengikuti skenario demo.</div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
+
+        <Card className="span-5">
+          <CardHeader>
+            <CardTitle>Yang perlu client lihat</CardTitle>
+            <CardDescription>Checklist presentasi demo.</CardDescription>
+          </CardHeader>
+          <CardContent className="checklist">
+            <div><PackageCheck size={16} /> Stok berubah setelah POS/pembelian.</div>
+            <div><WalletCards size={16} /> Piutang dan hutang punya status jelas.</div>
+            <div><Truck size={16} /> Delivery bisa partial, sisa tetap terlacak.</div>
+            <div><ReceiptText size={16} /> Laporan owner memakai angka dummy.</div>
+          </CardContent>
+        </Card>
       </section>
     </div>
   );

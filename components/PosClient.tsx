@@ -1,465 +1,242 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { createClient } from "../lib/supabase/client";
+import { useMemo, useState } from "react";
+import { Minus, Plus, ReceiptText, Search, ShoppingCart, Trash2 } from "lucide-react";
 import { formatRupiah } from "../lib/utils/format";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 
-interface Product {
+type Product = {
   id: string;
-  code: string;
+  sku: string;
   name: string;
-  category_name: string | null;
-  brand_name: string | null;
-  stock_qty: number;
-  unit_options: { unit_id: string; unit_code: string; conversion: number }[];
-  retail_price: number;
-  wholesale_price: number;
-  unit_id_pcs: string;
-  color: string;
-}
-interface Customer {
-  id: string;
-  code: string;
-  name: string;
-  group_id: string | null;
-  group_name: string | null;
-}
-interface CartLine {
-  product_id: string;
-  product_code: string;
-  product_name: string;
-  unit_id: string;
-  unit_code: string;
-  qty: number;
-  unit_price: number;
-  stock_qty: number;
-  subtotal: number;
-}
+  category: string;
+  unit: string;
+  retail: number;
+  wholesale: number;
+  stockToko: number;
+  stockGudang: number;
+};
 
-const COLORS = ["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#ef4444", "#06b6d4", "#ec4899", "#a78bfa"];
+type CartLine = Product & { qty: number; price: number };
 
-export default function PosClient({ initialWorkspaceId }: { initialWorkspaceId?: string }) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [warehouses, setWarehouses] = useState<{ id: string; name: string }[]>([]);
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("Semua");
-  const [customerId, setCustomerId] = useState<string>("");
-  const [warehouseId, setWarehouseId] = useState<string>("");
+const initialProducts: Product[] = [
+  { id: "p1", sku: "ITEM-001", name: "Plastik PP 1 kg", category: "Plastik", unit: "pack", retail: 28000, wholesale: 25500, stockToko: 42, stockGudang: 120 },
+  { id: "p2", sku: "ITEM-004", name: "Standing Pouch 250gr", category: "Packaging", unit: "pcs", retail: 1850, wholesale: 1600, stockToko: 260, stockGudang: 900 },
+  { id: "p3", sku: "ITEM-008", name: "Bubble Wrap 50cm", category: "Packaging", unit: "roll", retail: 72000, wholesale: 68000, stockToko: 18, stockGudang: 45 },
+  { id: "p4", sku: "ITEM-014", name: "Cup 12 oz", category: "Cup", unit: "dus", retail: 118000, wholesale: 109000, stockToko: 8, stockGudang: 36 },
+  { id: "p5", sku: "ITEM-021", name: "Kresek Hitam 24", category: "Plastik", unit: "bal", retail: 42000, wholesale: 39000, stockToko: 12, stockGudang: 4 },
+  { id: "p6", sku: "ITEM-026", name: "Sendok Plastik Putih", category: "Aksesoris", unit: "pack", retail: 11500, wholesale: 9800, stockToko: 64, stockGudang: 180 },
+];
+
+const customers = [
+  { id: "retail", name: "Pelanggan Umum", group: "Retail" },
+  { id: "grosir", name: "Toko Berkah Jaya", group: "Grosir" },
+  { id: "tempo", name: "Minimarket Sejahtera", group: "Tempo" },
+];
+
+export default function PosClient() {
+  const [products, setProducts] = useState(initialProducts);
   const [cart, setCart] = useState<CartLine[]>([]);
-  const [paid, setPaid] = useState<number>(0);
-  const [receipt, setReceipt] = useState<{ number: string; total: number; paid: number; change: number; lines: CartLine[]; customer: string } | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [posting, setPosting] = useState(false);
+  const [customerId, setCustomerId] = useState(customers[0].id);
+  const [category, setCategory] = useState("Semua");
+  const [query, setQuery] = useState("");
+  const [paid, setPaid] = useState(0);
+  const [receipt, setReceipt] = useState<{ number: string; total: number; paid: number; lines: CartLine[] } | null>(null);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) { window.location.href = "/"; return; }
-        const { data: ms } = await supabase
-          .from("workspace_members")
-          .select("workspace_id")
-          .eq("user_id", user.id)
-          .limit(1);
-        const wsId = (initialWorkspaceId || ms?.[0]?.workspace_id) as string;
-        if (!wsId) { setErr("Workspace belum ada. Buka landing dulu."); setLoading(false); return; }
+  const customer = customers.find((item) => item.id === customerId) ?? customers[0];
+  const isWholesale = customer.group !== "Retail";
+  const categories = ["Semua", ...Array.from(new Set(products.map((item) => item.category)))];
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return products.filter((item) => {
+      const matchCategory = category === "Semua" || item.category === category;
+      const matchQuery = !q || item.name.toLowerCase().includes(q) || item.sku.toLowerCase().includes(q);
+      return matchCategory && matchQuery;
+    });
+  }, [category, products, query]);
 
-        // Products + units + prices
-        const { data: prods } = await supabase
-          .from("products")
-          .select("id, code, name, category_id, brand_id, stock_unit_id, categories(name), brands(name)")
-          .eq("workspace_id", wsId)
-          .eq("active", true);
+  const total = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+  const itemCount = cart.reduce((sum, item) => sum + item.qty, 0);
+  const change = Math.max(0, paid - total);
 
-        const { data: pUnits } = await supabase
-          .from("product_units")
-          .select("product_id, unit_id, conversion_to_stock_unit, units(code)")
-          .eq("workspace_id", wsId);
+  const priceFor = (product: Product) => (isWholesale ? product.wholesale : product.retail);
 
-        const { data: pPrices } = await supabase
-          .from("product_prices")
-          .select("product_id, customer_group_id, unit_id, price, customer_groups(code)")
-          .eq("workspace_id", wsId);
-
-        const { data: balances } = await supabase
-          .from("stock_balances")
-          .select("product_id, qty")
-          .eq("workspace_id", wsId);
-
-        const groupCode = (groupId: string | null) => {
-          const p = pPrices?.find((x: any) => x.customer_group_id === groupId);
-          return (p?.customer_groups as any)?.code ?? null;
-        };
-
-        const productList: Product[] = (prods ?? []).map((p: any, i: number) => {
-          const units = (pUnits ?? [])
-            .filter((u: any) => u.product_id === p.id)
-            .map((u: any) => ({ unit_id: u.unit_id, unit_code: u.units?.code ?? "?", conversion: Number(u.conversion_to_stock_unit) }));
-          const stockQty = (balances ?? []).filter((b: any) => b.product_id === p.id).reduce((s: number, b: any) => s + Number(b.qty), 0);
-          const retailPrice = (pPrices ?? []).find((x: any) => x.product_id === p.id && (x.customer_groups as any)?.code === "RETAIL")?.price ?? 0;
-          const wholesalePrice = (pPrices ?? []).find((x: any) => x.product_id === p.id && (x.customer_groups as any)?.code === "GROSIR")?.price ?? 0;
-          return {
-            id: p.id, code: p.code, name: p.name,
-            category_name: p.categories?.name ?? null,
-            brand_name: p.brands?.name ?? null,
-            stock_qty: stockQty,
-            unit_options: units,
-            retail_price: Number(retailPrice),
-            wholesale_price: Number(wholesalePrice),
-            unit_id_pcs: p.stock_unit_id,
-            color: COLORS[i % COLORS.length],
-          };
-        });
-        setProducts(productList);
-
-        const { data: custs } = await supabase
-          .from("customers")
-          .select("id, code, name, customer_group_id, customer_groups(name)")
-          .eq("workspace_id", wsId)
-          .eq("active", true);
-        setCustomers(
-          (custs ?? []).map((c: any) => ({
-            id: c.id, code: c.code, name: c.name,
-            group_id: c.customer_group_id, group_name: c.customer_groups?.name ?? null,
-          }))
-        );
-        const defaultCust = (custs ?? []).find((c: any) => c.code === "CUST-0003") ?? custs?.[0];
-        if (defaultCust) setCustomerId(defaultCust.id);
-
-        const { data: whs } = await supabase
-          .from("warehouses")
-          .select("id, name")
-          .eq("workspace_id", wsId)
-          .eq("active", true);
-        setWarehouses((whs ?? []).map((w: any) => ({ id: w.id, name: w.name })));
-        const toko = (whs ?? []).find((w: any) => w.name?.includes("Toko"));
-        if (toko) setWarehouseId(toko.id);
-        else if (whs?.[0]) setWarehouseId(whs[0].id);
-
-        setLoading(false);
-      } catch (e: unknown) {
-        setErr(e instanceof Error ? e.message : String(e));
-        setLoading(false);
+  const addItem = (product: Product) => {
+    if (product.stockToko <= 0) return;
+    const price = priceFor(product);
+    setCart((current) => {
+      const exists = current.find((item) => item.id === product.id);
+      if (exists) {
+        return current.map((item) => item.id === product.id ? { ...item, qty: item.qty + 1 } : item);
       }
-    };
-    load();
-  }, [initialWorkspaceId]);
-
-  const customer = customers.find((c) => c.id === customerId);
-  const isWholesale = customer?.group_name === "Grosir";
-
-  const categories = useMemo(() => ["Semua", ...Array.from(new Set(products.map((p) => p.category_name).filter(Boolean) as string[]))], [products]);
-
-  const filtered = products.filter((p) => {
-    const catOk = category === "Semua" || p.category_name === category;
-    const q = search.trim().toLowerCase();
-    const searchOk = !q || p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q);
-    return catOk && searchOk;
-  });
-
-  const priceFor = (p: Product) => isWholesale ? p.wholesale_price : p.retail_price;
-
-  const addToCart = (p: Product, unit: { unit_id: string; unit_code: string; conversion: number }) => {
-    const unitPrice = priceFor(p) * unit.conversion;
-    setCart((prev) => {
-      const ex = prev.find((l) => l.product_id === p.id && l.unit_id === unit.unit_id);
-      if (ex) {
-        return prev.map((l) => l === ex ? { ...l, qty: l.qty + 1, subtotal: (l.qty + 1) * l.unit_price } : l);
-      }
-      return [...prev, {
-        product_id: p.id, product_code: p.code, product_name: p.name,
-        unit_id: unit.unit_id, unit_code: unit.unit_code,
-        qty: 1, unit_price: unitPrice, stock_qty: unit.conversion,
-        subtotal: unitPrice,
-      }];
+      return [...current, { ...product, price, qty: 1 }];
     });
   };
 
-  const changeQty = (line: CartLine, delta: number) => {
-    setCart((prev) =>
-      prev.map((l) => {
-        if (l !== line) return l;
-        const qty = Math.max(0, l.qty + delta);
-        return { ...l, qty, subtotal: qty * l.unit_price };
-      }).filter((l) => l.qty > 0)
+  const updateQty = (id: string, delta: number) => {
+    setCart((current) =>
+      current
+        .map((item) => item.id === id ? { ...item, qty: Math.max(0, item.qty + delta) } : item)
+        .filter((item) => item.qty > 0)
     );
   };
 
-  const total = cart.reduce((s, l) => s + l.subtotal, 0);
-  const totalPcs = cart.reduce((s, l) => s + l.qty * l.stock_qty, 0);
-  const change = Math.max(0, paid - total);
-
-  const checkout = async () => {
-    if (!customer || !warehouseId || cart.length === 0) return;
-    setPosting(true);
-    setErr(null);
-    try {
-      const supabase = createClient();
-      const items = cart.map((l) => ({
-        product_id: l.product_id,
-        unit_id: l.unit_id,
-        qty: l.qty,
-      }));
-      const { data, error } = await supabase.rpc("post_sale", {
-        p_workspace: (await supabase.from("workspace_members").select("workspace_id").eq("user_id", (await supabase.auth.getUser()).data.user?.id).limit(1).single()).data?.workspace_id,
-        p_sale_type: "POS",
-        p_customer: customer.id,
-        p_salesman: null,
-        p_warehouse: warehouseId,
-        p_items: items,
-        p_paid: paid,
-        p_notes: null,
-      });
-      if (error) throw error;
-      setReceipt({
-        number: data.number,
-        total,
-        paid,
-        change,
-        lines: cart,
-        customer: customer.name,
-      });
-      setCart([]);
-      setPaid(0);
-      setPosting(false);
-    } catch (e: unknown) {
-      setErr(e instanceof Error ? e.message : String(e));
-      setPosting(false);
-    }
+  const checkout = () => {
+    if (cart.length === 0) return;
+    setProducts((current) =>
+      current.map((product) => {
+        const line = cart.find((item) => item.id === product.id);
+        return line ? { ...product, stockToko: Math.max(0, product.stockToko - line.qty) } : product;
+      })
+    );
+    setReceipt({
+      number: `POS-${String(Math.floor(180 + Math.random() * 40)).padStart(6, "0")}`,
+      total,
+      paid,
+      lines: cart,
+    });
+    setCart([]);
+    setPaid(0);
   };
 
-  if (err && loading === false && products.length === 0) {
-    return <div style={{ padding: 40, textAlign: "center", color: "var(--red)" }}>{err}</div>;
-  }
-  if (loading) {
-    return <div style={{ padding: 40, textAlign: "center", color: "var(--muted)" }}>Memuat POS…</div>;
-  }
-
   return (
-    <div className="pos-root">
-      <div className="pos-left">
-        <div className="pos-top">
-          <div className="pos-cust">
-            <div className={"price-badge " + (isWholesale ? "ws" : "rt")}>
-              {isWholesale ? "Harga Grosir" : "Harga Retail"}
-            </div>
-            <div>
-              <div className="cust-name">{customer?.name ?? "(pilih customer)"}</div>
-              <div className="cust-sub">{customer?.code ?? ""}</div>
-            </div>
+    <div className="pos-page">
+      <section className="pos-workspace">
+        <div className="pos-toolbar">
+          <div>
+            <Badge variant={isWholesale ? "warning" : "success"}>{isWholesale ? "Harga grosir/tempo" : "Harga retail"}</Badge>
+            <h1>POS Kasir</h1>
+            <p>Dummy kasir untuk presentasi: pilih customer, tambah barang, bayar, stok toko langsung berkurang.</p>
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <select className="cust-select" value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
-              {customers.map((c) => <option key={c.id} value={c.id}>{c.name} ({c.group_name})</option>)}
+          <div className="pos-selectors">
+            <select value={customerId} onChange={(event) => setCustomerId(event.target.value)}>
+              {customers.map((item) => <option key={item.id} value={item.id}>{item.name} · {item.group}</option>)}
             </select>
-            <select className="cust-select" value={warehouseId} onChange={(e) => setWarehouseId(e.target.value)}>
-              {warehouses.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
+            <select defaultValue="toko">
+              <option value="toko">Toko Utama</option>
+              <option value="gudang">Gudang Utama</option>
             </select>
           </div>
         </div>
 
-        <div className="search-row">
-          <span className="search-icon">⌕</span>
-          <input className="search" placeholder="Cari produk / scan barcode..." value={search} onChange={(e) => setSearch(e.target.value)} />
-        </div>
-
-        <div className="cat-row">
-          {categories.map((c) => (
-            <button key={c} className={"chip" + (category === c ? " active" : "")} onClick={() => setCategory(c)}>{c}</button>
-          ))}
-        </div>
+        <Card>
+          <CardContent className="pos-filter">
+            <div className="pos-search">
+              <Search size={16} />
+              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari produk / scan barcode..." />
+            </div>
+            <div className="category-tabs">
+              {categories.map((item) => (
+                <button key={item} className={category === item ? "active" : ""} onClick={() => setCategory(item)}>
+                  {item}
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="product-grid">
-          {filtered.map((p) => {
-            const up = priceFor(p);
-            return (
-              <div key={p.id} className="product-card">
-                <div className="product-swatch" style={{ background: p.color }}>{p.code.replace("ITEM-", "")}</div>
-                <div className="product-body">
-                  <div className="product-name">{p.name}</div>
-                  <div className="product-meta">{p.brand_name ?? "-"} · stok {Math.round(p.stock_qty)}</div>
-                  <div className="product-price num">{formatRupiah(up)} / PCS</div>
-                </div>
-                <div className="product-actions">
-                  {p.unit_options.map((u) => (
-                    <button key={u.unit_id} className="add-btn" onClick={() => addToCart(p, u)} title={`${u.conversion} PCS`}>
-                      +{u.unit_code}
-                    </button>
-                  ))}
-                </div>
+          {filtered.map((product) => (
+            <button className="product-tile" key={product.id} onClick={() => addItem(product)}>
+              <div className="product-topline">
+                <span>{product.sku}</span>
+                <Badge variant={product.stockToko <= 10 ? "warning" : "outline"}>Toko {product.stockToko}</Badge>
               </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="cart-panel">
-        <div className="cart-head">
-          <div>
-            <div className="cart-title">Keranjang</div>
-            <div className="cart-sub num">{cart.length} baris · {totalPcs} PCS</div>
-          </div>
-          {cart.length > 0 && <button className="clear-btn" onClick={() => setCart([])}>Kosongkan</button>}
-        </div>
-
-        <div className="cart-list">
-          {cart.length === 0 ? (
-            <div className="cart-empty">
-              <div className="cart-empty-icon">🛒</div>
-              <div className="cart-empty-title">Belum ada item</div>
-              <div className="cart-empty-sub">Pilih produk di sebelah kiri</div>
-            </div>
-          ) : cart.map((l) => (
-            <div key={`${l.product_id}-${l.unit_id}`} className="cart-line">
-              <div>
-                <div className="cart-line-name">{l.product_name}</div>
-                <div className="cart-line-meta">
-                  <span className="uom-chip">{l.unit_code}</span>
-                  <span className="num">{formatRupiah(l.unit_price)}/{l.unit_code}</span>
-                  <span className="meta-sep">·</span>
-                  <span className="num">{l.qty * l.stock_qty} PCS</span>
-                </div>
-              </div>
-              <div className="qty-ctrl">
-                <button onClick={() => changeQty(l, -1)}>−</button>
-                <span className="qty-val num">{l.qty}</span>
-                <button onClick={() => changeQty(l, 1)}>+</button>
-              </div>
-              <div className="cart-line-total num">{formatRupiah(l.subtotal)}</div>
-            </div>
+              <strong>{product.name}</strong>
+              <small>{product.category} · Gudang {product.stockGudang} · {product.unit}</small>
+              <b>{formatRupiah(priceFor(product))}</b>
+            </button>
           ))}
         </div>
+      </section>
 
-        <div className="cart-foot">
-          <div className="total-row">
-            <span className="total-label">Total</span>
-            <span className="total-value num">{formatRupiah(total)}</span>
-          </div>
-          <div className="pay-row">
-            <label className="pay-label">Tunai</label>
-            <input className="pay-input num" type="number" min={0} value={paid || ""} placeholder="0" onChange={(e) => setPaid(Number(e.target.value) || 0)} />
-          </div>
-          <div className="change-row">
-            <span>Kembali</span>
-            <span className="change-value num">{formatRupiah(change)}</span>
-          </div>
-          {err && <div className="cart-err">{err}</div>}
-          <button className="btn-pay" disabled={cart.length === 0 || posting} onClick={checkout}>
-            {posting ? "Posting..." : "Bayar Sekarang"}
-          </button>
-        </div>
-      </div>
+      <aside className="cart-panel">
+        <Card>
+          <CardHeader>
+            <div className="cart-heading">
+              <div>
+                <CardTitle>Keranjang</CardTitle>
+                <CardDescription>{itemCount} item · {customer.name}</CardDescription>
+              </div>
+              <ShoppingCart size={20} />
+            </div>
+          </CardHeader>
+          <CardContent className="cart-content">
+            {cart.length === 0 ? (
+              <div className="cart-empty">
+                <ReceiptText size={28} />
+                <strong>Belum ada item</strong>
+                <span>Pilih produk dari grid kiri.</span>
+              </div>
+            ) : (
+              <div className="cart-lines">
+                {cart.map((item) => (
+                  <div className="cart-line" key={item.id}>
+                    <div>
+                      <strong>{item.name}</strong>
+                      <span>{formatRupiah(item.price)} / {item.unit}</span>
+                    </div>
+                    <div className="qty-control">
+                      <button onClick={() => updateQty(item.id, -1)}><Minus size={14} /></button>
+                      <b>{item.qty}</b>
+                      <button onClick={() => updateQty(item.id, 1)}><Plus size={14} /></button>
+                    </div>
+                    <em>{formatRupiah(item.qty * item.price)}</em>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="cart-summary">
+              <div>
+                <span>Total</span>
+                <strong>{formatRupiah(total)}</strong>
+              </div>
+              <label>
+                <span>Tunai</span>
+                <input type="number" min={0} value={paid || ""} onChange={(event) => setPaid(Number(event.target.value) || 0)} placeholder="0" />
+              </label>
+              <div>
+                <span>Kembali</span>
+                <strong>{formatRupiah(change)}</strong>
+              </div>
+            </div>
+
+            <div className="cart-actions">
+              <Button variant="outline" disabled={cart.length === 0} onClick={() => setCart([])}>
+                <Trash2 size={15} /> Kosongkan
+              </Button>
+              <Button disabled={cart.length === 0} onClick={checkout}>
+                Bayar dummy
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </aside>
 
       {receipt && (
         <div className="receipt-overlay" onClick={() => setReceipt(null)}>
-          <div className="receipt" onClick={(e) => e.stopPropagation()}>
-            <div className="receipt-store">RetailERP</div>
-            <div className="receipt-store-sub">Berkah Plastik &amp; Packaging</div>
-            <div className="receipt-num">{receipt.number}</div>
-            <hr />
-            <div className="receipt-cust">Customer: {receipt.customer}</div>
-            <hr />
-            {receipt.lines.map((l, i) => (
-              <div key={i} className="receipt-line">
-                <span>{l.product_name} ×{l.qty} {l.unit_code}</span>
-                <span className="num">{formatRupiah(l.subtotal)}</span>
-              </div>
-            ))}
-            <hr />
+          <div className="receipt-modal" onClick={(event) => event.stopPropagation()}>
+            <strong>Berkah Plastik &amp; Packaging</strong>
+            <span>{receipt.number}</span>
+            <div className="receipt-lines">
+              {receipt.lines.map((item) => (
+                <div key={item.id}>
+                  <span>{item.name} × {item.qty}</span>
+                  <b>{formatRupiah(item.qty * item.price)}</b>
+                </div>
+              ))}
+            </div>
             <div className="receipt-total">
               <span>Total</span>
-              <span className="num">{formatRupiah(receipt.total)}</span>
+              <b>{formatRupiah(receipt.total)}</b>
             </div>
-            <div className="receipt-line">
-              <span>Tunai</span>
-              <span className="num">{formatRupiah(receipt.paid)}</span>
-            </div>
-            <div className="receipt-line">
-              <span>Kembali</span>
-              <span className="num">{formatRupiah(receipt.change)}</span>
-            </div>
-            <div className="receipt-thanks">Terima kasih atas kunjungan Anda.</div>
-            <button className="btn-receipt" onClick={() => setReceipt(null)}>Tutup</button>
+            <Button onClick={() => setReceipt(null)}>Tutup struk</Button>
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        .pos-root { display: grid; grid-template-columns: 1fr 400px; gap: 20px; height: 100%; padding: 20px; }
-        @media (max-width: 960px) { .pos-root { grid-template-columns: 1fr; height: auto; } }
-        .pos-left { display: flex; flex-direction: column; gap: 14px; overflow: hidden; }
-        .pos-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .pos-cust { display: flex; align-items: center; gap: 12px; }
-        .price-badge { padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; }
-        .price-badge.rt { background: var(--accent-soft); color: var(--accent); }
-        .price-badge.ws { background: var(--purple-soft); color: var(--purple); }
-        .cust-name { font-weight: 700; font-size: 14px; }
-        .cust-sub { font-size: 11px; color: var(--muted); }
-        .cust-select { background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; font-size: 13px; font-weight: 500; outline: none; }
-        .search-row { position: relative; display: flex; align-items: center; }
-        .search-icon { position: absolute; left: 14px; font-size: 16px; color: var(--muted); }
-        .search { width: 100%; padding: 11px 14px 11px 38px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; outline: none; }
-        .cat-row { display: flex; gap: 6px; flex-wrap: wrap; }
-        .chip { background: var(--panel); border: 1px solid var(--border); color: var(--text-2); padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer; }
-        .chip.active { background: var(--text); color: white; border-color: var(--text); }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; overflow-y: auto; padding-bottom: 8px; }
-        .product-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: flex; gap: 12px; align-items: flex-start; }
-        .product-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); }
-        .product-swatch { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: white; flex-shrink: 0; }
-        .product-body { flex: 1; min-width: 0; }
-        .product-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .product-meta { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
-        .product-price { font-size: 13px; font-weight: 700; color: var(--accent); }
-        .product-actions { display: flex; flex-direction: column; gap: 5px; }
-        .add-btn { background: var(--panel-2); border: 1px solid var(--border); color: var(--text); border-radius: 7px; padding: 5px 10px; font-size: 10px; font-weight: 700; cursor: pointer; }
-        .add-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
-        .cart-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-sm); }
-        .cart-head { display: flex; justify-content: space-between; align-items: flex-start; padding: 16px 18px; border-bottom: 1px solid var(--border); }
-        .cart-title { font-size: 15px; font-weight: 700; }
-        .cart-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-        .clear-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
-        .cart-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-        .cart-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--muted); gap: 4px; padding: 40px 12px; }
-        .cart-empty-icon { font-size: 36px; opacity: 0.4; margin-bottom: 6px; }
-        .cart-empty-title { font-size: 14px; font-weight: 600; color: var(--text-2); }
-        .cart-empty-sub { font-size: 12px; }
-        .cart-line { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; background: var(--panel-2); border-radius: 8px; padding: 10px 12px; }
-        .cart-line-name { font-size: 13px; font-weight: 600; }
-        .cart-line-meta { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); margin-top: 3px; }
-        .uom-chip { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; }
-        .meta-sep { color: var(--border-strong); }
-        .qty-ctrl { display: flex; align-items: center; gap: 6px; background: var(--panel); border: 1px solid var(--border); border-radius: 7px; padding: 3px; }
-        .qty-ctrl button { background: transparent; border: none; color: var(--text); width: 22px; height: 22px; border-radius: 5px; font-weight: 700; cursor: pointer; }
-        .qty-val { font-size: 12px; font-weight: 700; min-width: 16px; text-align: center; }
-        .cart-line-total { font-size: 13px; font-weight: 700; min-width: 90px; text-align: right; }
-        .cart-foot { border-top: 1px solid var(--border); padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 10px; background: var(--panel); }
-        .total-row { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-        .total-label { font-size: 13px; color: var(--muted); font-weight: 600; }
-        .total-value { font-size: 24px; font-weight: 800; color: var(--text); }
-        .pay-row { display: flex; align-items: center; gap: 10px; }
-        .pay-label { font-size: 12px; color: var(--muted); font-weight: 600; min-width: 50px; }
-        .pay-input { flex: 1; padding: 10px 14px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 15px; font-weight: 600; outline: none; }
-        .change-row { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; }
-        .change-row > span:first-child { font-size: 12px; color: var(--muted); font-weight: 600; }
-        .change-value { font-size: 14px; font-weight: 700; color: var(--green); }
-        .cart-err { background: var(--red-soft); color: var(--red); padding: 8px 10px; border-radius: 6px; font-size: 12px; }
-        .btn-pay { background: var(--green); color: white; border: none; padding: 13px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25); }
-        .btn-pay:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
-        .receipt-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; }
-        .receipt { background: #fff; color: #0f172a; width: 340px; border-radius: 14px; padding: 24px; font-family: 'SF Mono', 'Monaco', 'Courier New', monospace; box-shadow: var(--shadow-lg); }
-        .receipt-store { text-align: center; font-weight: 800; font-size: 16px; }
-        .receipt-store-sub { text-align: center; font-size: 11px; margin-top: 2px; }
-        .receipt-num { text-align: center; font-size: 12px; font-weight: 700; margin-top: 4px; color: #475569; }
-        .receipt-cust { font-size: 12px; font-weight: 700; margin: 4px 0; }
-        .receipt hr { border: none; border-top: 1px dashed #cbd5e1; margin: 10px 0; }
-        .receipt-line { display: flex; justify-content: space-between; font-size: 11px; margin: 3px 0; }
-        .receipt-total { display: flex; justify-content: space-between; font-weight: 800; font-size: 14px; margin-top: 6px; }
-        .receipt-thanks { text-align: center; font-size: 10px; margin-top: 10px; color: #64748b; }
-        .btn-receipt { width: 100%; margin-top: 14px; background: var(--accent); color: white; border: none; padding: 11px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-      `}</style>
     </div>
   );
 }

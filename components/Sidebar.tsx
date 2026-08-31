@@ -2,50 +2,75 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  BarChart3,
+  Boxes,
+  ClipboardList,
+  CreditCard,
+  LayoutDashboard,
+  PackageOpen,
+  ReceiptText,
+  Repeat2,
+  ShoppingCart,
+  Truck,
+  WalletCards,
+  Warehouse,
+} from "lucide-react";
 
 const NAV = [
-  { href: "/dashboard", label: "Dashboard", tag: "01" },
-  { href: "/pos", label: "POS Kasir", tag: "02" },
-  { href: "/sales", label: "Penjualan", tag: "03" },
-  { href: "/purchases", label: "Pembelian", tag: "04" },
-  { href: "/delivery", label: "Delivery", tag: "05" },
-  { href: "/inventory/stock", label: "Stok", tag: "06" },
-  { href: "/receivables", label: "Piutang", tag: "07" },
-  { href: "/payables", label: "Hutang", tag: "08" },
-  { href: "/inventory/repack", label: "Repack", tag: "09" },
-  { href: "/reports", label: "Laporan", tag: "10" },
-  { href: "/settings/demo", label: "Reset Demo", tag: "R" },
+  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/pos", label: "POS Kasir", icon: ShoppingCart },
+  { href: "/inventory/stock", label: "Stok Gudang", icon: Warehouse },
+  { href: "/sales", label: "Penjualan", icon: ReceiptText },
+  { href: "/purchases", label: "Pembelian", icon: PackageOpen },
+  { href: "/delivery", label: "Delivery", icon: Truck },
+  { href: "/receivables", label: "Piutang", icon: CreditCard },
+  { href: "/payables", label: "Hutang", icon: WalletCards },
+  { href: "/master/products", label: "Produk & Harga", icon: Boxes },
+  { href: "/inventory/repack", label: "Repack", icon: Repeat2 },
+  { href: "/reports", label: "Laporan", icon: BarChart3 },
+  { href: "/settings/demo", label: "Checklist Demo", icon: ClipboardList },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="sidebar simple-sidebar">
-      <Link href="/dashboard" className="simple-brand">
+    <aside className="app-sidebar">
+      <Link href="/" className="sidebar-brand">
         <span>BP</span>
         <div>
           <strong>Berkah Plastik</strong>
-          <small>Demo ERP Retail</small>
+          <small>Retail ERP Demo</small>
         </div>
       </Link>
 
-      <div className="demo-note">
-        <b>Mode demo</b>
-        <span>Dummy data siap untuk presentasi client.</span>
+      <div className="sidebar-context">
+        <strong>Toko Utama</strong>
+        <span>Kasir, gudang, owner dashboard</span>
       </div>
 
-      <nav className="simple-nav">
+      <nav className="sidebar-nav" aria-label="Navigasi aplikasi">
         {NAV.map((item) => {
-          const active = pathname === item.href || Boolean(pathname?.startsWith(item.href + "/"));
+          const active =
+            pathname === item.href ||
+            (item.href !== "/" && Boolean(pathname?.startsWith(item.href + "/"))) ||
+            (item.href === "/" && pathname === "/dashboard");
+          const Icon = item.icon;
+
           return (
             <Link key={item.href} href={item.href} className={active ? "active" : ""}>
-              <span>{item.tag}</span>
-              {item.label}
+              <Icon size={16} />
+              <span>{item.label}</span>
             </Link>
           );
         })}
       </nav>
+
+      <div className="sidebar-footer">
+        <span>Demo script</span>
+        <strong>POS → Stok → Laporan</strong>
+      </div>
     </aside>
   );
 }

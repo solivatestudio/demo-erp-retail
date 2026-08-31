@@ -1,5 +1,10 @@
-import LandingPage from "../components/LandingPage";
+import AppShell from "../components/AppShell";
+import DashboardClient from "../components/DashboardClient";
 
 export default function Home() {
-  return <LandingPage />;
+  return (
+    <AppShell>
+      <DashboardClient />
+    </AppShell>
+  );
 }
