@@ -26,18 +26,21 @@ type Product = {
 type CartLine = Product & { qty: number; price: number };
 
 const initialProducts: Product[] = [
-  { id: "p1", sku: "SKU-001", name: "Beras Premium 5 kg", category: "Sembako", unit: "sak", retail: 72000, wholesale: 68500, stockToko: 32, stockGudang: 120, lowStockThreshold: 20, reorderPoint: 10 },
-  { id: "p2", sku: "SKU-004", name: "Minyak Goreng 1 L", category: "Sembako", unit: "karton", retail: 18500, wholesale: 17000, stockToko: 16, stockGudang: 36, lowStockThreshold: 20, reorderPoint: 10 },
-  { id: "p3", sku: "SKU-008", name: "Susu UHT 1 L", category: "Minuman", unit: "kotak", retail: 21000, wholesale: 19500, stockToko: 0, stockGudang: 45, lowStockThreshold: 15, reorderPoint: 5 },
-  { id: "p4", sku: "SKU-014", name: "Mie Instan Goreng", category: "Makanan", unit: "dus", retail: 118000, wholesale: 109000, stockToko: 8, stockGudang: 36, lowStockThreshold: 20, reorderPoint: 10 },
-  { id: "p5", sku: "SKU-021", name: "Kopi Sachet 10 pcs", category: "Minuman", unit: "pack", retail: 16500, wholesale: 14800, stockToko: 7, stockGudang: 4, lowStockThreshold: 20, reorderPoint: 10 },
-  { id: "p6", sku: "SKU-026", name: "Sabun Cair 450 ml", category: "Household", unit: "botol", retail: 24500, wholesale: 22500, stockToko: 50, stockGudang: 180, lowStockThreshold: undefined, reorderPoint: undefined },
+  { id: "p1", sku: "SKU-CUP-16OZ", name: "Cup Plastik PP 16oz Oza (50 pcs)", category: "Cup & Minuman", unit: "pack", retail: 15000, wholesale: 13200, stockToko: 45, stockGudang: 240, lowStockThreshold: 30, reorderPoint: 15 },
+  { id: "p2", sku: "SKU-MIKA-B4", name: "Mika Bento 4 Sekat Hitam (50 pcs)", category: "Kemasan Makanan", unit: "pack", retail: 46000, wholesale: 41500, stockToko: 18, stockGudang: 90, lowStockThreshold: 20, reorderPoint: 10 },
+  { id: "p3", sku: "SKU-KRESEK-15", name: "Kresek HDPE Bening 15x30 (500 gr)", category: "Plastik & Kresek", unit: "pack", retail: 12500, wholesale: 10500, stockToko: 65, stockGudang: 350, lowStockThreshold: 40, reorderPoint: 20 },
+  { id: "p4", sku: "SKU-ROLL-PE08", name: "Plastik Roll PE Bening 0.8 mm (10 kg)", category: "Plastik & Kresek", unit: "roll", retail: 330000, wholesale: 305000, stockToko: 6, stockGudang: 28, lowStockThreshold: 10, reorderPoint: 5 },
+  { id: "p5", sku: "SKU-BOX-LUNCH-M", name: "Paper Lunch Box Kraft Medium (100 pcs)", category: "Kemasan Makanan", unit: "pack", retail: 75000, wholesale: 67000, stockToko: 4, stockGudang: 3, lowStockThreshold: 15, reorderPoint: 8 },
+  { id: "p6", sku: "SKU-BUBBLE-50M", name: "Bubble Wrap Roll 50m x 125cm", category: "Perlengkapan Packing", unit: "roll", retail: 105000, wholesale: 92000, stockToko: 0, stockGudang: 18, lowStockThreshold: 8, reorderPoint: 3 },
+  { id: "p7", sku: "SKU-LAKBAN-48", name: "Lakban Bening Daimaru 48mm x 90y", category: "Perlengkapan Packing", unit: "roll", retail: 11500, wholesale: 9800, stockToko: 80, stockGudang: 420, lowStockThreshold: 50, reorderPoint: 25 },
+  { id: "p8", sku: "SKU-SEDOTAN-STR", name: "Sedotan Steril Bubble 12mm (100 pcs)", category: "Cup & Minuman", unit: "pack", retail: 9000, wholesale: 7500, stockToko: 50, stockGudang: 200, lowStockThreshold: undefined, reorderPoint: undefined },
 ];
 
 const customers = [
-  { id: "retail", name: "Pelanggan Umum", group: "Retail" },
-  { id: "grosir", name: "Retail Partner A", group: "Grosir" },
-  { id: "tempo", name: "Outlet Cabang", group: "Tempo" },
+  { id: "retail", name: "Pelanggan Umum (Walk-in)", group: "Retail" },
+  { id: "grosir1", name: "Warung Makan Bu Aminah", group: "Grosir" },
+  { id: "grosir2", name: "Kedai Kopi Selaras", group: "Grosir" },
+  { id: "tempo", name: "Catering Berkah Klaten", group: "Tempo" },
 ];
 
 export default function PosClient() {
@@ -177,7 +180,7 @@ export default function PosClient() {
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Ketik nama produk, SKU, barcode (contoh: Beras, Bimoli, SKU-001)..."
+                placeholder="Ketik nama produk, SKU, barcode (contoh: Cup 16oz, Mika Bento, Kresek 15)..."
               />
             </div>
             <div className="category-tabs">

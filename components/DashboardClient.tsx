@@ -22,16 +22,17 @@ const shortcuts = [
 ];
 
 const transactions = [
-  { no: "POS-000184", customer: "Pelanggan Umum", channel: "POS", status: "Lunas", amount: 186500 },
-  { no: "SAL-000091", customer: "Retail Partner A", channel: "Grosir", status: "Piutang", amount: 3420000 },
-  { no: "PUR-000044", customer: "Supplier Nasional", channel: "Pembelian", status: "Partial", amount: 4850000 },
-  { no: "DLV-000027", customer: "Outlet Cabang", channel: "Delivery", status: "8/12 koli", amount: 1840000 },
+  { no: "POS-000184", customer: "Pelanggan Umum (Walk-in)", channel: "POS Kasir", status: "Lunas", amount: 168000 },
+  { no: "SAL-000091", customer: "Warung Makan Bu Aminah", channel: "Grosir", status: "Piutang", amount: 3420000 },
+  { no: "PUR-000044", customer: "PT Sinar Joyoboyo Plastik", channel: "Pembelian", status: "Partial", amount: 8450000 },
+  { no: "DLV-000027", customer: "Gatotkoco 2 (Krapyak)", channel: "Delivery / Mutasi", status: "12/12 dus", amount: 2640000 },
 ];
 
 const inventory = [
-  { sku: "SKU-014", item: "Minyak Goreng 1 L", location: "Toko Utama", qty: "8 karton", status: "Low" },
-  { sku: "SKU-021", item: "Kopi Sachet 10 pcs", location: "Gudang Utama", qty: "4 pack", status: "Restock" },
-  { sku: "SKU-008", item: "Susu UHT 1 L", location: "Toko Utama", qty: "18 kotak", status: "Aman" },
+  { sku: "SKU-ROLL-PE08", item: "Plastik Roll PE Bening 0.8 mm (10 kg)", location: "Toko Utama", qty: "6 roll", status: "Low" },
+  { sku: "SKU-BOX-LUNCH-M", item: "Paper Lunch Box Medium Kraft", location: "Gudang Utama", qty: "3 pack", status: "Restock" },
+  { sku: "SKU-BUBBLE-50M", item: "Bubble Wrap Roll 50m x 125cm", location: "Toko Utama", qty: "0 roll", status: "Habis" },
+  { sku: "SKU-CUP-16OZ", item: "Cup Plastik PP 16oz Oza Slim", location: "Toko Utama", qty: "45 pack", status: "Aman" },
 ];
 
 const finance = [

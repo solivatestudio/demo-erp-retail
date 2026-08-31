@@ -98,79 +98,139 @@ type ModuleConfig = {
 
 const INITIAL_STOCK_PRODUCTS: ProductStockData[] = [
   {
-    kode: "SKU-001",
-    nama: "Beras Premium 5 kg",
-    kategori: "Sembako / Beras",
-    merk: "Beras Kita",
-    satuan: "sak",
-    hpp: 68500,
-    ecer: 72000,
-    grosir: 68500,
-    stockToko: 32,
-    stockGudang: 120,
-    stockCabang: 40,
-    lowStockThreshold: 20,
-    reorderPoint: 10,
-  },
-  {
-    kode: "SKU-014",
-    nama: "Minyak Goreng 1 L",
-    kategori: "Sembako / Minyak",
-    merk: "Bimoli",
-    satuan: "karton",
-    hpp: 17000,
-    ecer: 18500,
-    grosir: 17000,
-    stockToko: 16,
-    stockGudang: 36,
-    stockCabang: 8,
-    lowStockThreshold: 20,
-    reorderPoint: 10,
-  },
-  {
-    kode: "SKU-021",
-    nama: "Kopi Sachet 10 pcs",
-    kategori: "Minuman / Kopi",
-    merk: "Kapal Api",
+    kode: "SKU-CUP-16OZ",
+    nama: "Cup Plastik PP 16oz Oza Slim (Isi 50 pcs)",
+    kategori: "Cup & Minuman",
+    merk: "Oza Pack",
     satuan: "pack",
-    hpp: 14800,
-    ecer: 16500,
-    grosir: 14800,
-    stockToko: 7,
-    stockGudang: 4,
-    stockCabang: 0,
+    hpp: 12000,
+    ecer: 15000,
+    grosir: 13200,
+    stockToko: 45,
+    stockGudang: 240,
+    stockCabang: 80,
+    lowStockThreshold: 30,
+    reorderPoint: 15,
+  },
+  {
+    kode: "SKU-MIKA-B4",
+    nama: "Mika Bento 4 Sekat Hitam + Tutup (Isi 50 pcs)",
+    kategori: "Kemasan Makanan",
+    merk: "Starindo",
+    satuan: "pack",
+    hpp: 38000,
+    ecer: 46000,
+    grosir: 41500,
+    stockToko: 18,
+    stockGudang: 90,
+    stockCabang: 25,
     lowStockThreshold: 20,
     reorderPoint: 10,
   },
   {
-    kode: "SKU-008",
-    nama: "Susu UHT 1 L",
-    kategori: "Minuman / Susu",
-    merk: "Ultra",
-    satuan: "kotak",
-    hpp: 16500,
-    ecer: 21000,
-    grosir: 19500,
-    stockToko: 0,
-    stockGudang: 45,
-    stockCabang: 12,
-    lowStockThreshold: 15,
+    kode: "SKU-KRESEK-15",
+    nama: "Kantong Kresek HDPE Bening 15x30 (500 gr)",
+    kategori: "Plastik & Kresek",
+    merk: "Bawang Super",
+    satuan: "pack",
+    hpp: 9500,
+    ecer: 12500,
+    grosir: 10500,
+    stockToko: 65,
+    stockGudang: 350,
+    stockCabang: 120,
+    lowStockThreshold: 40,
+    reorderPoint: 20,
+  },
+  {
+    kode: "SKU-ROLL-PE08",
+    nama: "Plastik Roll PE Bening 0.8 mm (10 kg)",
+    kategori: "Plastik & Kresek",
+    merk: "Wayang",
+    satuan: "roll",
+    hpp: 285000,
+    ecer: 330000,
+    grosir: 305000,
+    stockToko: 6,
+    stockGudang: 28,
+    stockCabang: 4,
+    lowStockThreshold: 10,
     reorderPoint: 5,
   },
   {
-    kode: "SKU-026",
-    nama: "Sabun Cair 450 ml",
-    kategori: "Household",
-    merk: "Lifebuoy",
-    satuan: "botol",
-    hpp: 21000,
-    ecer: 24500,
-    grosir: 22500,
+    kode: "SKU-BOX-LUNCH-M",
+    nama: "Paper Lunch Box Medium Kraft (Isi 100 pcs)",
+    kategori: "Kemasan Makanan",
+    merk: "EcoKraft",
+    satuan: "pack",
+    hpp: 62000,
+    ecer: 75000,
+    grosir: 67000,
+    stockToko: 4,
+    stockGudang: 3,
+    stockCabang: 0,
+    lowStockThreshold: 15,
+    reorderPoint: 8,
+  },
+  {
+    kode: "SKU-BUBBLE-50M",
+    nama: "Bubble Wrap Tebal Premium Roll 50m x 125cm",
+    kategori: "Perlengkapan Packing",
+    merk: "Klaten Pack",
+    satuan: "roll",
+    hpp: 82000,
+    ecer: 105000,
+    grosir: 92000,
+    stockToko: 0,
+    stockGudang: 18,
+    stockCabang: 6,
+    lowStockThreshold: 8,
+    reorderPoint: 3,
+  },
+  {
+    kode: "SKU-LAKBAN-48",
+    nama: "Lakban Bening Daimaru 48mm x 90y",
+    kategori: "Perlengkapan Packing",
+    merk: "Daimaru",
+    satuan: "roll",
+    hpp: 8800,
+    ecer: 11500,
+    grosir: 9800,
+    stockToko: 80,
+    stockGudang: 420,
+    stockCabang: 150,
+    lowStockThreshold: 50,
+    reorderPoint: 25,
+  },
+  {
+    kode: "SKU-SEDOTAN-STR",
+    nama: "Sedotan Steril Runcing Bubble 12mm (Isi 100 pcs)",
+    kategori: "Cup & Minuman",
+    merk: "Tomat",
+    satuan: "pack",
+    hpp: 6500,
+    ecer: 9000,
+    grosir: 7500,
     stockToko: 50,
     stockGudang: 200,
     stockCabang: 80,
-    lowStockThreshold: null, // Threshold not set test case
+    lowStockThreshold: null,
     reorderPoint: null,
+  },
+  {
+    kode: "SKU-PANIR-1KG",
+    nama: "Tepung Panir Halus Bakery 1 kg",
+    kategori: "Bahan Pelengkap",
+    merk: "Mamasuka",
+    satuan: "kg",
+    hpp: 14500,
+    ecer: 18000,
+    grosir: 16000,
+    stockToko: 12,
+    stockGudang: 40,
+    stockCabang: 10,
+    lowStockThreshold: 15,
+    reorderPoint: 8,
   },
 ];
 
@@ -179,41 +239,41 @@ const INITIAL_TRANSACTIONS: Record<string, TransactionDetail> = {
     no: "POS-000184",
     tanggal: "31/08/2026",
     tipe: "Nota Penjualan POS",
-    partner: "Pelanggan Umum",
+    partner: "Pelanggan Umum (Walk-in)",
     partnerRole: "Pelanggan",
-    gudang: "Toko Utama",
-    petugas: "Kasir 01 (Siti)",
+    gudang: "Toko Utama (Irian)",
+    petugas: "Siti Rahayu (Kasir Toko)",
     status: "Lunas",
     items: [
-      { sku: "SKU-001", name: "Beras Premium 5 kg", qty: 2, unit: "sak", price: 72000, subtotal: 144000 },
-      { sku: "SKU-021", name: "Kopi Sachet 10 pcs", qty: 2, unit: "pack", price: 16500, subtotal: 33000 },
-      { sku: "SKU-014", name: "Minyak Goreng 1 L", qty: 1, unit: "botol", price: 18500, subtotal: 18500 },
+      { sku: "SKU-CUP-16OZ", name: "Cup Plastik PP 16oz Oza (50 pcs)", qty: 2, unit: "pack", price: 15000, subtotal: 30000 },
+      { sku: "SKU-KRESEK-15", name: "Kresek HDPE Bening 15x30 (500 gr)", qty: 3, unit: "pack", price: 12500, subtotal: 37500 },
+      { sku: "SKU-SEDOTAN-STR", name: "Sedotan Steril Bubble 12mm (100 pcs)", qty: 2, unit: "pack", price: 9000, subtotal: 18000 },
     ],
-    subtotal: 195500,
-    diskon: 9000,
+    subtotal: 85500,
+    diskon: 0,
     pajak: 0,
     biayaKirim: 0,
-    total: 186500,
-    terbayar: 200000,
+    total: 85500,
+    terbayar: 100000,
     sisa: 0,
-    catatan: "Penjualan langsung POS Kasir tunai",
+    catatan: "Pembayaran Tunai Kasir Toko Irian",
   },
   "SAL-000091": {
     no: "SAL-000091",
     tanggal: "31/08/2026",
-    tipe: "Penjualan Grosir",
-    partner: "Retail Partner A",
+    tipe: "Penjualan Grosir Packaging",
+    partner: "Warung Makan Bu Aminah",
     partnerRole: "Pelanggan",
-    fakturRef: "PO-RPA-992",
-    gudang: "Gudang Utama",
-    petugas: "Andi Pratama (Sales)",
-    top: "30 Hari",
-    jatuhTempo: "30/09/2026",
+    fakturRef: "PO-WMA-442",
+    gudang: "Gudang Logistik Pusat",
+    petugas: "Budi Santoso (Kru Toko)",
+    top: "14 Hari",
+    jatuhTempo: "14/09/2026",
     status: "Piutang",
     items: [
-      { sku: "SKU-001", name: "Beras Premium 5 kg", qty: 30, unit: "sak", price: 68500, subtotal: 2055000 },
-      { sku: "SKU-014", name: "Minyak Goreng 1 L", qty: 40, unit: "karton", price: 17000, subtotal: 680000 },
-      { sku: "SKU-008", name: "Susu UHT 1 L", qty: 35, unit: "kotak", price: 19500, subtotal: 685000 },
+      { sku: "SKU-MIKA-B4", name: "Mika Bento 4 Sekat Hitam (50 pcs)", qty: 40, unit: "pack", price: 41500, subtotal: 1660000 },
+      { sku: "SKU-BOX-LUNCH-M", name: "Paper Lunch Box Medium Kraft (100 pcs)", qty: 20, unit: "pack", price: 67000, subtotal: 1340000 },
+      { sku: "SKU-KRESEK-15", name: "Kresek HDPE Bening 15x30 (500 gr)", qty: 40, unit: "pack", price: 10500, subtotal: 420000 },
     ],
     subtotal: 3420000,
     diskon: 0,
@@ -222,52 +282,57 @@ const INITIAL_TRANSACTIONS: Record<string, TransactionDetail> = {
     total: 3420000,
     terbayar: 0,
     sisa: 3420000,
-    catatan: "Pengiriman via Armada Truk Toko Utama",
+    catatan: "Pengiriman via Armada Toko ke Pandanrejo, Klaten",
   },
   "PUR-000044": {
     no: "PUR-000044",
     tanggal: "31/08/2026",
-    tipe: "Faktur Pembelian",
-    partner: "Supplier Nasional",
+    tipe: "Faktur Pembelian Pabrik",
+    partner: "PT Sinar Joyoboyo Plastik",
     partnerRole: "Supplier",
-    fakturRef: "INV-SUP-8841",
-    gudang: "Gudang Utama",
-    petugas: "Budi Santoso (Purchasing)",
-    top: "14 Hari",
-    jatuhTempo: "14/09/2026",
+    fakturRef: "INV-SJP-9941",
+    gudang: "Gudang Logistik Pusat",
+    petugas: "Agus Pramono (Logistik)",
+    top: "30 Hari",
+    jatuhTempo: "30/09/2026",
     status: "Partial",
     items: [
-      { sku: "SKU-001", name: "Beras Premium 5 kg", qty: 50, unit: "sak", price: 65000, subtotal: 3250000 },
-      { sku: "SKU-014", name: "Minyak Goreng 1 L", qty: 100, unit: "karton", price: 16000, subtotal: 1600000 },
+      { sku: "SKU-KRESEK-15", name: "Kantong Kresek HDPE Bening 15x30", qty: 500, unit: "pack", price: 8500, subtotal: 4250000 },
+      { sku: "SKU-ROLL-PE08", name: "Plastik Roll PE Bening 0.8 mm (10 kg)", qty: 15, unit: "roll", price: 280000, subtotal: 4200000 },
     ],
-    subtotal: 4850000,
+    subtotal: 8450000,
     diskon: 0,
     pajak: 0,
     biayaKirim: 0,
-    total: 4850000,
-    terbayar: 2500000,
-    sisa: 2350000,
-    catatan: "Uang muka 50% telah ditransfer",
+    total: 8450000,
+    terbayar: 4000000,
+    sisa: 4450000,
+    catatan: "Uang muka 50% via Transfer BCA",
   },
 };
 
 const commonRows = {
   products: [
-    { kode: "SKU-001", nama: "Beras Premium 5 kg", kategori: "Sembako / Beras", merk: "Beras Kita", satuan: "sak", hpp: 68500, ecer: 72000, grosir: 68500, minStock: 20, reorderPoint: 10, status: "Aktif" },
-    { kode: "SKU-014", nama: "Minyak Goreng 1 L", kategori: "Sembako / Minyak", merk: "Bimoli", satuan: "karton", hpp: 17000, ecer: 18500, grosir: 17000, minStock: 20, reorderPoint: 10, status: "Aktif" },
-    { kode: "SKU-021", nama: "Kopi Sachet 10 pcs", kategori: "Minuman / Kopi", merk: "Kapal Api", satuan: "pack", hpp: 14800, ecer: 16500, grosir: 14800, minStock: 20, reorderPoint: 10, status: "Aktif" },
-    { kode: "SKU-008", nama: "Susu UHT 1 L", kategori: "Minuman / Susu", merk: "Ultra", satuan: "kotak", hpp: 16500, ecer: 21000, grosir: 19500, minStock: 15, reorderPoint: 5, status: "Aktif" },
-    { kode: "SKU-026", nama: "Sabun Cair 450 ml", kategori: "Household", merk: "Lifebuoy", satuan: "botol", hpp: 21000, ecer: 24500, grosir: 22500, minStock: "-", reorderPoint: "-", status: "Aktif" },
+    { kode: "SKU-CUP-16OZ", nama: "Cup Plastik PP 16oz Oza Slim (50 pcs)", kategori: "Cup & Minuman", merk: "Oza Pack", satuan: "pack", hpp: 12000, ecer: 15000, grosir: 13200, minStock: 30, reorderPoint: 15, status: "Aktif" },
+    { kode: "SKU-MIKA-B4", nama: "Mika Bento 4 Sekat Hitam + Tutup (50 pcs)", kategori: "Kemasan Makanan", merk: "Starindo", satuan: "pack", hpp: 38000, ecer: 46000, grosir: 41500, minStock: 20, reorderPoint: 10, status: "Aktif" },
+    { kode: "SKU-KRESEK-15", nama: "Kantong Kresek HDPE Bening 15x30 (500 gr)", kategori: "Plastik & Kresek", merk: "Bawang Super", satuan: "pack", hpp: 9500, ecer: 12500, grosir: 10500, minStock: 40, reorderPoint: 20, status: "Aktif" },
+    { kode: "SKU-ROLL-PE08", nama: "Plastik Roll PE Bening 0.8 mm (10 kg)", kategori: "Plastik & Kresek", merk: "Wayang", satuan: "roll", hpp: 285000, ecer: 330000, grosir: 305000, minStock: 10, reorderPoint: 5, status: "Aktif" },
+    { kode: "SKU-BOX-LUNCH-M", nama: "Paper Lunch Box Medium Kraft (100 pcs)", kategori: "Kemasan Makanan", merk: "EcoKraft", satuan: "pack", hpp: 62000, ecer: 75000, grosir: 67000, minStock: 15, reorderPoint: 8, status: "Aktif" },
+    { kode: "SKU-BUBBLE-50M", nama: "Bubble Wrap Roll 50m x 125cm", kategori: "Perlengkapan Packing", merk: "Klaten Pack", satuan: "roll", hpp: 82000, ecer: 105000, grosir: 92000, minStock: 8, reorderPoint: 3, status: "Aktif" },
+    { kode: "SKU-LAKBAN-48", nama: "Lakban Bening Daimaru 48mm x 90y", kategori: "Perlengkapan Packing", merk: "Daimaru", satuan: "roll", hpp: 8800, ecer: 11500, grosir: 9800, minStock: 50, reorderPoint: 25, status: "Aktif" },
+    { kode: "SKU-SEDOTAN-STR", nama: "Sedotan Steril Runcing Bubble 12mm (100 pcs)", kategori: "Cup & Minuman", merk: "Tomat", satuan: "pack", hpp: 6500, ecer: 9000, grosir: 7500, minStock: "-", reorderPoint: "-", status: "Aktif" },
+    { kode: "SKU-PANIR-1KG", nama: "Tepung Panir Halus Bakery 1 kg", kategori: "Bahan Pelengkap", merk: "Mamasuka", satuan: "kg", hpp: 14500, ecer: 18000, grosir: 16000, minStock: 15, reorderPoint: 8, status: "Aktif" },
   ],
   sales: [
-    { no: "POS-000184", tanggal: "31/08/2026", pelanggan: "Pelanggan Umum", jenis: "POS Kasir", gudang: "Toko Utama", total: 186500, status: "Lunas" },
-    { no: "SAL-000091", tanggal: "31/08/2026", pelanggan: "Retail Partner A", jenis: "Grosir", gudang: "Gudang Utama", total: 3420000, status: "Piutang" },
-    { no: "DLV-000027", tanggal: "31/08/2026", pelanggan: "Outlet Cabang", jenis: "Delivery", gudang: "Gudang Utama", total: 1840000, status: "Partial" },
+    { no: "POS-000184", tanggal: "31/08/2026", pelanggan: "Pelanggan Umum (Walk-in)", jenis: "POS Kasir", gudang: "Toko Utama (Irian)", total: 85500, status: "Lunas" },
+    { no: "SAL-000091", tanggal: "31/08/2026", pelanggan: "Warung Makan Bu Aminah", jenis: "Grosir", gudang: "Gudang Logistik Pusat", total: 3420000, status: "Piutang" },
+    { no: "SAL-000092", tanggal: "31/08/2026", pelanggan: "Kedai Kopi Selaras", jenis: "Grosir", gudang: "Toko Utama (Irian)", total: 940000, status: "Lunas" },
+    { no: "DLV-000027", tanggal: "31/08/2026", pelanggan: "Catering Berkah Klaten", jenis: "Delivery", gudang: "Gudang Logistik Pusat", total: 2640000, status: "Partial" },
   ],
   purchases: [
-    { no: "PUR-000044", tanggal: "31/08/2026", supplier: "Supplier Nasional", faktur: "INV-8841", top: "14 hari", gudang: "Gudang Utama", total: 4850000, status: "Partial" },
-    { no: "PUR-000045", tanggal: "31/08/2026", supplier: "Distributor Sentosa", faktur: "INV-8842", top: "Tunai", gudang: "Toko Utama", total: 2125000, status: "Lunas" },
-    { no: "PUR-000046", tanggal: "30/08/2026", supplier: "CV Sumber Makmur", faktur: "INV-8837", top: "30 hari", gudang: "Gudang Cabang", total: 3650000, status: "Open" },
+    { no: "PUR-000044", tanggal: "31/08/2026", supplier: "PT Sinar Joyoboyo Plastik", faktur: "INV-SJP-9941", top: "30 Hari", gudang: "Gudang Logistik Pusat", total: 8450000, status: "Partial" },
+    { no: "PUR-000045", tanggal: "31/08/2026", supplier: "CV Starindo Packaging Solo", faktur: "INV-STA-7712", top: "14 Hari", gudang: "Toko Utama (Irian)", total: 4250000, status: "Lunas" },
+    { no: "PUR-000046", tanggal: "30/08/2026", supplier: "Pabrik Daimaru Tape", faktur: "INV-DMR-3320", top: "Tunai", gudang: "Gatotkoco 2 (Krapyak)", total: 2850000, status: "Lunas" },
   ],
 };
 
@@ -275,79 +340,84 @@ const CONFIG: Partial<Record<DemoKind, ModuleConfig>> = {
   settings: {
     section: "System",
     primaryAction: "Simpan Pengaturan",
-    stats: [{ label: "Profil Toko", value: "Lengkap" }, { label: "Template Nota", value: "Aktif" }, { label: "Global Threshold", value: "Aktif" }],
+    stats: [{ label: "Profil Toko", value: "Lengkap" }, { label: "Template Nota", value: "Aktif" }, { label: "Multi-Gudang", value: "3 Lokasi" }],
     columns: ["kode", "pengaturan", "nilai", "status"],
     rows: [
-      { kode: "STORE_NAME", pengaturan: "Nama Toko", nilai: "Kelolain", status: "Aktif" },
-      { kode: "DEFAULT_LOW_STOCK", pengaturan: "Default Low Stock Threshold", nilai: "15", status: "Aktif" },
-      { kode: "DEFAULT_REORDER_POINT", pengaturan: "Default Reorder Point", nilai: "5", status: "Aktif" },
-      { kode: "RECEIPT_FOOTER", pengaturan: "Footer Nota", nilai: "Terima kasih atas kunjungan Anda.", status: "Aktif" },
+      { kode: "STORE_NAME", pengaturan: "Nama Toko / Usaha", nilai: "Kelolain", status: "Aktif" },
+      { kode: "STORE_BRANCH", pengaturan: "Outlet Utama", nilai: "Gatotkoco Irian (Klaten)", status: "Aktif" },
+      { kode: "DEFAULT_LOW_STOCK", pengaturan: "Default Low Stock Threshold", nilai: "20", status: "Aktif" },
+      { kode: "DEFAULT_REORDER_POINT", pengaturan: "Default Reorder Point", nilai: "10", status: "Aktif" },
+      { kode: "RECEIPT_FOOTER", pengaturan: "Footer Nota Kasir", nilai: "Pusat Plastik & Packaging Terlengkap Klaten", status: "Aktif" },
     ],
-    sideTitle: "Pengaturan Inventory",
+    sideTitle: "Pengaturan Inventory & Toko",
     sideItems: [
       "Default Low Stock Threshold global",
-      "Default Reorder Point global",
-      "Format nota & printer thermal",
-      "Konfigurasi multi-gudang",
+      "Default Reorder Point alert",
+      "Konfigurasi multi-gudang Klaten",
+      "Format cetak nota thermal 58/80mm",
     ],
   },
   suppliers: {
     section: "Master",
     primaryAction: "Tambah Supplier",
-    stats: [{ label: "Supplier Aktif", value: "42" }, { label: "Kota", value: "8" }, { label: "Hutang Open", value: "Rp 5,8 jt", status: "warning" }],
+    stats: [{ label: "Supplier Aktif", value: "18" }, { label: "Pabrik / Distributor", value: "6" }, { label: "Hutang Open", value: "Rp 8,4 jt", status: "warning" }],
     columns: ["kode", "nama", "alamat", "kota", "telp", "status"],
     rows: [
-      { kode: "SUP-001", nama: "Supplier Nasional", alamat: "Jl. Industri 12", kota: "Jakarta", telp: "0812-0000-2001", status: "TOP 14" },
-      { kode: "SUP-009", nama: "Distributor Sentosa", alamat: "Jl. Logistik 8", kota: "Bandung", telp: "0812-0000-2009", status: "TOP 30" },
-      { kode: "SUP-016", nama: "CV Sumber Makmur", alamat: "Jl. Niaga 4", kota: "Bekasi", telp: "0812-0000-2016", status: "Tunai" },
+      { kode: "SUP-001", nama: "PT Sinar Joyoboyo Plastik", alamat: "Kawasan Industri Rungkut", kota: "Surabaya", telp: "0812-3000-1122", status: "TOP 30" },
+      { kode: "SUP-002", nama: "CV Starindo Packaging Solo", alamat: "Jl. Palur Raya No. 45", kota: "Surakarta", telp: "0813-2900-4455", status: "TOP 14" },
+      { kode: "SUP-003", nama: "Pabrik Daimaru Tape Indonesia", alamat: "Kawasan Industri Candi", kota: "Semarang", telp: "0811-2400-8899", status: "TOP 14" },
+      { kode: "SUP-004", nama: "CV EcoKraft Boxindo", alamat: "Jl. Ring Road Utara", kota: "Yogyakarta", telp: "0818-0200-3344", status: "Tunai" },
     ],
-    sideTitle: "Field Supplier",
-    sideItems: ["Kode supplier", "Nama dan alamat", "Kota", "Telepon / WhatsApp", "Termin pembayaran"],
+    sideTitle: "Master Supplier Packaging",
+    sideItems: ["Pabrik plastik & mika", "Distributor cup & sedotan", "Produsen lakban & bubble wrap", "Termin pembayaran (TOP)"],
   },
   customers: {
     section: "Master",
     primaryAction: "Tambah Pelanggan",
-    stats: [{ label: "Pelanggan", value: "128" }, { label: "Grup Harga", value: "3" }, { label: "Piutang", value: "Rp 7,4 jt", status: "warning" }],
+    stats: [{ label: "Pelanggan Terdaftar", value: "142" }, { label: "Grup Grosir / UMKM", value: "48" }, { label: "Total Piutang", value: "Rp 6,2 jt", status: "warning" }],
     columns: ["kode", "nama", "alamat", "kota", "telp", "grup", "status"],
     rows: [
-      { kode: "CUST-001", nama: "Pelanggan Umum", alamat: "Walk-in", kota: "Jakarta", telp: "-", grup: "Retail", status: "Aktif" },
-      { kode: "CUST-014", nama: "Retail Partner A", alamat: "Jl. Niaga 21", kota: "Bandung", telp: "0812-0000-1014", grup: "Grosir", status: "Tempo" },
-      { kode: "CUST-027", nama: "Outlet Cabang", alamat: "Jl. Raya 9", kota: "Bekasi", telp: "0812-0000-1027", grup: "Tempo", status: "Aktif" },
+      { kode: "CUST-001", nama: "Pelanggan Umum (Walk-in)", alamat: "Jl. Irian & Sekitarnya", kota: "Klaten Tengah", telp: "-", grup: "Retail", status: "Aktif" },
+      { kode: "CUST-002", nama: "Warung Makan Bu Aminah", alamat: "Pandanrejo", kota: "Klaten Tengah", telp: "0877-1234-5678", grup: "Grosir", status: "Aktif" },
+      { kode: "CUST-003", nama: "Kedai Kopi Selaras", alamat: "Merbung", kota: "Klaten Selatan", telp: "0858-9876-5432", grup: "Grosir", status: "Aktif" },
+      { kode: "CUST-004", name: "Catering Berkah Klaten", alamat: "Krapyak", kota: "Klaten Selatan", telp: "0813-2468-1357", grup: "Tempo", status: "Tempo 14 Hari" },
+      { kode: "CUST-005", nama: "UMKM Keripik & Snack Jaya", alamat: "Ceper", kota: "Klaten", telp: "0812-3344-5566", grup: "Grosir", status: "Aktif" },
     ],
-    sideTitle: "Field Pelanggan",
-    sideItems: ["Kode pelanggan", "Alamat dan kota", "Telepon / WhatsApp", "Grup pelanggan", "Limit dan status piutang"],
+    sideTitle: "Segmentasi Pelanggan",
+    sideItems: ["Pelanggan retail umum", "UMKM Kuliner & Warung", "Kedai Minuman & Kopi", "Catering & Reseller"],
   },
   salesPeople: {
     section: "Master",
-    primaryAction: "Tambah Salesman",
-    stats: [{ label: "Salesman", value: "9" }, { label: "Area", value: "4" }, { label: "Order Bulan Ini", value: "124" }],
+    primaryAction: "Tambah Kru / Sales",
+    stats: [{ label: "Kru Toko & Sales", value: "8" }, { label: "Outlet", value: "2" }, { label: "Transaksi Hari Ini", value: "147" }],
     columns: ["kode", "nama", "alamat", "hp", "area", "status"],
     rows: [
-      { kode: "SLS-001", nama: "Andi Pratama", alamat: "Jakarta Barat", hp: "0812-0000-3001", area: "Barat", status: "Aktif" },
-      { kode: "SLS-002", nama: "Rina Lestari", alamat: "Jakarta Selatan", hp: "0812-0000-3002", area: "Selatan", status: "Aktif" },
-      { kode: "SLS-003", nama: "Dimas Putra", alamat: "Bekasi", hp: "0812-0000-3003", area: "Bekasi", status: "Training" },
+      { kode: "SLS-001", nama: "Budi Santoso", alamat: "Pandanrejo, Klaten", hp: "0877-4400-1122", area: "Toko Utama (Irian)", status: "Kru Toko & Display" },
+      { kode: "SLS-002", nama: "Siti Rahayu", alamat: "Merbung, Klaten", hp: "0858-2200-3344", area: "Kasir Toko (Irian)", status: "Kasir Utama" },
+      { kode: "SLS-003", nama: "Agus Pramono", alamat: "Ceper, Klaten", hp: "0813-8800-5566", area: "Gudang Logistik", status: "Logistik & Armada" },
+      { kode: "SLS-004", nama: "Dewi Lestari", alamat: "Krapyak, Klaten", hp: "0812-7700-9900", area: "Gatotkoco 2 (Krapyak)", status: "Kru Outlet Cabang" },
     ],
-    sideTitle: "Komisi & Area",
-    sideItems: ["Mapping area salesman", "Riwayat transaksi", "Omset per salesman", "Customer assignment"],
+    sideTitle: "Kru & Operasional Toko",
+    sideItems: ["Kru display & replenishment", "Kasir POS harian", "Petugas gudang logistik", "Kru cabang Krapyak"],
   },
   products: {
     section: "Inventaris",
     primaryAction: "Tambah Barang",
-    stats: [{ label: "SKU Aktif", value: "28" }, { label: "Kategori", value: "7" }, { label: "Nilai Stok", value: "Rp 42,6 jt" }],
+    stats: [{ label: "SKU Aktif", value: "9" }, { label: "Kategori", value: "6" }, { label: "Nilai Aset Stok", value: "Rp 68,4 jt" }],
     columns: ["kode", "nama", "kategori", "merk", "satuan", "hpp", "ecer", "grosir", "minStock", "reorderPoint", "status"],
     rows: commonRows.products,
     sideTitle: "Konfigurasi Stok & Harga",
     sideItems: [
       "Minimum / Low Stock Threshold per SKU",
-      "Reorder Point untuk alert restock",
-      "Multi-satuan konversi (UOM)",
-      "Harga retail & grosir per grup",
+      "Reorder Point untuk rekomendasi restock",
+      "Multi-satuan konversi (Pcs - Pack - Dus)",
+      "Tiering harga Retail & Grosir",
     ],
   },
   stock: {
     section: "Inventaris",
     primaryAction: "Koreksi Stok",
-    stats: [{ label: "SKU Aktif", value: "5" }, { label: "Perlu Restock", value: "2 SKU", status: "warning" }, { label: "Nilai Stok", value: "Rp 42,6 jt" }],
+    stats: [{ label: "Total SKU", value: "9" }, { label: "Perlu Restock", value: "2 SKU", status: "warning" }, { label: "Nilai Aset", value: "Rp 68,4 jt" }],
     columns: ["kode", "nama", "kategori", "stokSaatIni", "minStock", "reorderPoint", "hpp", "status"],
     rows: [],
     sideTitle: "Logika Status Persediaan",
@@ -355,239 +425,262 @@ const CONFIG: Partial<Record<DemoKind, ModuleConfig>> = {
       "AMAN: Stok saat ini > Batas Low",
       "LOW: Reorder Point < Stok ≤ Batas Low",
       "RESTOCK: Stok saat ini ≤ Reorder Point",
-      "HABIS: Stok saat ini = 0",
-      "Belum Diatur: Belum ada konfigurasi threshold",
+      "HABIS: Saldo stok = 0 di lokasi terpilih",
+      "Belum Diatur: Belum dikonfigurasi threshold",
     ],
   },
   sales: {
     section: "Penjualan",
     primaryAction: "Buat Penjualan",
-    stats: [{ label: "Omset", value: "Rp 18,7 jt" }, { label: "Nota", value: "14" }, { label: "Piutang", value: "Rp 4,1 jt", status: "warning" }],
+    stats: [{ label: "Omset Hari Ini", value: "Rp 18,4 jt" }, { label: "Total Nota", value: "147" }, { label: "Piutang Berjalan", value: "Rp 6,2 jt", status: "warning" }],
     columns: ["no", "tanggal", "pelanggan", "jenis", "gudang", "total", "status"],
     rows: commonRows.sales,
-    sideTitle: "Status Penjualan",
-    sideItems: ["POS tunai", "Penjualan grosir", "Delivery order", "Retur dan piutang"],
+    sideTitle: "Channel Penjualan",
+    sideItems: ["POS kasir walk-in", "Order grosir UMKM", "Pengiriman armada toko", "Retur & piutang tempo"],
   },
   purchases: {
     section: "Pembelian",
     primaryAction: "Buat Pembelian",
-    stats: [{ label: "Pembelian", value: "Rp 9,8 jt" }, { label: "Supplier", value: "4" }, { label: "Hutang", value: "Rp 3,2 jt", status: "warning" }],
+    stats: [{ label: "Pembelian Bulan Ini", value: "Rp 24,8 jt" }, { label: "Supplier Aktif", value: "4 Pabrik" }, { label: "Hutang Berjalan", value: "Rp 8,4 jt", status: "warning" }],
     columns: ["no", "tanggal", "supplier", "faktur", "top", "gudang", "total", "status"],
     rows: commonRows.purchases,
-    sideTitle: "Nota Pembelian",
-    sideItems: ["Nomor faktur supplier", "TOP pembayaran", "Gudang tujuan", "Item, qty, satuan, harga beli"],
+    sideTitle: "Pengadaan Pabrik / Supplier",
+    sideItems: ["Nomor faktur pabrik", "Termin pembayaran (TOP)", "Gudang penerimaan", "Input ball/dus & konversi pack"],
   },
   delivery: {
     section: "Logistik",
     primaryAction: "Buat Surat Jalan",
-    stats: [{ label: "Order Kirim", value: "6" }, { label: "Pending", value: "18 koli", status: "warning" }, { label: "Terkirim", value: "2 hari ini" }],
+    stats: [{ label: "Order Antar", value: "8" }, { label: "Pending Kirim", value: "4 dus", status: "warning" }, { label: "Terkirim Hari Ini", value: "6 rute" }],
     columns: ["no", "tanggal", "pelanggan", "alamat", "qtyOrder", "qtyKirim", "status"],
     rows: [
-      { no: "DLV-000027", tanggal: "31/08/2026", pelanggan: "Outlet Cabang", alamat: "Bekasi", qtyOrder: "12 koli", qtyKirim: "8 koli", status: "Partial" },
-      { no: "DLV-000028", tanggal: "31/08/2026", pelanggan: "Retail Partner A", alamat: "Bandung", qtyOrder: "7 koli", qtyKirim: "7 koli", status: "Selesai" },
+      { no: "DLV-000027", tanggal: "31/08/2026", pelanggan: "Catering Berkah Klaten", alamat: "Krapyak, Klaten", qtyOrder: "20 pack", qtyKirim: "15 pack", status: "Partial" },
+      { no: "DLV-000028", tanggal: "31/08/2026", pelanggan: "Warung Makan Bu Aminah", alamat: "Pandanrejo, Klaten", qtyOrder: "40 pack", qtyKirim: "40 pack", status: "Selesai" },
+      { no: "DLV-000029", tanggal: "31/08/2026", pelanggan: "Kedai Kopi Selaras", alamat: "Merbung, Klaten", qtyOrder: "10 dus", qtyKirim: "10 dus", status: "Selesai" },
     ],
-    sideTitle: "Pengiriman",
-    sideItems: ["Kirim penuh atau sebagian", "Sisa barang tidak terkirim", "Surat jalan", "Cetak ulang dokumen"],
+    sideTitle: "Distribusi & Pengiriman",
+    sideItems: ["Armada toko Klaten", "Surat jalan pengiriman", "Kirim penuh atau bertahap", "Konfirmasi penerimaan barang"],
   },
   purchaseReturns: {
     section: "Pembelian",
-    primaryAction: "Buat Retur",
-    stats: [{ label: "Retur Bulan Ini", value: "6" }, { label: "Nilai Retur", value: "Rp 1,2 jt" }, { label: "Open", value: "1", status: "warning" }],
+    primaryAction: "Buat Retur Beli",
+    stats: [{ label: "Retur Bulan Ini", value: "3" }, { label: "Nilai Retur", value: "Rp 1,4 jt" }, { label: "Open", value: "1", status: "warning" }],
     columns: ["no", "tanggal", "supplier", "notaAsal", "gudang", "total", "status"],
     rows: [
-      { no: "RET-P-000006", tanggal: "29/08/2026", supplier: "Distributor Sentosa", notaAsal: "PUR-000039", gudang: "Gudang Utama", total: 385000, status: "Posted" },
-      { no: "RET-P-000007", tanggal: "30/08/2026", supplier: "Supplier Nasional", notaAsal: "PUR-000044", gudang: "Toko Utama", total: 240000, status: "Draft" },
+      { no: "RET-P-000006", tanggal: "29/08/2026", supplier: "CV Starindo Packaging Solo", notaAsal: "PUR-000045", gudang: "Gudang Logistik Pusat", total: 420000, status: "Posted" },
+      { no: "RET-P-000007", tanggal: "30/08/2026", supplier: "PT Sinar Joyoboyo Plastik", notaAsal: "PUR-000044", gudang: "Toko Utama (Irian)", total: 340000, status: "Draft" },
     ],
-    sideTitle: "Retur Supplier",
-    sideItems: ["Referensi nota beli", "Qty retur dan satuan", "Stok keluar", "Penyesuaian hutang"],
+    sideTitle: "Retur ke Pabrik",
+    sideItems: ["Barang cacat / reject produksi", "Plastik tipis / sobek", "Kompensasi potong hutang", "Nota retur resmi"],
   },
   salesReturns: {
     section: "Penjualan",
-    primaryAction: "Buat Retur",
-    stats: [{ label: "Retur Bulan Ini", value: "11" }, { label: "Nilai Retur", value: "Rp 2,1 jt" }, { label: "Diproses", value: "2", status: "warning" }],
+    primaryAction: "Buat Retur Jual",
+    stats: [{ label: "Retur Bulan Ini", value: "4" }, { label: "Nilai Retur", value: "Rp 680 rb" }, { label: "Diproses", value: "1", status: "warning" }],
     columns: ["no", "tanggal", "pelanggan", "notaAsal", "gudang", "total", "status"],
     rows: [
-      { no: "RET-S-000011", tanggal: "30/08/2026", pelanggan: "Retail Partner A", notaAsal: "SAL-000091", gudang: "Toko Utama", total: 420000, status: "Posted" },
-      { no: "RET-S-000012", tanggal: "31/08/2026", pelanggan: "Pelanggan Umum", notaAsal: "POS-000184", gudang: "Toko Utama", total: 86500, status: "Draft" },
+      { no: "RET-S-000011", tanggal: "30/08/2026", pelanggan: "Warung Makan Bu Aminah", notaAsal: "SAL-000091", gudang: "Toko Utama (Irian)", total: 240000, status: "Posted" },
+      { no: "RET-S-000012", tanggal: "31/08/2026", pelanggan: "Pelanggan Umum (Walk-in)", notaAsal: "POS-000184", gudang: "Toko Utama (Irian)", total: 30000, status: "Draft" },
     ],
-    sideTitle: "Retur Pelanggan",
-    sideItems: ["Referensi nota jual", "Barang masuk kembali", "Penyesuaian piutang", "Cetak nota retur"],
+    sideTitle: "Retur dari Pembeli",
+    sideItems: ["Tukar ukuran cup/kresek", "Barang tidak sesuai pesanan", "Pengembalian saldo stok", "Penyesuaian nota & kasir"],
   },
   payables: {
     section: "Keuangan",
     primaryAction: "Bayar Supplier",
-    stats: [{ label: "Total Hutang", value: "Rp 5,8 jt", status: "warning" }, { label: "Jatuh Tempo", value: "3 invoice" }, { label: "Dibayar Hari Ini", value: "Rp 750 rb" }],
+    stats: [{ label: "Total Hutang", value: "Rp 8,4 jt", status: "warning" }, { label: "Jatuh Tempo", value: "2 Pabrik" }, { label: "Dibayar Hari Ini", value: "Rp 2,5 jt" }],
     columns: ["no", "supplier", "jatuhTempo", "total", "terbayar", "sisa", "status"],
     rows: [
-      { no: "PUR-000044", supplier: "Supplier Nasional", jatuhTempo: "14/09/2026", total: 4850000, terbayar: 2500000, sisa: 2350000, status: "Partial" },
-      { no: "PUR-000039", supplier: "Distributor Sentosa", jatuhTempo: "29/08/2026", total: 1475000, terbayar: 0, sisa: 1475000, status: "Overdue" },
+      { no: "PUR-000044", supplier: "PT Sinar Joyoboyo Plastik", jatuhTempo: "30/09/2026", total: 8450000, terbayar: 4000000, sisa: 4450000, status: "Partial" },
+      { no: "PUR-000042", supplier: "CV Starindo Packaging Solo", jatuhTempo: "28/08/2026", total: 3950000, terbayar: 0, sisa: 3950000, status: "Overdue" },
     ],
-    sideTitle: "Pembayaran Supplier",
-    sideItems: ["Angsuran bertahap", "Sisa hutang", "Jatuh tempo", "Kas keluar"],
+    sideTitle: "Manajemen Hutang Supplier",
+    sideItems: ["Jadwal jatuh tempo TOP", "Cicilan bertahap", "Histori pembayaran pabrik", "Arus kas keluar"],
   },
   receivables: {
     section: "Keuangan",
     primaryAction: "Terima Pembayaran",
-    stats: [{ label: "Total Piutang", value: "Rp 7,4 jt", status: "warning" }, { label: "Customer Tempo", value: "5" }, { label: "Masuk Hari Ini", value: "Rp 1,2 jt" }],
+    stats: [{ label: "Total Piutang", value: "Rp 6,2 jt", status: "warning" }, { label: "Pelanggan Tempo", value: "4 UMKM" }, { label: "Diterima Hari Ini", value: "Rp 1,8 jt" }],
     columns: ["no", "pelanggan", "jatuhTempo", "total", "terbayar", "sisa", "status"],
     rows: [
-      { no: "SAL-000091", pelanggan: "Retail Partner A", jatuhTempo: "07/09/2026", total: 3420000, terbayar: 0, sisa: 3420000, status: "Open" },
-      { no: "SAL-000086", pelanggan: "Outlet Cabang", jatuhTempo: "02/09/2026", total: 1980000, terbayar: 1000000, sisa: 980000, status: "Partial" },
+      { no: "SAL-000091", pelanggan: "Warung Makan Bu Aminah", jatuhTempo: "14/09/2026", total: 3420000, terbayar: 0, sisa: 3420000, status: "Open" },
+      { no: "SAL-000088", pelanggan: "Catering Berkah Klaten", jatuhTempo: "05/09/2026", total: 2840000, terbayar: 1000000, sisa: 1840000, status: "Partial" },
     ],
-    sideTitle: "Penerimaan Piutang",
-    sideItems: ["Angsuran pelanggan", "Sisa tagihan", "Aging piutang", "Kas masuk"],
+    sideTitle: "Pengawasan Piutang Grosir",
+    sideItems: ["Batas limit piutang toko", "Aging piutang per UMKM", "Penerimaan cicilan", "Pengingat jatuh tempo"],
   },
   categories: {
     section: "Inventaris",
     primaryAction: "Tambah Kategori",
-    stats: [{ label: "Kategori", value: "7" }, { label: "Sub-Kategori", value: "18" }, { label: "SKU Terkait", value: "28" }],
+    stats: [{ label: "Kategori Utama", value: "6" }, { label: "Sub-Kategori", value: "24" }, { label: "SKU Terdaftar", value: "140+" }],
     columns: ["kode", "kategori", "subKategori", "jumlahSku", "status"],
     rows: [
-      { kode: "CAT-001", kategori: "Sembako", subKategori: "Beras, Minyak, Gula", jumlahSku: 11, status: "Aktif" },
-      { kode: "CAT-002", kategori: "Minuman", subKategori: "Susu, Kopi, Teh", jumlahSku: 8, status: "Aktif" },
+      { kode: "CAT-CUP", kategori: "Cup & Minuman", subKategori: "PP Cup, PET Cup, Sedotan, Sealing", jumlahSku: 36, status: "Aktif" },
+      { kode: "CAT-FOOD", kategori: "Kemasan Makanan", subKategori: "Mika Bento, Thinwall, Lunch Box Kraft", jumlahSku: 42, status: "Aktif" },
+      { kode: "CAT-PLASTIK", kategori: "Plastik & Kresek", subKategori: "HDPE Kresek, PE Roll, PP Wayang, OPP", jumlahSku: 58, status: "Aktif" },
+      { kode: "CAT-PACK", kategori: "Perlengkapan Packing", subKategori: "Lakban Daimaru, Bubble Wrap, Tali Rafia", jumlahSku: 22, status: "Aktif" },
+      { kode: "CAT-BAKERY", kategori: "Bahan Pelengkap", subKategori: "Tepung Panir, Box Donat, Mika Tart", jumlahSku: 14, status: "Aktif" },
     ],
-    sideTitle: "Struktur Kategori",
-    sideItems: ["Kategori utama", "Sub-kategori", "Merk", "Filter produk"],
+    sideTitle: "Hierarki Kategori Produk",
+    sideItems: ["Kategori kemasan makanan", "Kategori minuman & cup", "Kategori plastik roll & kresek", "Perlengkapan lakban & packing"],
   },
   warehouses: {
     section: "Inventaris",
-    primaryAction: "Tambah Gudang",
-    stats: [{ label: "Lokasi", value: "3" }, { label: "Transfer", value: "7" }, { label: "Stok Aktif", value: "28 SKU" }],
+    primaryAction: "Tambah Lokasi",
+    stats: [{ label: "Lokasi Terdaftar", value: "3" }, { label: "Transfer Stok", value: "14" }, { label: "SKU Terkelola", value: "140+" }],
     columns: ["kode", "lokasi", "keterangan", "sku", "status"],
     rows: [
-      { kode: "WH-001", lokasi: "Toko Utama", keterangan: "Stok kasir & display", sku: 24, status: "Aktif" },
-      { kode: "WH-002", lokasi: "Gudang Utama", keterangan: "Stok pembelian pusat", sku: 28, status: "Aktif" },
-      { kode: "WH-003", lokasi: "Gudang Cabang", keterangan: "Buffer stock & transit", sku: 16, status: "Aktif" },
+      { kode: "WH-IRIAN", lokasi: "Toko Utama (Irian)", keterangan: "Jl. Irian No.8, Klaten Tengah (Display & Kasir)", sku: 140, status: "Aktif" },
+      { kode: "WH-GUDANG", lokasi: "Gudang Logistik Pusat", keterangan: "Pusat penerimaan pabrik (Ball & Dus besar)", sku: 140, status: "Aktif" },
+      { kode: "WH-KRAPYAK", lokasi: "Gatotkoco 2 (Krapyak)", keterangan: "Jl. Kuntowijayandanu, Krapyak, Klaten Selatan", sku: 85, status: "Aktif" },
     ],
-    sideTitle: "Lokasi Stok",
-    sideItems: ["Kode gudang", "Lokasi", "Keterangan", "Saldo per gudang"],
+    sideTitle: "Jaringan Toko & Multi-Gudang",
+    sideItems: ["Toko Utama Irian Klaten", "Outlet 2 Krapyak Merbung", "Gudang Logistik Pusat", "Sinkronisasi saldo antar cabang"],
   },
   stockCard: {
     section: "Inventaris",
     primaryAction: "Filter Kartu Stok",
-    stats: [{ label: "Movement", value: "126" }, { label: "Produk", value: "28" }, { label: "Lokasi", value: "3" }],
+    stats: [{ label: "Mutasi Hari Ini", value: "38" }, { label: "SKU Terpilih", value: "Semua" }, { label: "Lokasi", value: "Toko Utama" }],
     columns: ["tanggal", "referensi", "produk", "gudang", "masuk", "keluar", "saldo"],
     rows: [
-      { tanggal: "31/08/2026", referensi: "PUR-000044", produk: "Minyak Goreng 1 L", gudang: "Gudang Utama", masuk: "36 karton", keluar: "-", saldo: "36 karton" },
-      { tanggal: "31/08/2026", referensi: "POS-000184", produk: "Beras Premium 5 kg", gudang: "Toko Utama", masuk: "-", keluar: "3 sak", saldo: "32 sak" },
+      { tanggal: "31/08/2026", referensi: "PUR-000044", produk: "Kantong Kresek HDPE 15x30", gudang: "Gudang Logistik Pusat", masuk: "500 pack", keluar: "-", saldo: "850 pack" },
+      { tanggal: "31/08/2026", referensi: "TRF-000012", produk: "Kantong Kresek HDPE 15x30", gudang: "Toko Utama (Irian)", masuk: "50 pack", keluar: "-", saldo: "65 pack" },
+      { tanggal: "31/08/2026", referensi: "SAL-000091", produk: "Mika Bento 4 Sekat Hitam", gudang: "Gudang Logistik Pusat", masuk: "-", keluar: "40 pack", saldo: "90 pack" },
+      { tanggal: "31/08/2026", referensi: "POS-000184", produk: "Cup Plastik PP 16oz Oza", gudang: "Toko Utama (Irian)", masuk: "-", keluar: "2 pack", saldo: "45 pack" },
     ],
-    sideTitle: "Ledger Stok",
-    sideItems: ["Opening balance", "Purchase", "Sale", "Transfer", "Adjustment"],
+    sideTitle: "Audit Trail & Buku Besar Stok",
+    sideItems: ["Saldo awal (Opening balance)", "Penerimaan pembelian pabrik", "Penjualan POS kasir & grosir", "Transfer antar cabang / gudang"],
   },
   stockTransfers: {
     section: "Inventaris",
-    primaryAction: "Buat Transfer",
-    stats: [{ label: "Transfer", value: "7" }, { label: "Pending", value: "0" }, { label: "Lokasi", value: "3" }],
+    primaryAction: "Buat Mutasi Antar Gudang",
+    stats: [{ label: "Mutasi Bulan Ini", value: "14" }, { label: "Dalam Perjalanan", value: "0" }, { label: "Lokasi", value: "3 Titik" }],
     columns: ["no", "tanggal", "asal", "tujuan", "item", "total", "status"],
     rows: [
-      { no: "TRF-000012", tanggal: "31/08/2026", asal: "Gudang Utama", tujuan: "Toko Utama", item: "2 SKU", total: 1280000, status: "Posted" },
+      { no: "TRF-000012", tanggal: "31/08/2026", asal: "Gudang Logistik Pusat", tujuan: "Toko Utama (Irian)", item: "Cup 16oz (20 pk), Kresek (50 pk)", total: 765000, status: "Posted" },
+      { no: "TRF-000013", tanggal: "31/08/2026", asal: "Gudang Logistik Pusat", tujuan: "Gatotkoco 2 (Krapyak)", item: "Lakban (72 roll), Mika (20 pk)", total: 1420000, status: "Posted" },
     ],
-    sideTitle: "Mutasi Gudang",
-    sideItems: ["Gudang asal", "Gudang tujuan", "Transfer out/in", "Cost tetap terbawa"],
+    sideTitle: "Replenishment Antar Cabang",
+    sideItems: ["Gudang logistik ke toko display", "Pasokan toko ke outlet cabang 2", "HPP terjaga otomatis", "Verifikasi fisik saat tiba"],
   },
   stockIssues: {
     section: "Operasional",
-    primaryAction: "Buat Pengeluaran",
-    stats: [{ label: "Pengeluaran", value: "9" }, { label: "Nilai", value: "Rp 1,8 jt" }, { label: "Draft", value: "1", status: "warning" }],
+    primaryAction: "Pengeluaran Non-Jual",
+    stats: [{ label: "Pengeluaran", value: "5" }, { label: "Nilai", value: "Rp 340 rb" }, { label: "Status", value: "Posted" }],
     columns: ["no", "tanggal", "gudang", "keperluan", "item", "total", "status"],
     rows: [
-      { no: "OUT-000019", tanggal: "31/08/2026", gudang: "Toko Utama", keperluan: "Rusak", item: "1 SKU", total: 125000, status: "Posted" },
+      { no: "OUT-000019", tanggal: "31/08/2026", gudang: "Toko Utama (Irian)", keperluan: "Mika Bento Pecah / Rusak", item: "2 pack", total: 76000, status: "Posted" },
+      { no: "OUT-000020", tanggal: "31/08/2026", gudang: "Toko Utama (Irian)", keperluan: "Sample Display Pelanggan", item: "1 pack", total: 15000, status: "Posted" },
     ],
-    sideTitle: "Non-Penjualan",
-    sideItems: ["Barang rusak", "Sample", "Hilang", "Kebutuhan internal"],
+    sideTitle: "Pencatatan Kerusakan & Sample",
+    sideItems: ["Barang pecah / retak saat display", "Sample contoh untuk pelanggan", "Plastik kotor / reject", "Beban operasional toko"],
   },
   repack: {
     section: "Inventaris",
-    primaryAction: "Buat Repack",
-    stats: [{ label: "Repack", value: "5" }, { label: "Output SKU", value: "12" }, { label: "Draft", value: "1", status: "warning" }],
+    primaryAction: "Buat Repack / Konversi",
+    stats: [{ label: "Repack Bulan Ini", value: "8" }, { label: "Output Satuan", value: "Pack & Pcs" }, { label: "Status", value: "Ready" }],
     columns: ["no", "tanggal", "gudang", "input", "output", "nilai", "status"],
     rows: [
-      { no: "RPK-000008", tanggal: "31/08/2026", gudang: "Gudang Utama", input: "2 karton", output: "48 pcs", nilai: 1260000, status: "Posted" },
+      { no: "RPK-000008", tanggal: "31/08/2026", gudang: "Gudang Logistik Pusat", input: "1 Dus Cup 16oz", output: "20 Pack (1.000 Pcs)", nilai: 240000, status: "Posted" },
+      { no: "RPK-000009", tanggal: "31/08/2026", gudang: "Toko Utama (Irian)", input: "1 Ball Kresek HDPE", output: "40 Pack (500 gr)", nilai: 380000, status: "Posted" },
     ],
-    sideTitle: "Konversi Barang",
-    sideItems: ["Input SKU", "Output SKU", "Alokasi nilai", "Stok keluar/masuk"],
+    sideTitle: "Konversi Dus ke Pack / Pcs",
+    sideItems: ["Buka dus pabrik jadi eceran", "Konversi ball plastik ke pack", "Alokasi HPP tetap presisi", "Stok ecer bertambah otomatis"],
   },
   adjustments: {
     section: "Inventaris",
-    primaryAction: "Buat Koreksi",
-    stats: [{ label: "Koreksi", value: "8" }, { label: "Selisih Qty", value: "14 pcs" }, { label: "Review", value: "1", status: "warning" }],
+    primaryAction: "Buat Stock Opname",
+    stats: [{ label: "Opname Terakhir", value: "28/08/2026" }, { label: "Selisih Bersih", value: "+2 pack" }, { label: "Status", value: "Posted" }],
     columns: ["no", "tanggal", "produk", "gudang", "qtySistem", "qtyFisik", "status"],
     rows: [
-      { no: "ADJ-000021", tanggal: "31/08/2026", produk: "Minyak Goreng 1 L", gudang: "Toko Utama", qtySistem: "18", qtyFisik: "16", status: "Posted" },
+      { no: "ADJ-000021", tanggal: "31/08/2026", produk: "Cup Plastik PP 16oz Oza", gudang: "Toko Utama (Irian)", qtySistem: "47", qtyFisik: "45", status: "Posted" },
+      { no: "ADJ-000022", tanggal: "31/08/2026", produk: "Lakban Bening Daimaru", gudang: "Toko Utama (Irian)", qtySistem: "78", qtyFisik: "80", status: "Posted" },
     ],
-    sideTitle: "Kontrol Koreksi",
-    sideItems: ["Qty sistem", "Qty fisik", "Alasan koreksi", "Update HPP aman"],
+    sideTitle: "Stock Opname & Penyesuaian",
+    sideItems: ["Pencocokan stok fisik display", "Identifikasi barang selisih", "Alasan selisih & catatan kru", "Penyesuaian saldo sistem"],
   },
   cashIn: {
     section: "Keuangan",
     primaryAction: "Tambah Kas Masuk",
-    stats: [{ label: "Kas Masuk", value: "Rp 12,8 jt" }, { label: "Transaksi", value: "18" }, { label: "Manual", value: "3" }],
+    stats: [{ label: "Kas Masuk Hari Ini", value: "Rp 14,2 jt" }, { label: "Transaksi POS", value: "147 Nota" }, { label: "Pelunasan UMKM", value: "2" }],
     columns: ["no", "tanggal", "sumber", "keterangan", "jumlah", "status"],
     rows: [
-      { no: "CIN-000031", tanggal: "31/08/2026", sumber: "Pembayaran Customer", keterangan: "SAL-000086", jumlah: 500000, status: "Posted" },
+      { no: "CIN-000031", tanggal: "31/08/2026", sumber: "Setoran Kasir Toko Irian", keterangan: "Pendapatan POS Shift Siang", jumlah: 8450000, status: "Posted" },
+      { no: "CIN-000032", tanggal: "31/08/2026", sumber: "Transfer Pelunasan Piutang", keterangan: "Catering Berkah Klaten (SAL-000088)", jumlah: 1000000, status: "Posted" },
     ],
-    sideTitle: "Sumber Kas",
-    sideItems: ["Pembayaran piutang", "Setoran kasir", "Penerimaan manual"],
+    sideTitle: "Penerimaan Kas & Bank",
+    sideItems: ["Setoran kasir POS tunai/QRIS", "Pelunasan piutang grosir UMKM", "Penerimaan transfer BCA/Mandiri", "Buku kas operasional"],
   },
   cashOut: {
     section: "Keuangan",
     primaryAction: "Tambah Kas Keluar",
-    stats: [{ label: "Kas Keluar", value: "Rp 4,8 jt" }, { label: "Transaksi", value: "11" }, { label: "Supplier", value: "4" }],
+    stats: [{ label: "Kas Keluar Hari Ini", value: "Rp 4,5 jt" }, { label: "Bayar Supplier", value: "Rp 4,0 jt" }, { label: "Biaya Toko", value: "Rp 500 rb" }],
     columns: ["no", "tanggal", "tujuan", "keterangan", "jumlah", "status"],
     rows: [
-      { no: "COUT-000014", tanggal: "31/08/2026", tujuan: "Supplier Nasional", keterangan: "Angsuran PUR-000044", jumlah: 750000, status: "Posted" },
+      { no: "COUT-000014", tanggal: "31/08/2026", tujuan: "PT Sinar Joyoboyo Plastik", keterangan: "Angsuran Faktur PUR-000044", jumlah: 4000000, status: "Posted" },
+      { no: "COUT-000015", tanggal: "31/08/2026", tujuan: "Operasional Toko Irian", keterangan: "Bensin Armada Truk & Konsumsi Kru", jumlah: 500000, status: "Posted" },
     ],
-    sideTitle: "Pengeluaran",
-    sideItems: ["Bayar supplier", "Biaya operasional", "Kas/bank"],
+    sideTitle: "Pengeluaran Kas & Hutang",
+    sideItems: ["Pelunasan faktur pabrik plastik", "Biaya bahan bakar & armada antar", "Listrik & operasional toko", "Biaya gaji & konsumsi kru"],
   },
   brands: {
     section: "Inventaris",
     primaryAction: "Tambah Merk",
-    stats: [{ label: "Merk", value: "16" }, { label: "SKU", value: "28" }, { label: "Aktif", value: "16" }],
+    stats: [{ label: "Merk Terdaftar", value: "18" }, { label: "Merk Utama", value: "9" }, { label: "Status", value: "Aktif" }],
     columns: ["kode", "merk", "kategori", "sku", "status"],
     rows: [
-      { kode: "BR-001", merk: "Beras Kita", kategori: "Sembako", sku: 8, status: "Aktif" },
-      { kode: "BR-002", merk: "Bimoli", kategori: "Sembako", sku: 6, status: "Aktif" },
+      { kode: "BR-OZA", merk: "Oza Pack", kategori: "Cup & Minuman", sku: 24, status: "Aktif" },
+      { kode: "BR-STAR", merk: "Starindo", kategori: "Kemasan Makanan", sku: 28, status: "Aktif" },
+      { kode: "BR-BWG", merk: "Bawang Super", kategori: "Plastik & Kresek", sku: 32, status: "Aktif" },
+      { kode: "BR-WYG", merk: "Wayang", kategori: "Plastik & Kresek", sku: 18, status: "Aktif" },
+      { kode: "BR-DMR", merk: "Daimaru", kategori: "Perlengkapan Packing", sku: 12, status: "Aktif" },
+      { kode: "BR-KRAFT", merk: "EcoKraft", kategori: "Kemasan Makanan", sku: 16, status: "Aktif" },
     ],
-    sideTitle: "Merk Produk",
-    sideItems: ["Kode merk", "Nama merk", "Kategori terkait"],
+    sideTitle: "Manajemen Merk & Pabrik",
+    sideItems: ["Merk plastik terkenal (Bawang, Wayang)", "Merk kemasan (Starindo, EcoKraft)", "Merk cup minuman (Oza)", "Merk isolasi (Daimaru)"],
   },
   units: {
     section: "Inventaris",
     primaryAction: "Tambah Satuan",
-    stats: [{ label: "Satuan", value: "9" }, { label: "Multi-unit", value: "12 SKU" }, { label: "Konversi", value: "Aktif" }],
+    stats: [{ label: "Satuan Terdaftar", value: "8" }, { label: "Konversi Multi-UOM", value: "Aktif" }, { label: "Satuan Dasar", value: "Pack / Pcs" }],
     columns: ["kode", "satuan", "konversi", "digunakanPada", "status"],
     rows: [
-      { kode: "PCS", satuan: "Pieces", konversi: "1 pcs", digunakanPada: "Penjualan", status: "Aktif" },
-      { kode: "KRT", satuan: "Karton", konversi: "24 pcs", digunakanPada: "Pembelian", status: "Aktif" },
+      { kode: "PACK", satuan: "Pack", konversi: "1 pack = 50 pcs", digunakanPada: "Penjualan Retail & Grosir", status: "Aktif" },
+      { kode: "DUS", satuan: "Dus / Karton", konversi: "1 dus = 20 pack", digunakanPada: "Pembelian Pabrik", status: "Aktif" },
+      { kode: "BALL", satuan: "Ball", konversi: "1 ball = 40 pack", digunakanPada: "Grosir Plastik", status: "Aktif" },
+      { kode: "ROLL", satuan: "Roll", konversi: "1 roll = 50 meter / 10 kg", digunakanPada: "Plastik Roll & Bubble", status: "Aktif" },
+      { kode: "KG", satuan: "Kilogram", konversi: "1 kg", digunakanPada: "Tepung Panir & Biji Plastik", status: "Aktif" },
+      { kode: "PCS", satuan: "Pieces (Satuan)", konversi: "1 pcs", digunakanPada: "Eceran Kasir POS", status: "Aktif" },
     ],
-    sideTitle: "Konversi UOM",
-    sideItems: ["Satuan dasar", "Satuan beli", "Satuan jual"],
+    sideTitle: "Standar Satuan & Konversi",
+    sideItems: ["Konversi dus ke pack", "Konversi ball ke pack", "Satuan panjang roll & berat kg", "Satuan terkecil pcs"],
   },
   reports: {
     section: "Reporting",
-    primaryAction: "Generate Laporan",
-    stats: [{ label: "Laporan", value: "24" }, { label: "Export", value: "CSV/XLS" }, { label: "Periode", value: "Agustus 2026" }],
+    primaryAction: "Export Laporan",
+    stats: [{ label: "Laporan Eksekutif", value: "24" }, { label: "Format", value: "PDF/XLS" }, { label: "Sinkronisasi", value: "Realtime" }],
     columns: ["kode", "laporan", "kategori", "periode", "status"],
     rows: [
-      { kode: "RPT-INV", laporan: "Stok Barang & Kartu Stok", kategori: "Inventaris", periode: "Realtime", status: "Ready" },
-      { kode: "RPT-PUR", laporan: "Rekap Pembelian & Retur", kategori: "Pembelian", periode: "Bulanan", status: "Ready" },
-      { kode: "RPT-SALES", laporan: "Penjualan, Omset, Kasir", kategori: "Penjualan", periode: "Harian", status: "Ready" },
+      { kode: "RPT-STK-01", laporan: "Analisis Persediaan & Valuasi Multi-Gudang", kategori: "Inventaris", periode: "Realtime", status: "Ready" },
+      { kode: "RPT-SAL-01", laporan: "Rekap Penjualan Harian Kasir & Grosir UMKM", kategori: "Penjualan", periode: "Harian", status: "Ready" },
+      { kode: "RPT-PUR-01", laporan: "Laporan Pembelian Pabrik & Monitoring TOP", kategori: "Pembelian", periode: "Bulanan", status: "Ready" },
+      { kode: "RPT-FIN-01", laporan: "Arus Kas Masuk, Keluar & Margin Laba Bersih", kategori: "Keuangan", periode: "Bulanan", status: "Ready" },
+      { kode: "RPT-RST-01", laporan: "Smart Restock Recommendation & Slow Moving", kategori: "Inventaris", periode: "Mingguan", status: "Ready" },
     ],
-    sideTitle: "Kategori Laporan",
-    sideItems: ["Inventaris", "Pembelian", "Penjualan & omset", "Keuangan", "Operasional"],
+    sideTitle: "Laporan Strategis Owner",
+    sideItems: ["Analisis turnover stok packaging", "Laba kotor per kategori barang", "Monitoring piutang UMKM kuliner", "Rekomendasi pemesanan pabrik"],
   },
   reprints: {
     section: "Dokumen",
-    primaryAction: "Cari Nota",
-    stats: [{ label: "Nota Jual", value: "184" }, { label: "Nota Beli", value: "44" }, { label: "Retur", value: "17" }],
+    primaryAction: "Cari Dokumen",
+    stats: [{ label: "Nota POS", value: "147" }, { label: "Faktur Grosir", value: "32" }, { label: "Faktur Pabrik", value: "18" }],
     columns: ["no", "tanggal", "tipe", "partner", "total", "status"],
     rows: [
-      { no: "POS-000184", tanggal: "31/08/2026", tipe: "Nota Penjualan", partner: "Pelanggan Umum", total: 186500, status: "Printable" },
-      { no: "PUR-000044", tanggal: "31/08/2026", tipe: "Nota Pembelian", partner: "Supplier Nasional", total: 4850000, status: "Printable" },
+      { no: "POS-000184", tanggal: "31/08/2026", tipe: "Nota Penjualan POS", partner: "Pelanggan Umum (Walk-in)", total: 85500, status: "Printable" },
+      { no: "SAL-000091", tanggal: "31/08/2026", tipe: "Faktur Penjualan Grosir", partner: "Warung Makan Bu Aminah", total: 3420000, status: "Printable" },
+      { no: "PUR-000044", tanggal: "31/08/2026", tipe: "Faktur Pembelian Pabrik", partner: "PT Sinar Joyoboyo Plastik", total: 8450000, status: "Printable" },
     ],
-    sideTitle: "Jenis Dokumen",
-    sideItems: ["Nota Penjualan", "Nota Retur Penjualan", "Nota Pembelian", "Nota Retur Pembelian"],
+    sideTitle: "Cetak Ulang Dokumen",
+    sideItems: ["Nota thermal kasir 58/80mm", "Invoice / faktur penjualan A4/F4", "Surat jalan pengiriman barang", "Bukti tanda terima retur"],
   },
 };
 
@@ -684,126 +777,127 @@ function getFieldPlaceholder(kind: DemoKind, column: string): string {
   if (kind === "adjustments") {
     if (column === "qtySistem") return "Contoh: 24 pcs (stok tercatat di sistem)";
     if (column === "qtyFisik") return "Contoh: 20 pcs (hasil hitung fisik di rak)";
-    if (column === "produk") return "Contoh: Minyak Goreng Bimoli 1 L";
-    if (column === "gudang") return "Contoh: Toko Utama / Rak Display 01";
+    if (column === "produk") return "Contoh: Cup Plastik PP 16oz Oza / Mika Bento 4 Sekat";
+    if (column === "gudang") return "Contoh: Toko Utama (Irian) / Gudang Logistik Pusat";
   }
 
   if (kind === "repack") {
-    if (column === "input") return "Contoh: 1 Sak Beras 50 kg (induk/karung besar)";
-    if (column === "output") return "Contoh: 10 Kemasan @ 5 kg (kemasan ecer)";
-    if (column === "nilai") return "Contoh: 650000 (alokasi HPP bahan)";
+    if (column === "input") return "Contoh: 1 Dus Cup Plastik 16oz (isi 20 pack)";
+    if (column === "output") return "Contoh: 20 Pack (1.000 Pcs kemasan ecer)";
+    if (column === "nilai") return "Contoh: 240000 (alokasi HPP bahan)";
   }
 
   if (kind === "stockTransfers") {
-    if (column === "asal") return "Contoh: Gudang Utama (Transit)";
-    if (column === "tujuan") return "Contoh: Toko Utama (Display Depan)";
-    if (column === "item") return "Contoh: Beras Premium 5 kg (20 sak)";
+    if (column === "asal") return "Contoh: Gudang Logistik Pusat";
+    if (column === "tujuan") return "Contoh: Toko Utama (Irian) / Gatotkoco 2 (Krapyak)";
+    if (column === "item") return "Contoh: Cup 16oz (20 pack), Kresek HDPE (50 pack)";
   }
 
   if (kind === "stockIssues") {
-    if (column === "keperluan") return "Contoh: Rusak / Kadaluarsa / Sample promosi";
-    if (column === "item") return "Contoh: Susu UHT 1 L (3 kotak)";
+    if (column === "keperluan") return "Contoh: Mika Pecah / Reject Pabrik / Sample Display";
+    if (column === "item") return "Contoh: Mika Bento 4 Sekat (2 pack)";
   }
 
   if (kind === "suppliers") {
     if (column === "kode") return "Contoh: SUP-001";
-    if (column === "nama") return "Contoh: PT Distributor Sentosa Abadi";
-    if (column === "alamat") return "Contoh: Jl. Pergudangan Kamal No. 18, Jakarta Barat";
-    if (column === "kota") return "Contoh: Jakarta Barat";
-    if (column === "telp") return "Contoh: 0812-9876-5432 / (021) 555-1234";
+    if (column === "nama") return "Contoh: PT Sinar Joyoboyo Plastik / CV Starindo";
+    if (column === "alamat") return "Contoh: Kawasan Industri Rungkut / Palur Raya";
+    if (column === "kota") return "Contoh: Surabaya / Surakarta / Semarang";
+    if (column === "telp") return "Contoh: 0812-3000-1122 / (0271) 654-321";
   }
 
   if (kind === "customers") {
     if (column === "kode") return "Contoh: CUST-001";
-    if (column === "nama") return "Contoh: Toko Sejahtera / Retail Partner A";
-    if (column === "alamat") return "Contoh: Jl. Ahmad Yani No. 12 Pasar Lama";
-    if (column === "kota") return "Contoh: Bandung";
-    if (column === "telp") return "Contoh: 0857-1122-3344";
-    if (column === "grup") return "Contoh: Grosir / Retail Walk-in / Member VIP";
+    if (column === "nama") return "Contoh: Warung Makan Bu Aminah / Kedai Kopi Selaras";
+    if (column === "alamat") return "Contoh: Jl. Pandanrejo No. 12 / Krapyak";
+    if (column === "kota") return "Contoh: Klaten Tengah / Klaten Selatan";
+    if (column === "telp") return "Contoh: 0877-1234-5678";
+    if (column === "grup") return "Contoh: Grosir UMKM / Retail Walk-in / Tempo 14 Hari";
   }
 
   if (kind === "salesPeople") {
     if (column === "kode") return "Contoh: SLS-001";
-    if (column === "nama") return "Contoh: Andi Pratama";
-    if (column === "hp") return "Contoh: 0813-2233-4455";
-    if (column === "alamat") return "Contoh: Jl. Kebon Jeruk No. 8, Jakarta Barat";
-    if (column === "area") return "Contoh: Jabodetabek / Jakarta Barat";
+    if (column === "nama") return "Contoh: Budi Santoso / Siti Rahayu";
+    if (column === "hp") return "Contoh: 0877-4400-1122";
+    if (column === "alamat") return "Contoh: Pandanrejo / Merbung, Klaten";
+    if (column === "area") return "Contoh: Toko Utama (Irian) / Gatotkoco 2 (Krapyak)";
   }
 
   if (kind === "warehouses") {
-    if (column === "kode") return "Contoh: WH-001";
-    if (column === "lokasi") return "Contoh: Toko Utama (Kasir & Display)";
-    if (column === "keterangan") return "Contoh: Lokasi penjualan langsung lantai 1";
+    if (column === "kode") return "Contoh: WH-IRIAN / WH-GUDANG";
+    if (column === "lokasi") return "Contoh: Toko Utama (Irian) / Gatotkoco 2 (Krapyak)";
+    if (column === "keterangan") return "Contoh: Jl. Irian No.8, Klaten Tengah (Display & Kasir)";
   }
 
   if (kind === "products" || kind === "stock") {
-    if (column === "kode") return "Contoh: SKU-001 / 8992753123456 (Barcode)";
-    if (column === "nama") return "Contoh: Beras Pandan Wangi Premium 5 kg";
-    if (column === "kategori") return "Contoh: Sembako / Beras";
-    if (column === "merk") return "Contoh: Beras Kita / Bimoli / Kapal Api";
-    if (column === "satuan") return "Contoh: Sak / Karton / Botol / Pcs";
-    if (column === "hpp") return "Contoh: 65000 (Harga beli supplier)";
-    if (column === "ecer") return "Contoh: 72000 (Harga kasir walk-in)";
-    if (column === "grosir") return "Contoh: 68500 (Harga mitra grosir)";
+    if (column === "kode") return "Contoh: SKU-CUP-16OZ / 8991001 (Barcode)";
+    if (column === "nama") return "Contoh: Cup Plastik PP 16oz Oza Slim (Isi 50 pcs)";
+    if (column === "kategori") return "Contoh: Cup & Minuman / Kemasan Makanan";
+    if (column === "merk") return "Contoh: Oza Pack / Starindo / Bawang / Daimaru";
+    if (column === "satuan") return "Contoh: Pack / Dus / Roll / Ball / Pcs / Kg";
+    if (column === "hpp") return "Contoh: 12000 (Harga beli supplier)";
+    if (column === "ecer") return "Contoh: 15000 (Harga eceran kasir)";
+    if (column === "grosir") return "Contoh: 13200 (Harga mitra grosir/UMKM)";
   }
 
   if (kind === "purchases") {
     if (column === "no") return "Contoh: PUR-202608-0044";
-    if (column === "supplier") return "Contoh: PT Distributor Sentosa";
-    if (column === "faktur") return "Contoh: INV-SUP-8841/VIII/2026";
-    if (column === "top") return "Contoh: TOP 14 Hari / Tunai / Transfer BCA";
-    if (column === "gudang") return "Contoh: Gudang Utama (Pusat)";
-    if (column === "total") return "Contoh: 4850000";
+    if (column === "supplier") return "Contoh: PT Sinar Joyoboyo Plastik";
+    if (column === "faktur") return "Contoh: INV-SJP-9941/VIII/2026";
+    if (column === "top") return "Contoh: TOP 30 Hari / TOP 14 Hari / Tunai";
+    if (column === "gudang") return "Contoh: Gudang Logistik Pusat / Toko Utama";
+    if (column === "total") return "Contoh: 8450000";
   }
 
   if (kind === "sales") {
     if (column === "no") return "Contoh: SAL-202608-0091";
-    if (column === "pelanggan") return "Contoh: Retail Partner A / Pelanggan Umum";
-    if (column === "jenis") return "Contoh: Penjualan Grosir / Delivery / POS";
-    if (column === "gudang") return "Contoh: Toko Utama / Gudang Pusat";
+    if (column === "pelanggan") return "Contoh: Warung Makan Bu Aminah / Kedai Kopi Selaras";
+    if (column === "jenis") return "Contoh: Penjualan Grosir / POS Kasir / Delivery";
+    if (column === "gudang") return "Contoh: Toko Utama (Irian) / Gudang Pusat";
     if (column === "total") return "Contoh: 3420000";
   }
 
   if (kind === "purchaseReturns" || kind === "salesReturns") {
     if (column === "no") return kind === "purchaseReturns" ? "Contoh: RET-P-000006" : "Contoh: RET-S-000011";
-    if (column === "notaAsal") return kind === "purchaseReturns" ? "Contoh: PUR-000044 (No. Faktur Pembelian)" : "Contoh: POS-000184 (No. Nota Penjualan)";
-    if (column === "gudang") return "Contoh: Toko Utama / Gudang Utama";
-    if (column === "total") return "Contoh: 240000";
+    if (column === "notaAsal") return kind === "purchaseReturns" ? "Contoh: PUR-000044 (Faktur Beli Pabrik)" : "Contoh: POS-000184 (Nota Kasir Jual)";
+    if (column === "gudang") return "Contoh: Toko Utama (Irian) / Gudang Pusat";
+    if (column === "total") return "Contoh: 340000";
   }
 
   if (kind === "payables" || kind === "receivables") {
     if (column === "no") return "Contoh: INV-202608-0044";
-    if (column === "total") return "Contoh: 4850000";
-    if (column === "terbayar") return "Contoh: 2500000 (Nominal yang sudah dibayar)";
-    if (column === "sisa") return "Contoh: 2350000 (Sisa kewajiban)";
+    if (column === "total") return "Contoh: 8450000";
+    if (column === "terbayar") return "Contoh: 4000000 (Nominal yang sudah dibayar)";
+    if (column === "sisa") return "Contoh: 4450000 (Sisa kewajiban)";
   }
 
   if (kind === "cashIn" || kind === "cashOut") {
     if (column === "no") return kind === "cashIn" ? "Contoh: CIN-202608-0031" : "Contoh: COUT-202608-0014";
-    if (column === "sumber") return "Contoh: Pembayaran Piutang Customer / Setoran Kasir";
-    if (column === "tujuan") return "Contoh: Pembayaran Faktur Supplier / Biaya Listrik Toko";
-    if (column === "keterangan") return "Contoh: Pembayaran invoice INV-8841 via transfer bank";
-    if (column === "jumlah") return "Contoh: 750000";
+    if (column === "sumber") return "Contoh: Setoran Kasir Toko Irian / Pelunasan UMKM";
+    if (column === "tujuan") return "Contoh: Pembayaran Faktur Pabrik / Bensin Armada Toko";
+    if (column === "keterangan") return "Contoh: Pembayaran faktur INV-SJP-9941 via transfer BCA";
+    if (column === "jumlah") return "Contoh: 4000000";
   }
 
   if (kind === "categories") {
-    if (column === "kode") return "Contoh: CAT-001";
-    if (column === "kategori") return "Contoh: Sembako / Bahan Pokok";
-    if (column === "subKategori") return "Contoh: Beras, Minyak Goreng, Gula Pasir";
-    if (column === "jumlahSku") return "Contoh: 12";
+    if (column === "kode") return "Contoh: CAT-FOOD";
+    if (column === "kategori") return "Contoh: Kemasan Makanan & Bento";
+    if (column === "subKategori") return "Contoh: Mika Bento, Thinwall, Paper Lunch Box";
+    if (column === "jumlahSku") return "Contoh: 42";
   }
 
   if (kind === "brands") {
-    if (column === "kode") return "Contoh: BR-001";
-    if (column === "merk") return "Contoh: Indomie / Bimoli / Kapal Api";
-    if (column === "kategori") return "Contoh: Makanan Instan / Sembako";
+    if (column === "kode") return "Contoh: BR-OZA";
+    if (column === "merk") return "Contoh: Oza Pack / Starindo / Daimaru";
+    if (column === "kategori") return "Contoh: Cup & Minuman / Kemasan Makanan";
+    if (column === "sku") return "Contoh: 24";
   }
 
   if (kind === "units") {
-    if (column === "kode") return "Contoh: PCS / KRT / LSN / SAK";
-    if (column === "satuan") return "Contoh: Pieces / Karton / Lusin / Sak";
-    if (column === "konversi") return "Contoh: 1 Karton = 24 Pcs";
-    if (column === "digunakanPada") return "Contoh: Transaksi Pembelian & Penjualan";
+    if (column === "kode") return "Contoh: PACK / DUS / BALL / ROLL / PCS";
+    if (column === "satuan") return "Contoh: Pack / Dus / Ball / Roll / Pieces";
+    if (column === "konversi") return "Contoh: 1 Dus = 20 Pack / 1 Pack = 50 Pcs";
+    if (column === "digunakanPada") return "Contoh: Penjualan Retail & Grosir";
   }
 
   if (kind === "settings") {
@@ -1028,8 +1122,8 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
         jatuhTempo: row.jatuhTempo ? String(row.jatuhTempo) : "-",
         status: String(row.status ?? "Open"),
         items: [
-          { sku: "SKU-001", name: "Beras Premium 5 kg", qty: 2, unit: "sak", price: 72000, subtotal: 144000 },
-          { sku: "SKU-014", name: "Minyak Goreng 1 L", qty: 3, unit: "karton", price: 17000, subtotal: 51000 },
+          { sku: "SKU-CUP-16OZ", name: "Cup Plastik PP 16oz Oza (50 pcs)", qty: 2, unit: "pack", price: 15000, subtotal: 30000 },
+          { sku: "SKU-KRESEK-15", name: "Kresek HDPE Bening 15x30 (500 gr)", qty: 3, unit: "pack", price: 12500, subtotal: 37500 },
         ],
         subtotal: total,
         diskon: 0,
