@@ -20,7 +20,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       if (wsError) throw wsError;
       const { error } = await supabase.rpc("reset_demo_workspace", { p_workspace: data.workspace_id });
       if (error) throw error;
-      setMsg("Data demo sudah di-reset.");
+      setMsg("Data demo sudah di-reset");
       window.location.reload();
     } catch (e: unknown) {
       setMsg(e instanceof Error ? e.message : String(e));
@@ -33,35 +33,35 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <div className="shell">
       <Sidebar />
       <div className="shell-main">
-        <header className="shell-header">
-          <div>
-            <div className="header-eyebrow">MODE DEMO</div>
-            <div className="header-title">Berkah Plastik &amp; Packaging</div>
+        <header className="topbar">
+          <div className="workspace">
+            <div className="crumb">Workspace Demo</div>
+            <div className="business">Berkah Plastik &amp; Packaging</div>
           </div>
-          <div className="header-actions">
-            {msg && <span className="header-msg">{msg}</span>}
-            <button className="btn-secondary" onClick={() => window.location.href = "/reports"}>Start Guided Tour</button>
-            <button className="btn-danger" disabled={busy} onClick={resetDemo}>{busy ? "Reset..." : "Reset Data Demo"}</button>
+          <div className="top-actions">
+            {msg && <span className="message">{msg}</span>}
+            <button className="tour" onClick={() => window.location.href = "/reports"}>Guided Tour</button>
+            <button className="reset" disabled={busy} onClick={resetDemo}>{busy ? "Resetting" : "Reset Demo"}</button>
           </div>
         </header>
-        <main className="shell-content">{children}</main>
+        <main className="content">{children}</main>
       </div>
 
       <style jsx>{`
         .shell { display: flex; min-height: 100vh; background: var(--bg); }
         .shell-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-        .shell-header { background: var(--panel); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm); gap: 16px; }
-        .header-eyebrow { font-size: 10px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; color: var(--amber); }
-        .header-title { font-size: 13px; font-weight: 700; }
-        .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
-        .header-msg { color: var(--muted); font-size: 12px; font-weight: 700; }
-        .btn-secondary { font-size: 12px; font-weight: 700; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel); color: var(--text); }
-        .btn-secondary:hover { background: var(--panel-2); }
-        .btn-danger { font-size: 12px; font-weight: 800; padding: 7px 12px; border-radius: 8px; border: 1px solid rgba(220, 38, 38, 0.2); background: var(--red-soft); color: var(--red); }
-        .btn-danger:hover:not(:disabled) { background: var(--red); color: white; }
-        .btn-danger:disabled { opacity: .6; cursor: not-allowed; }
-        .shell-content { flex: 1; overflow: auto; }
-        @media (max-width: 860px) { .shell { display: block; } .shell-header { padding: 10px 14px; align-items: flex-start; } }
+        .topbar { position: sticky; top: 0; z-index: 10; height: 62px; background: rgba(255,255,255,.86); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+        .crumb { color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .65px; text-transform: uppercase; }
+        .business { margin-top: 2px; color: var(--ink); font-size: 15px; font-weight: 820; letter-spacing: -.15px; }
+        .top-actions { display: flex; align-items: center; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
+        .message { color: var(--text-2); font-size: 12px; font-weight: 720; }
+        .tour, .reset { border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 780; border: 1px solid var(--border); background: #fff; color: var(--text); box-shadow: var(--shadow-sm); }
+        .tour:hover { background: var(--panel-2); }
+        .reset { border-color: #f3c9c9; background: #fff6f6; color: var(--red); }
+        .reset:hover:not(:disabled) { background: var(--red); border-color: var(--red); color: #fff; }
+        .reset:disabled { opacity: .6; cursor: not-allowed; }
+        .content { flex: 1; min-width: 0; overflow: auto; }
+        @media (max-width: 860px) { .shell { display: block; } .topbar { height: auto; min-height: 58px; padding: 10px 14px; align-items: flex-start; } .tour { display: none; } }
       `}</style>
     </div>
   );

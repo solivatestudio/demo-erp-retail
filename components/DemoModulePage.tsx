@@ -46,6 +46,23 @@ function moneyColumn(name: string) {
   return /amount|total|price|cost|value|limit|outstanding|paid/.test(name);
 }
 
+function statusClass(value: string) {
+  const v = value.toUpperCase();
+  if (["PAID", "FULL", "POSTED", "AKTIF"].includes(v)) return "good";
+  if (["PARTIAL", "RETURNED_PARTIAL", "PENDING", "NONE", "UNPAID"].includes(v)) return "warn";
+  if (["CANCELLED", "NONAKTIF"].includes(v)) return "bad";
+  return "neutral";
+}
+
+function labelFor(key: string) {
+  return key
+    .replace("customer_groups", "group")
+    .replace("warehouses", "gudang")
+    .replace("suppliers", "supplier")
+    .replace("customers", "customer")
+    .replaceAll("_", " ");
+}
+
 export default function DemoModulePage({ kind, title, description }: { kind: DemoKind; title: string; description: string }) {
   const supabase = useMemo(() => createClient(), []);
   const [ref, setRef] = useState<RefData | null>(null);
@@ -203,6 +220,15 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
     a.href = url; a.download = kind + ".csv"; a.click(); URL.revokeObjectURL(url);
   };
 
+  const renderCell = (key: string, value: any) => {
+    if (moneyColumn(key) && typeof value === "number") return <span className="money">{formatRupiah(value)}</span>;
+    const rendered = text(value);
+    if (/status|type|reason|active/.test(key)) return <span className={"pill " + statusClass(rendered)}>{rendered}</span>;
+    if (/number|code|barcode/.test(key)) return <span className="code">{rendered}</span>;
+    if (/qty|min/.test(key) && typeof value === "number") return <span className="num strong">{formatNumber(value)}</span>;
+    return rendered;
+  };
+
   const actions = <div className="actions">
     {kind in MASTER && <button onClick={addMaster} disabled={busy}>Tambah Demo</button>}
     {kind === "purchases" && <button onClick={purchase} disabled={busy}>Post Pembelian</button>}
@@ -222,11 +248,24 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
     {filtered.length > 0 && <button onClick={exportCsv} disabled={busy}>Export CSV</button>}
   </div>;
 
-  if (loading) return <div className="module"><div className="empty">Memuat data...</div><style jsx>{`.module{padding:24px}.empty{color:var(--muted)}`}</style></div>;
+  if (loading) return <div className="module"><div className="skeleton">Memuat data operasional...</div><style jsx>{`.module{padding:24px}.skeleton{height:220px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(90deg,#fff,#f5f7f9,#fff);display:grid;place-items:center;color:var(--muted);font-weight:750}`}</style></div>;
 
   return <div className="module">
-    <div className="head"><div><h1>{title}</h1><p>{description}</p></div>{actions}</div>
+    <section className="hero">
+      <div>
+        <div className="eyebrow">ERP RETAIL / GROSIR</div>
+        <h1>{title}</h1>
+        <p>{description}</p>
+      </div>
+      {actions}
+    </section>
     {(notice || error) && <div className={error ? "notice error" : "notice"}>{error || notice}</div>}
+    {kind !== "reports" && kind !== "settings" && <div className="insight-row">
+      <div className="insight"><span>Baris data</span><strong>{formatNumber(filtered.length)}</strong></div>
+      <div className="insight"><span>Total omset</span><strong>{formatRupiah(totals.sales)}</strong></div>
+      <div className="insight"><span>Piutang</span><strong>{formatRupiah(totals.ar)}</strong></div>
+      <div className="insight"><span>Hutang</span><strong>{formatRupiah(totals.ap)}</strong></div>
+    </div>}
     {kind === "reports" || kind === "settings" ? <div className="report-grid">
       <div className="metric"><span>Omset total demo</span><strong>{formatRupiah(totals.sales)}</strong></div>
       <div className="metric"><span>Piutang aktif</span><strong>{formatRupiah(totals.ar)}</strong></div>
@@ -235,11 +274,57 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
       <div className="panel wide"><h2>Laporan tersedia</h2><div className="report-list">{["Stock Summary","Kartu Stok","Koreksi Stok","Pembelian","Retur Pembelian","Angsuran Supplier","Penjualan","Retur Penjualan","Omset Per Nota","Penjualan Kasir","Laba Per Nota","Angsuran Customer","Pengeluaran Barang","Barang Tidak Terkirim"].map((x) => <span key={x}>{x}</span>)}</div></div>
       <div className="panel wide"><h2>Quick links</h2><div className="links"><Link href="/pos">POS</Link><Link href="/purchases">Pembelian</Link><Link href="/delivery">Delivery</Link><Link href="/inventory/repack">Repack</Link><Link href="/reports">Laporan</Link></div></div>
     </div> : <>
-      <div className="toolbar"><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cari data..." /><span>{filtered.length} baris</span></div>
-      <div className="table-wrap"><table><thead><tr>{columns.map((c) => <th key={c}>{c.replaceAll("_", " ")}</th>)}</tr></thead><tbody>{filtered.map((row, i) => <tr key={i}>{columns.map((c) => <td key={c}>{typeof row[c] === "number" && moneyColumn(c) ? formatRupiah(row[c]) : text(row[c])}</td>)}</tr>)}</tbody></table></div>
+      <div className="toolbar"><div><div className="toolbar-title">Data Workspace</div><div className="toolbar-sub">Realtime dari Supabase, dibatasi RLS workspace.</div></div><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cari nomor, nama, status..." /></div>
+      <div className="table-wrap"><table><thead><tr>{columns.map((c) => <th key={c}>{labelFor(c)}</th>)}</tr></thead><tbody>{filtered.map((row, i) => <tr key={i}>{columns.map((c) => <td key={c}>{renderCell(c, row[c])}</td>)}</tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">Tidak ada data sesuai pencarian.</div>}</div>
     </>}
     <style jsx>{`
-      .module{padding:24px;max-width:1280px;margin:0 auto}.head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:16px}h1{margin:0;font-size:22px}p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.5}.actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}button,.links a{border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:8px;padding:9px 12px;font-size:12px;font-weight:700;text-decoration:none}button:hover,.links a:hover{background:var(--panel-2)}button:disabled{opacity:.55;cursor:not-allowed}.danger{background:var(--red-soft);color:var(--red);border-color:rgba(220,38,38,.2)}.notice{background:var(--green-soft);color:var(--green);border:1px solid rgba(5,150,105,.18);padding:10px 12px;border-radius:8px;margin-bottom:14px;font-size:13px;font-weight:700}.notice.error{background:var(--red-soft);color:var(--red);border-color:rgba(220,38,38,.18)}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 0}.toolbar input{width:320px;max-width:100%;border:1px solid var(--border);border-radius:8px;background:var(--panel);padding:10px 12px;color:var(--text)}.toolbar span{color:var(--muted);font-size:12px;font-weight:700}.table-wrap{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:auto;box-shadow:var(--shadow-sm)}table{width:100%;border-collapse:collapse;font-size:13px}th{background:var(--panel-2);color:var(--muted);font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.4px;padding:11px 12px;white-space:nowrap}td{padding:11px 12px;border-top:1px solid var(--border);white-space:nowrap}tr:hover td{background:#fafcff}.report-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.metric,.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow-sm)}.metric span{display:block;color:var(--muted);font-size:12px;font-weight:700;margin-bottom:8px}.metric strong{font-size:20px}.wide{grid-column:span 4}.panel h2{margin:0 0 12px;font-size:14px}.report-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}.report-list span{background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:12px;font-weight:700;color:var(--text-2)}.links{display:flex;flex-wrap:wrap;gap:8px}@media(max-width:900px){.head{display:block}.actions{justify-content:flex-start;margin-top:12px}.report-grid{grid-template-columns:1fr}.wide{grid-column:auto}.module{padding:16px}}
-    `}</style>
+      .module { padding: 24px; max-width: 1320px; margin: 0 auto; }
+      .hero { border: 1px solid var(--border); border-radius: 14px; padding: 18px; background: linear-gradient(180deg, #ffffff, #fafbfc); box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; margin-bottom: 14px; }
+      .eyebrow { color: var(--accent); font-size: 10px; font-weight: 900; letter-spacing: .9px; text-transform: uppercase; margin-bottom: 7px; }
+      h1 { margin: 0; font-size: 24px; line-height: 1.15; letter-spacing: -.35px; color: var(--ink); }
+      p { margin: 7px 0 0; color: var(--text-2); font-size: 13px; line-height: 1.5; max-width: 700px; }
+      .actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; min-width: 280px; }
+      button, .links a { border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 8px; padding: 9px 12px; min-height: 36px; font-size: 12px; font-weight: 800; text-decoration: none; box-shadow: var(--shadow-sm); }
+      button:first-child { background: #152033; color: #fff; border-color: #152033; }
+      button:hover, .links a:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+      button:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
+      .danger { background: #fff6f6 !important; color: var(--red) !important; border-color: #f0c2c2 !important; }
+      .notice { background: var(--green-soft); color: var(--green); border: 1px solid rgba(21,128,61,.18); padding: 11px 13px; border-radius: 10px; margin-bottom: 14px; font-size: 13px; font-weight: 760; }
+      .notice.error { background: var(--red-soft); color: var(--red); border-color: rgba(185,28,28,.18); }
+      .insight-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+      .insight { border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,.75); padding: 12px 13px; }
+      .insight span { display: block; color: var(--muted); font-size: 10px; font-weight: 850; letter-spacing: .55px; text-transform: uppercase; margin-bottom: 5px; }
+      .insight strong { color: var(--ink); font-size: 16px; font-weight: 860; }
+      .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin: 0; padding: 13px 14px; border: 1px solid var(--border); border-bottom: none; border-radius: 14px 14px 0 0; background: #fff; }
+      .toolbar-title { font-size: 13px; font-weight: 850; color: var(--ink); }
+      .toolbar-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+      .toolbar input { width: 340px; max-width: 100%; border: 1px solid var(--border); border-radius: 8px; background: var(--panel-2); padding: 10px 12px; color: var(--text); font-size: 13px; }
+      .table-wrap { background: var(--panel); border: 1px solid var(--border); border-radius: 0 0 14px 14px; overflow: auto; box-shadow: var(--shadow-sm); }
+      table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+      th { position: sticky; top: 0; z-index: 1; background: #f4f6f8; color: #687386; font-size: 10px; text-align: left; text-transform: uppercase; letter-spacing: .72px; padding: 11px 13px; white-space: nowrap; border-bottom: 1px solid var(--border); }
+      td { padding: 12px 13px; border-bottom: 1px solid #edf0f4; white-space: nowrap; color: var(--text-2); vertical-align: middle; }
+      tr:last-child td { border-bottom: none; }
+      tbody tr:hover td { background: #fbfcfd; color: var(--ink); }
+      .money { color: var(--ink); font-weight: 820; }
+      .strong { color: var(--ink); font-weight: 820; }
+      .code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; color: #233044; background: #eef2f6; border: 1px solid #e0e5ec; border-radius: 6px; padding: 3px 6px; }
+      .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 8px; font-size: 10px; font-weight: 900; letter-spacing: .35px; text-transform: uppercase; border: 1px solid transparent; }
+      .pill.good { background: var(--green-soft); color: var(--green); border-color: rgba(21,128,61,.15); }
+      .pill.warn { background: var(--amber-soft); color: var(--amber); border-color: rgba(180,83,9,.16); }
+      .pill.bad { background: var(--red-soft); color: var(--red); border-color: rgba(185,28,28,.16); }
+      .pill.neutral { background: var(--panel-3); color: var(--text-2); border-color: var(--border); }
+      .empty { padding: 34px; text-align: center; color: var(--muted); font-size: 13px; font-weight: 700; }
+      .report-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+      .metric, .panel { background: linear-gradient(180deg, #fff, #fbfcfd); border: 1px solid var(--border); border-radius: 14px; padding: 17px; box-shadow: var(--shadow-sm); }
+      .metric span { display: block; color: var(--muted); font-size: 11px; font-weight: 850; text-transform: uppercase; letter-spacing: .55px; margin-bottom: 8px; }
+      .metric strong { color: var(--ink); font-size: 22px; letter-spacing: -.25px; }
+      .wide { grid-column: span 4; }
+      .panel h2 { margin: 0 0 13px; font-size: 15px; color: var(--ink); }
+      .report-list { display: grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap: 9px; }
+      .report-list span { background: #f6f8fa; border: 1px solid var(--border); border-radius: 9px; padding: 11px 12px; font-size: 12px; font-weight: 780; color: var(--text-2); }
+      .links { display: flex; flex-wrap: wrap; gap: 9px; }
+      @media(max-width:900px){ .module{padding:14px}.hero{display:block}.actions{justify-content:flex-start;margin-top:14px;min-width:0}.insight-row,.report-grid{grid-template-columns:1fr 1fr}.wide{grid-column:span 2}.toolbar{display:block}.toolbar input{margin-top:10px;width:100%} }
+      @media(max-width:560px){ .insight-row,.report-grid{grid-template-columns:1fr}.wide{grid-column:auto} h1{font-size:21px} }    `}</style>
   </div>;
 }
+
