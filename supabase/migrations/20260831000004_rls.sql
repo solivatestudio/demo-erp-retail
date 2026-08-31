@@ -67,7 +67,29 @@ declare
 begin
   foreach t in array tables loop
     execute format('drop policy if exists "workspace_select" on public.%I', t);
-    execute format('create policy "workspace_select" on public.%I for select using (workspace_id in (select public.user_workspace_ids()))', t);
+    if t = 'purchase_items' then
+      execute 'create policy "workspace_select" on public.purchase_items for select using (exists (select 1 from public.purchases h where h.id = purchase_id and h.workspace_id in (select public.user_workspace_ids())))';
+    elsif t = 'purchase_return_items' then
+      execute 'create policy "workspace_select" on public.purchase_return_items for select using (exists (select 1 from public.purchase_returns h where h.id = return_id and h.workspace_id in (select public.user_workspace_ids())))';
+    elsif t = 'sale_items' then
+      execute 'create policy "workspace_select" on public.sale_items for select using (exists (select 1 from public.sales h where h.id = sale_id and h.workspace_id in (select public.user_workspace_ids())))';
+    elsif t = 'sales_return_items' then
+      execute 'create policy "workspace_select" on public.sales_return_items for select using (exists (select 1 from public.sales_returns h where h.id = return_id and h.workspace_id in (select public.user_workspace_ids())))';
+    elsif t = 'delivery_items' then
+      execute 'create policy "workspace_select" on public.delivery_items for select using (exists (select 1 from public.deliveries h where h.id = delivery_id and h.workspace_id in (select public.user_workspace_ids())))';
+    elsif t = 'stock_transfer_items' then
+      execute 'create policy "workspace_select" on public.stock_transfer_items for select using (exists (select 1 from public.stock_transfers h where h.id = transfer_id and h.workspace_id in (select public.user_workspace_ids())))';
+    elsif t = 'stock_issue_items' then
+      execute 'create policy "workspace_select" on public.stock_issue_items for select using (exists (select 1 from public.stock_issues h where h.id = issue_id and h.workspace_id in (select public.user_workspace_ids())))';
+    elsif t = 'repack_inputs' then
+      execute 'create policy "workspace_select" on public.repack_inputs for select using (exists (select 1 from public.repacks h where h.id = repack_id and h.workspace_id in (select public.user_workspace_ids())))';
+    elsif t = 'repack_outputs' then
+      execute 'create policy "workspace_select" on public.repack_outputs for select using (exists (select 1 from public.repacks h where h.id = repack_id and h.workspace_id in (select public.user_workspace_ids())))';
+    elsif t = 'stock_adjustment_items' then
+      execute 'create policy "workspace_select" on public.stock_adjustment_items for select using (exists (select 1 from public.stock_adjustments h where h.id = adjustment_id and h.workspace_id in (select public.user_workspace_ids())))';
+    else
+      execute format('create policy "workspace_select" on public.%I for select using (workspace_id in (select public.user_workspace_ids()))', t);
+    end if;
   end loop;
 end $$;
 

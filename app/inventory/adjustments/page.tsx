@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../../components/PlaceholderPage";
+import AppShell from "../../../components/AppShell";
+import DemoModulePage from "../../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Koreksi Stok & HPP" description="Stock adjustment dengan sistem vs fisik, plus simulasi koreksi HPP demo." icon="🛠️" phase="Phase 7" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="adjustments" title="Koreksi Stok & HPP" description="Koreksi stok fisik dan simulasi HPP demo untuk transaksi berikutnya." />
+    </AppShell>
+  );
 }

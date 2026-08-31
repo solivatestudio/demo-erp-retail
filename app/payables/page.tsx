@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../components/PlaceholderPage";
+import AppShell from "../../components/AppShell";
+import DemoModulePage from "../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Hutang Supplier" description="Daftar hutang per supplier dengan angsuran, partial payment, dan outstanding." icon="📑" phase="Phase 4" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="payables" title="Hutang Supplier" description="Daftar hutang supplier dan tombol angsuran yang membuat cash out otomatis." />
+    </AppShell>
+  );
 }

@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../../components/PlaceholderPage";
+import AppShell from "../../../components/AppShell";
+import DemoModulePage from "../../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Produk" description="Master produk dengan kategori, brand, multi-UOM, dan harga retail/grosir." icon="📦" phase="Phase 2" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="products" title="Produk" description="Produk aktif dengan kategori, brand, barcode, dan HPP rata-rata." />
+    </AppShell>
+  );
 }

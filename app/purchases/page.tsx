@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../components/PlaceholderPage";
+import AppShell from "../../components/AppShell";
+import DemoModulePage from "../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Pembelian" description="Modul pembelian dengan multi-warehouse dan multi-UOM. Stock otomatis bertambah saat posted." icon="📦" phase="Phase 4" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="purchases" title="Pembelian" description="Post pembelian supplier, stok bertambah, hutang muncul, dan laporan ikut berubah." />
+    </AppShell>
+  );
 }

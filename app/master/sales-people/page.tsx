@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../../components/PlaceholderPage";
+import AppShell from "../../../components/AppShell";
+import DemoModulePage from "../../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Salesman" description="Daftar salesman yang terhubung ke penjualan." icon="🧑‍💼" phase="Phase 2" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="salesPeople" title="Salesman" description="Master salesman yang terhubung ke transaksi penjualan." />
+    </AppShell>
+  );
 }

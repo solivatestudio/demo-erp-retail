@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../../components/PlaceholderPage";
+import AppShell from "../../../components/AppShell";
+import DemoModulePage from "../../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Satuan / UOM" description="Master unit of measure (PCS, PACK, DUS, KARTON, KG) dengan conversion factor." icon="📐" phase="Phase 2" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="units" title="Satuan / UOM" description="Master satuan seperti PCS, PACK, DUS, KARTON, dan KG." />
+    </AppShell>
+  );
 }

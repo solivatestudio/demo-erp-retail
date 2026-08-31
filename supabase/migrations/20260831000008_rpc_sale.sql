@@ -126,7 +126,7 @@ begin
 
     -- Resolve price (per UOM qty, multiply by stock_qty for total)
     v_unit_price := public.resolve_sale_price(p_workspace, v_product, v_customer_group, v_unit, v_qty);
-    v_subtotal := v_subtotal + v_unit_price;
+    v_subtotal := v_subtotal + (v_qty * v_unit_price);
 
     -- Deduct stock only for POS / DIRECT (DELIVERY deducts when delivery is posted)
     if v_sale_type_enum in ('POS'::sale_type, 'DIRECT'::sale_type) then
@@ -163,7 +163,7 @@ begin
       unit_price, subtotal, cost_snapshot, cogs_total
     ) values (
       v_sale_id, v_product, v_unit, v_qty, v_conv, v_stock_qty,
-      v_unit_price, v_unit_price, v_avg_cost, v_stock_qty * v_avg_cost
+      v_unit_price, v_qty * v_unit_price, coalesce(v_avg_cost, 0), v_stock_qty * coalesce(v_avg_cost, 0)
     );
   end loop;
 

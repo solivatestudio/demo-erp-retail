@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../../components/PlaceholderPage";
+import AppShell from "../../../components/AppShell";
+import DemoModulePage from "../../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Kas Masuk" description="Pencatatan kas masuk dari customer payment atau kategori operasional." icon="💵" phase="Phase 8" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="cashIn" title="Kas Masuk" description="Kas masuk manual dan otomatis dari pembayaran customer." />
+    </AppShell>
+  );
 }

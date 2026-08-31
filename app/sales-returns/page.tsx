@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../components/PlaceholderPage";
+import AppShell from "../../components/AppShell";
+import DemoModulePage from "../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Retur Penjualan" description="Retur barang dari customer. Mengembalikan stok dan menyesuaikan piutang sale asal." icon="↩️" phase="Phase 6" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="salesReturns" title="Retur Penjualan" description="Retur penjualan berbasis nota asal, stok kembali masuk dan piutang disesuaikan." />
+    </AppShell>
+  );
 }

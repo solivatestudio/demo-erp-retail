@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../../components/PlaceholderPage";
+import AppShell from "../../../components/AppShell";
+import DemoModulePage from "../../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Repack" description="Konversi SKU output beda dengan alokasi nilai 100%. Repack != UOM conversion." icon="🧪" phase="Phase 7" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="repack" title="Repack" description="Repack SKU input menjadi SKU output dengan alokasi nilai." />
+    </AppShell>
+  );
 }

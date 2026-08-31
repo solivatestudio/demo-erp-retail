@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../components/PlaceholderPage";
+import AppShell from "../../components/AppShell";
+import DemoModulePage from "../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Laporan" description="17 laporan: stok, laba per nota, angsuran, pending delivery, dll." icon="📈" phase="Phase 9" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="reports" title="Laporan" description="Ringkasan dan daftar laporan utama berbasis data transaksi aktif." />
+    </AppShell>
+  );
 }

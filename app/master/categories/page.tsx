@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../../components/PlaceholderPage";
+import AppShell from "../../../components/AppShell";
+import DemoModulePage from "../../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Kategori" description="Master kategori produk (nested Item Group)." icon="🗂️" phase="Phase 2" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="categories" title="Kategori" description="Master kategori produk." />
+    </AppShell>
+  );
 }

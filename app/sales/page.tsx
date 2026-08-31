@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../components/PlaceholderPage";
+import AppShell from "../../components/AppShell";
+import DemoModulePage from "../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Daftar Penjualan" description="Daftar semua transaksi penjualan (POS, Direct, Delivery) dengan filter, reprint, dan link ke piutang/retur." icon="📋" phase="Phase 5" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="sales" title="Daftar Penjualan" description="Penjualan POS, direct sale, dan delivery sale dengan piutang serta status fulfillment." />
+    </AppShell>
+  );
 }

@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../../components/PlaceholderPage";
+import AppShell from "../../../components/AppShell";
+import DemoModulePage from "../../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Kartu Stok" description="Stock ledger per produk: incoming/outgoing/balance, valuation rate." icon="📇" phase="Phase 3" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="stockCard" title="Kartu Stok" description="Ledger inventory movement untuk semua transaksi stok." />
+    </AppShell>
+  );
 }

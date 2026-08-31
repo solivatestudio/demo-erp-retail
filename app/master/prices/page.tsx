@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../../components/PlaceholderPage";
+import AppShell from "../../../components/AppShell";
+import DemoModulePage from "../../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Harga" description="Pricing matrix: customer group × product × UOM × min_qty." icon="💰" phase="Phase 2" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="prices" title="Harga Retail & Grosir" description="Matrix harga per produk, customer group, UOM, dan minimum qty." />
+    </AppShell>
+  );
 }

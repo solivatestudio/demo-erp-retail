@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../../components/PlaceholderPage";
+import AppShell from "../../../components/AppShell";
+import DemoModulePage from "../../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Produk & Stok" description="Daftar produk lengkap dengan stok per gudang, harga retail/grosir, dan UOM." icon="📦" phase="Phase 3" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="stock" title="Produk & Stok" description="Stok per produk dan gudang dari stock_balances, bukan angka hardcode." />
+    </AppShell>
+  );
 }

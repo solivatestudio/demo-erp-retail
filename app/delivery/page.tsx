@@ -1,5 +1,10 @@
-import PlaceholderPage from "../../components/PlaceholderPage";
+import AppShell from "../../components/AppShell";
+import DemoModulePage from "../../components/DemoModulePage";
 
 export default function Page() {
-  return <PlaceholderPage title="Delivery" description="Pengiriman barang dari Sales Order. Mendukung partial delivery dan pending qty report." icon="🚚" phase="Phase 6" />;
+  return (
+    <AppShell>
+      <DemoModulePage kind="delivery" title="Delivery" description="Kirim order delivery secara partial atau penuh dan kurangi stok saat pengiriman." />
+    </AppShell>
+  );
 }
