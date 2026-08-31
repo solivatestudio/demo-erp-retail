@@ -38,10 +38,10 @@ export default function Sidebar() {
   return (
     <aside className="app-sidebar">
       <Link href="/" className="sidebar-brand">
-        <span>BP</span>
+        <span>RD</span>
         <div>
-          <strong>Berkah Plastik</strong>
-          <small>Retail ERP Demo</small>
+          <strong>Retail Demo</strong>
+          <small>ERP Store Demo</small>
         </div>
       </Link>
 

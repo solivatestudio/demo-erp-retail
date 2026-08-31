@@ -24,8 +24,8 @@ type DemoContent = {
 
 const salesRecords: DemoRecord[] = [
   { no: "POS-000184", name: "Pelanggan Umum", meta: "3 item retail - Toko Utama", amount: 186500, status: "Lunas" },
-  { no: "SAL-000091", name: "Toko Berkah Jaya", meta: "Grosir tempo 14 hari", amount: 3420000, status: "Piutang" },
-  { no: "DLV-000027", name: "Minimarket Sejahtera", meta: "Kirim 8/12 dus", amount: 2760000, status: "Partial" },
+  { no: "SAL-000091", name: "Retail Partner A", meta: "Grosir tempo 14 hari", amount: 3420000, status: "Piutang" },
+  { no: "DLV-000027", name: "Outlet Cabang", meta: "Kirim 8/12 koli", amount: 2760000, status: "Partial" },
 ];
 
 const CONTENT: Partial<Record<DemoKind, DemoContent>> = {
@@ -64,7 +64,7 @@ const CONTENT: Partial<Record<DemoKind, DemoContent>> = {
     metrics: ["6 order delivery", "18 dus pending", "2 pengiriman hari ini"],
     story: ["Sales order dibuat tanpa potong stok.", "Gudang posting delivery sebagian.", "Sistem hitung sisa belum terkirim.", "Laporan pending delivery berubah."],
     records: [
-      { no: "SAL-000088", name: "Minimarket Sejahtera", meta: "Order 12 dus, terkirim 8 dus", amount: 2760000, status: "Partial" },
+      { no: "SAL-000088", name: "Outlet Cabang", meta: "Order 12 koli, terkirim 8 koli", amount: 2760000, status: "Partial" },
       { no: "SAL-000089", name: "Distributor Sentosa", meta: "Menunggu jadwal kirim", amount: 6150000, status: "Pending" },
       { no: "DLV-000027", name: "Surat jalan", meta: "Gudang Utama ke Bandung", amount: 1840000, status: "Posted" },
     ],
@@ -79,7 +79,7 @@ const CONTENT: Partial<Record<DemoKind, DemoContent>> = {
     metrics: ["Rp 7,4 jt piutang", "5 customer tempo", "Rp 1,2 jt dibayar hari ini"],
     story: ["Buka nota outstanding.", "Input pembayaran sebagian.", "Sisa piutang otomatis turun.", "Kas masuk tercatat."],
     records: [
-      { no: "SAL-000091", name: "Toko Berkah Jaya", meta: "Jatuh tempo 7 hari lagi", amount: 3420000, status: "Belum lunas" },
+      { no: "SAL-000091", name: "Retail Partner A", meta: "Jatuh tempo 7 hari lagi", amount: 3420000, status: "Belum lunas" },
       { no: "SAL-000086", name: "Warung Bu Sari", meta: "Dibayar sebagian", amount: 980000, status: "Partial" },
       { no: "PAY-C-000031", name: "Pembayaran customer", meta: "Tunai ke kas toko", amount: 500000, status: "Kas masuk" },
     ],
@@ -109,9 +109,9 @@ const CONTENT: Partial<Record<DemoKind, DemoContent>> = {
     metrics: ["28 SKU aktif", "3 gudang", "Rp 42,6 jt nilai stok"],
     story: ["Produk punya satuan stok dasar.", "Harga jual retail/grosir.", "Saldo stok terlihat per gudang.", "Mutasi tercatat di kartu stok."],
     records: [
-      { no: "ITEM-001", name: "Plastik PP 1 kg", meta: "Toko 42 pack, Gudang 120 pack", amount: 3850000, status: "Aman" },
-      { no: "ITEM-014", name: "Cup 12 oz", meta: "Sisa 8 dus di Toko Utama", amount: 960000, status: "Menipis" },
-      { no: "ITEM-021", name: "Kresek Hitam", meta: "Butuh restock minggu ini", amount: 420000, status: "Low" },
+      { no: "SKU-001", name: "Beras Premium 5 kg", meta: "Toko 42 sak, Gudang 120 sak", amount: 3850000, status: "Aman" },
+      { no: "SKU-014", name: "Minyak Goreng 1 L", meta: "Sisa 8 karton di Toko Utama", amount: 960000, status: "Menipis" },
+      { no: "SKU-021", name: "Kopi Sachet 10 pcs", meta: "Butuh restock minggu ini", amount: 420000, status: "Low" },
     ],
     impact: ["Semua transaksi stok masuk ledger.", "Saldo gudang selalu terlihat.", "Nilai stok memakai avg cost demo."],
   },
@@ -139,7 +139,7 @@ const CONTENT: Partial<Record<DemoKind, DemoContent>> = {
     metrics: ["3 gudang", "7 transfer minggu ini", "0 pending"],
     story: ["Pilih gudang asal dan tujuan.", "Input barang serta qty.", "Post transfer.", "Saldo asal turun dan tujuan naik."],
     records: [
-      { no: "TRF-000012", name: "Gudang Utama -> Toko Utama", meta: "Cup 12 oz, Plastik PP", amount: 1280000, status: "Posted" },
+      { no: "TRF-000012", name: "Gudang Utama -> Toko Utama", meta: "Minyak goreng, kopi sachet", amount: 1280000, status: "Posted" },
       { no: "TRF-000011", name: "Gudang Cadangan -> Gudang Utama", meta: "Restock internal", amount: 840000, status: "Posted" },
       { no: "TRF-000010", name: "Toko Utama -> Gudang Utama", meta: "Barang slow moving", amount: 315000, status: "Posted" },
     ],
@@ -148,15 +148,15 @@ const CONTENT: Partial<Record<DemoKind, DemoContent>> = {
   repack: {
     label: "Repack",
     headline: "Repack digambarkan sebagai pecah barang besar jadi SKU jual kecil.",
-    subline: "Ini penting untuk plastik/packaging: roll, pack, dus, dan bundle.",
+    subline: "Ini menggambarkan pecah stok besar jadi SKU jual kecil, misalnya karton ke satuan atau bundle promo.",
     cta: "Simulasi Repack",
     href: "/inventory/repack",
     metrics: ["5 repack bulan ini", "100% alokasi", "2 output SKU"],
     story: ["Ambil input barang dari gudang.", "Tentukan output SKU dan qty.", "Alokasi nilai total 100%.", "Input turun, output naik."],
     records: [
-      { no: "RPK-000008", name: "Roll Plastik -> Pack 1 kg", meta: "Input 2 roll, output 36 pack", amount: 1260000, status: "Posted" },
-      { no: "RPK-000007", name: "Karton Cup -> Ecer Dus", meta: "Output siap dijual retail", amount: 780000, status: "Posted" },
-      { no: "RPK-000006", name: "Bundle Sendok", meta: "Alokasi nilai 100%", amount: 240000, status: "Posted" },
+      { no: "RPK-000008", name: "Karton Produk -> Satuan", meta: "Input 2 karton, output 48 pcs", amount: 1260000, status: "Posted" },
+      { no: "RPK-000007", name: "Bundle Promo Weekend", meta: "Output siap dijual retail", amount: 780000, status: "Posted" },
+      { no: "RPK-000006", name: "Paket Hemat Bulanan", meta: "Alokasi nilai 100%", amount: 240000, status: "Posted" },
     ],
     impact: ["Repack out/in tercatat.", "Harga pokok output terbentuk.", "Bukan sekadar konversi UOM."],
   },
@@ -235,7 +235,7 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
       </div>
 
       <section className="demo-card records-card">
-        <div className="card-head"><span>Dummy data untuk presentasi</span><strong>Berkah Plastik & Packaging</strong></div>
+        <div className="card-head"><span>Dummy data untuk presentasi</span><strong>Retail Demo Store</strong></div>
         <div className="record-list">
           {content.records.map((record) => (
             <div className="record-row" key={record.no}>

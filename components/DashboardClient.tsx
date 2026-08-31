@@ -30,16 +30,16 @@ const quickFlows = [
 ];
 
 const stockRows = [
-  { sku: "ITEM-001", item: "Plastik PP 1 kg", toko: 42, gudang: 120, status: "Aman" },
-  { sku: "ITEM-014", item: "Cup 12 oz", toko: 8, gudang: 36, status: "Low" },
-  { sku: "ITEM-021", item: "Kresek Hitam 24", toko: 12, gudang: 4, status: "Restock" },
+  { sku: "SKU-001", item: "Beras Premium 5 kg", toko: 42, gudang: 120, status: "Aman" },
+  { sku: "SKU-014", item: "Minyak Goreng 1 L", toko: 8, gudang: 36, status: "Low" },
+  { sku: "SKU-021", item: "Kopi Sachet 10 pcs", toko: 12, gudang: 4, status: "Restock" },
 ];
 
 const transactions = [
   { no: "POS-000184", name: "Pelanggan Umum", type: "POS", amount: 186500, status: "Lunas" },
-  { no: "SAL-000091", name: "Toko Berkah Jaya", type: "Grosir", amount: 3420000, status: "Piutang" },
-  { no: "PUR-000044", name: "PT Sumber Plastik", type: "Pembelian", amount: 4850000, status: "Partial" },
-  { no: "DLV-000027", name: "Minimarket Sejahtera", type: "Delivery", amount: 1840000, status: "8/12 dus" },
+  { no: "SAL-000091", name: "Retail Partner A", type: "Grosir", amount: 3420000, status: "Piutang" },
+  { no: "PUR-000044", name: "Supplier Nasional", type: "Pembelian", amount: 4850000, status: "Partial" },
+  { no: "DLV-000027", name: "Outlet Cabang", type: "Delivery", amount: 1840000, status: "8/12 koli" },
 ];
 
 export default function DashboardClient() {

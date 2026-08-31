@@ -18,7 +18,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <div>
               <span>Demo Retail ERP</span>
-              <strong>Berkah Plastik &amp; Packaging</strong>
+              <strong>Retail Demo Store</strong>
             </div>
           </div>
 

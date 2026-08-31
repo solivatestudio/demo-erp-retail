@@ -22,18 +22,18 @@ type Product = {
 type CartLine = Product & { qty: number; price: number };
 
 const initialProducts: Product[] = [
-  { id: "p1", sku: "ITEM-001", name: "Plastik PP 1 kg", category: "Plastik", unit: "pack", retail: 28000, wholesale: 25500, stockToko: 42, stockGudang: 120 },
-  { id: "p2", sku: "ITEM-004", name: "Standing Pouch 250gr", category: "Packaging", unit: "pcs", retail: 1850, wholesale: 1600, stockToko: 260, stockGudang: 900 },
-  { id: "p3", sku: "ITEM-008", name: "Bubble Wrap 50cm", category: "Packaging", unit: "roll", retail: 72000, wholesale: 68000, stockToko: 18, stockGudang: 45 },
-  { id: "p4", sku: "ITEM-014", name: "Cup 12 oz", category: "Cup", unit: "dus", retail: 118000, wholesale: 109000, stockToko: 8, stockGudang: 36 },
-  { id: "p5", sku: "ITEM-021", name: "Kresek Hitam 24", category: "Plastik", unit: "bal", retail: 42000, wholesale: 39000, stockToko: 12, stockGudang: 4 },
-  { id: "p6", sku: "ITEM-026", name: "Sendok Plastik Putih", category: "Aksesoris", unit: "pack", retail: 11500, wholesale: 9800, stockToko: 64, stockGudang: 180 },
+  { id: "p1", sku: "SKU-001", name: "Beras Premium 5 kg", category: "Sembako", unit: "sak", retail: 72000, wholesale: 68500, stockToko: 42, stockGudang: 120 },
+  { id: "p2", sku: "SKU-004", name: "Minyak Goreng 1 L", category: "Sembako", unit: "botol", retail: 18500, wholesale: 17000, stockToko: 260, stockGudang: 900 },
+  { id: "p3", sku: "SKU-008", name: "Susu UHT 1 L", category: "Minuman", unit: "kotak", retail: 21000, wholesale: 19500, stockToko: 18, stockGudang: 45 },
+  { id: "p4", sku: "SKU-014", name: "Mie Instan Goreng", category: "Makanan", unit: "dus", retail: 118000, wholesale: 109000, stockToko: 8, stockGudang: 36 },
+  { id: "p5", sku: "SKU-021", name: "Kopi Sachet 10 pcs", category: "Minuman", unit: "pack", retail: 16500, wholesale: 14800, stockToko: 12, stockGudang: 4 },
+  { id: "p6", sku: "SKU-026", name: "Sabun Cair 450 ml", category: "Household", unit: "botol", retail: 24500, wholesale: 22500, stockToko: 64, stockGudang: 180 },
 ];
 
 const customers = [
   { id: "retail", name: "Pelanggan Umum", group: "Retail" },
-  { id: "grosir", name: "Toko Berkah Jaya", group: "Grosir" },
-  { id: "tempo", name: "Minimarket Sejahtera", group: "Tempo" },
+  { id: "grosir", name: "Retail Partner A", group: "Grosir" },
+  { id: "tempo", name: "Outlet Cabang", group: "Tempo" },
 ];
 
 export default function PosClient() {
@@ -219,7 +219,7 @@ export default function PosClient() {
       {receipt && (
         <div className="receipt-overlay" onClick={() => setReceipt(null)}>
           <div className="receipt-modal" onClick={(event) => event.stopPropagation()}>
-            <strong>Berkah Plastik &amp; Packaging</strong>
+            <strong>Retail Demo Store</strong>
             <span>{receipt.number}</span>
             <div className="receipt-lines">
               {receipt.lines.map((item) => (
