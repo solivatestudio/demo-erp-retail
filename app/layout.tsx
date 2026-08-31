@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "RetailOS",
-  description: "Retail ERP store management system",
+  title: "Kelolain / Akuratif",
+  description: "Sistem manajemen toko yang akurat dan aktif",
 };
 
 export default function RootLayout({

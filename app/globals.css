@@ -169,6 +169,8 @@ a:focus-visible {
   flex: 1;
   min-height: 0;
   align-content: start;
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .sidebar-nav a {
@@ -233,9 +235,11 @@ a:focus-visible {
 }
 
 .app-title span,
-.app-title strong { display: block; }
+.app-title strong,
+.app-title small { display: block; }
 .app-title span { color: var(--muted-foreground); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
 .app-title strong { margin-top: 2px; font-size: 14px; letter-spacing: -.01em; }
+.app-title small { margin-top: 1px; color: var(--muted-foreground); font-size: 10px; font-weight: 700; }
 
 .app-actions {
   display: flex;
@@ -1027,7 +1031,7 @@ a:focus-visible {
     right: 12px;
     bottom: 12px;
     z-index: 40;
-    height: 68px;
+    height: 74px;
     overflow: hidden;
     border: 1px solid rgba(228, 228, 231, .92);
     border-radius: 22px;
@@ -1043,17 +1047,20 @@ a:focus-visible {
 
   .sidebar-nav {
     height: 100%;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    display: flex;
     gap: 4px;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    padding: 0 2px 4px;
   }
 
-  .sidebar-nav a.mobile-secondary { display: none; }
-
   .sidebar-nav a {
+    flex: 0 0 72px;
+    scroll-snap-align: start;
     min-height: 0;
-    height: 52px;
+    height: 56px;
     display: grid;
     place-items: center;
     gap: 3px;
@@ -1075,7 +1082,7 @@ a:focus-visible {
 
   .app-content {
     overflow: visible;
-    padding-bottom: 94px;
+    padding-bottom: 108px;
   }
 
   .global-search { display: none; }
@@ -1098,8 +1105,8 @@ a:focus-visible {
     position: sticky;
     top: 0;
     z-index: 35;
-    height: 58px;
-    min-height: 58px;
+    height: 68px;
+    min-height: 68px;
     padding: 0 14px;
     align-items: center;
   }
@@ -1111,6 +1118,7 @@ a:focus-visible {
 
   .app-title span { font-size: 10px; }
   .app-title strong { font-size: 13px; }
+  .app-title small { font-size: 9px; }
 
   .app-actions .ui-badge,
   .app-actions .ui-button-size--icon { display: none; }

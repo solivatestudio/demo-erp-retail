@@ -49,7 +49,7 @@ const CONFIG: Partial<Record<DemoKind, ModuleConfig>> = {
     stats: [{ label: "Profil Toko", value: "Lengkap" }, { label: "Template Nota", value: "Aktif" }, { label: "Printer", value: "2 device" }],
     columns: ["kode", "pengaturan", "nilai", "status"],
     rows: [
-      { kode: "STORE_NAME", pengaturan: "Nama Toko", nilai: "RetailOS", status: "Aktif" },
+      { kode: "STORE_NAME", pengaturan: "Nama Toko", nilai: "Kelolain / Akuratif", status: "Aktif" },
       { kode: "STORE_ADDRESS", pengaturan: "Alamat", nilai: "Jl. Operasional No. 10, Jakarta", status: "Aktif" },
       { kode: "RECEIPT_FOOTER", pengaturan: "Footer Nota", nilai: "Terima kasih atas kunjungan Anda.", status: "Aktif" },
     ],
@@ -370,7 +370,7 @@ const fallback: ModuleConfig = {
   stats: [{ label: "Data Aktif", value: "36" }, { label: "Open", value: "8" }, { label: "Selesai", value: "28" }],
   columns: ["no", "tanggal", "nama", "referensi", "total", "status"],
   rows: [
-    { no: "TRX-0001", tanggal: "31/08/2026", nama: "Transaksi Operasional", referensi: "RetailOS", total: 1250000, status: "Open" },
+    { no: "TRX-0001", tanggal: "31/08/2026", nama: "Transaksi Operasional", referensi: "Kelolain", total: 1250000, status: "Open" },
     { no: "TRX-0002", tanggal: "31/08/2026", nama: "Dokumen Diproses", referensi: "Gudang Utama", total: 850000, status: "Posted" },
     { no: "TRX-0003", tanggal: "30/08/2026", nama: "Riwayat Aktivitas", referensi: "Toko Utama", total: 420000, status: "Selesai" },
   ],

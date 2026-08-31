@@ -20,8 +20,8 @@ export type SalesReceipt = {
   lines: SalesReceiptLine[];
 };
 
-const receiptKey = "retailos:sales-receipts";
-const stockKey = "retailos:stock-toko";
+const receiptKey = "kelolain:sales-receipts";
+const stockKey = "kelolain:stock-toko";
 
 function canUseStorage() {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
