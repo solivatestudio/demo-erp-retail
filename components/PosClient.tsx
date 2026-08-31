@@ -108,7 +108,7 @@ export default function PosClient() {
           <div>
             <Badge variant={isWholesale ? "warning" : "success"}>{isWholesale ? "Harga grosir/tempo" : "Harga retail"}</Badge>
             <h1>POS Kasir</h1>
-            <p>Dummy kasir untuk presentasi: pilih customer, tambah barang, bayar, stok toko langsung berkurang.</p>
+            <p>Pilih pelanggan, scan atau cari barang, lalu selesaikan pembayaran di kasir.</p>
           </div>
           <div className="pos-selectors">
             <select value={customerId} onChange={(event) => setCustomerId(event.target.value)}>
@@ -209,7 +209,7 @@ export default function PosClient() {
                 <Trash2 size={15} /> Kosongkan
               </Button>
               <Button disabled={cart.length === 0} onClick={checkout}>
-                Bayar dummy
+                Bayar
               </Button>
             </div>
           </CardContent>
@@ -219,7 +219,7 @@ export default function PosClient() {
       {receipt && (
         <div className="receipt-overlay" onClick={() => setReceipt(null)}>
           <div className="receipt-modal" onClick={(event) => event.stopPropagation()}>
-            <strong>Retail Demo Store</strong>
+            <strong>RetailOS</strong>
             <span>{receipt.number}</span>
             <div className="receipt-lines">
               {receipt.lines.map((item) => (

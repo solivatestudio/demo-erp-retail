@@ -1,67 +1,60 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  Boxes,
-  PackageCheck,
-  ReceiptText,
-  ShoppingCart,
-  Truck,
-  WalletCards,
-} from "lucide-react";
+import { Archive, ArrowRight, Banknote, ReceiptText, ShoppingCart, Truck, WalletCards } from "lucide-react";
 import { formatRupiah } from "../lib/utils/format";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 
 const kpis = [
-  { label: "Omset hari ini", value: 18750000, note: "14 nota", tone: "success" },
-  { label: "Transaksi POS", value: 42, note: "kasir aktif", tone: "default" },
-  { label: "Stok menipis", value: 8, note: "perlu restock", tone: "warning" },
-  { label: "Piutang aktif", value: 7420000, note: "5 customer", tone: "secondary" },
+  { label: "Penjualan Hari Ini", value: 18750000, note: "+12,4%", variant: "success" },
+  { label: "Nota POS", value: "42", note: "3 kasir", variant: "default" },
+  { label: "Piutang Jatuh Tempo", value: 7420000, note: "5 pelanggan", variant: "warning" },
+  { label: "Stok Kritis", value: "8 SKU", note: "perlu restock", variant: "warning" },
 ];
 
-const quickFlows = [
-  { title: "POS kasir", desc: "Tambah item, pilih customer, bayar, stok toko berkurang.", href: "/pos", icon: ShoppingCart },
-  { title: "Kelola stok gudang", desc: "Pantau stok per gudang, barang low stock, dan nilai persediaan.", href: "/inventory/stock", icon: Boxes },
-  { title: "Dashboard toko", desc: "Owner lihat omset, piutang, pending delivery, dan transaksi terbaru.", href: "/", icon: ReceiptText },
-  { title: "Delivery partial", desc: "Order terkirim sebagian dan sisa yang belum jalan tetap terlihat.", href: "/delivery", icon: Truck },
-];
-
-const stockRows = [
-  { sku: "SKU-001", item: "Beras Premium 5 kg", toko: 42, gudang: 120, status: "Aman" },
-  { sku: "SKU-014", item: "Minyak Goreng 1 L", toko: 8, gudang: 36, status: "Low" },
-  { sku: "SKU-021", item: "Kopi Sachet 10 pcs", toko: 12, gudang: 4, status: "Restock" },
+const shortcuts = [
+  { title: "Transaksi POS", desc: "Kasir toko", href: "/pos", icon: ShoppingCart },
+  { title: "Pembelian", desc: "Nota supplier", href: "/purchases", icon: ReceiptText },
+  { title: "Stok Gudang", desc: "Saldo persediaan", href: "/inventory/stock", icon: Archive },
+  { title: "Delivery", desc: "Status pengiriman", href: "/delivery", icon: Truck },
 ];
 
 const transactions = [
-  { no: "POS-000184", name: "Pelanggan Umum", type: "POS", amount: 186500, status: "Lunas" },
-  { no: "SAL-000091", name: "Retail Partner A", type: "Grosir", amount: 3420000, status: "Piutang" },
-  { no: "PUR-000044", name: "Supplier Nasional", type: "Pembelian", amount: 4850000, status: "Partial" },
-  { no: "DLV-000027", name: "Outlet Cabang", type: "Delivery", amount: 1840000, status: "8/12 koli" },
+  { no: "POS-000184", customer: "Pelanggan Umum", channel: "POS", status: "Lunas", amount: 186500 },
+  { no: "SAL-000091", customer: "Retail Partner A", channel: "Grosir", status: "Piutang", amount: 3420000 },
+  { no: "PUR-000044", customer: "Supplier Nasional", channel: "Pembelian", status: "Partial", amount: 4850000 },
+  { no: "DLV-000027", customer: "Outlet Cabang", channel: "Delivery", status: "8/12 koli", amount: 1840000 },
+];
+
+const inventory = [
+  { sku: "SKU-014", item: "Minyak Goreng 1 L", location: "Toko Utama", qty: "8 karton", status: "Low" },
+  { sku: "SKU-021", item: "Kopi Sachet 10 pcs", location: "Gudang Utama", qty: "4 pack", status: "Restock" },
+  { sku: "SKU-008", item: "Susu UHT 1 L", location: "Toko Utama", qty: "18 kotak", status: "Aman" },
+];
+
+const finance = [
+  { label: "Kas Masuk", value: 12850000, icon: Banknote },
+  { label: "Kas Keluar", value: 4850000, icon: WalletCards },
+  { label: "Margin Kotor", value: 3650000, icon: ReceiptText },
 ];
 
 export default function DashboardClient() {
   return (
     <div className="dashboard-page">
-      <section className="dashboard-hero">
+      <section className="page-header">
         <div>
-          <Badge variant="success">langsung masuk app</Badge>
-          <h1>Dashboard Kelola Toko</h1>
-          <p>
-            Fokus demo: POS, stok gudang, penjualan, pembelian, delivery,
-            piutang/hutang, dan laporan owner. Semua angka pakai dummy data.
-          </p>
+          <span>Dashboard</span>
+          <h1>Ringkasan Operasional</h1>
+          <p>Monitor penjualan, stok, pembayaran, dan pengiriman toko dalam satu layar.</p>
         </div>
-        <div className="hero-actions">
-          <Button asChild size="lg">
-            <Link href="/pos">
-              Coba POS <ArrowRight size={16} />
-            </Link>
+        <div className="header-actions">
+          <Button asChild>
+            <Link href="/pos">Buka POS</Link>
           </Button>
-          <Button asChild variant="outline" size="lg">
-            <Link href="/inventory/stock">Lihat Stok</Link>
+          <Button asChild variant="outline">
+            <Link href="/reports">Laporan</Link>
           </Button>
         </div>
       </section>
@@ -71,14 +64,10 @@ export default function DashboardClient() {
           <Card key={kpi.label} className="kpi-card">
             <CardHeader>
               <CardDescription>{kpi.label}</CardDescription>
-              <CardTitle>
-                {kpi.label.includes("Omset") || kpi.label.includes("Piutang")
-                  ? formatRupiah(kpi.value)
-                  : kpi.value}
-              </CardTitle>
+              <CardTitle>{typeof kpi.value === "number" ? formatRupiah(kpi.value) : kpi.value}</CardTitle>
             </CardHeader>
             <CardContent>
-              <Badge variant={kpi.tone as "success" | "default" | "warning" | "secondary"}>{kpi.note}</Badge>
+              <Badge variant={kpi.variant as "success" | "default" | "warning"}>{kpi.note}</Badge>
             </CardContent>
           </Card>
         ))}
@@ -87,42 +76,54 @@ export default function DashboardClient() {
       <section className="dashboard-grid">
         <Card className="span-7">
           <CardHeader>
-            <CardTitle>Alur demo yang ditunjukkan ke client</CardTitle>
-            <CardDescription>Empat layar utama cukup untuk menjelaskan MVP.</CardDescription>
+            <CardTitle>Transaksi Terbaru</CardTitle>
+            <CardDescription>Penjualan, pembelian, dan pengiriman terakhir.</CardDescription>
           </CardHeader>
-          <CardContent className="flow-grid">
-            {quickFlows.map((flow) => {
-              const Icon = flow.icon;
-              return (
-                <Link href={flow.href} className="flow-card" key={flow.title}>
-                  <div className="flow-icon"><Icon size={18} /></div>
-                  <strong>{flow.title}</strong>
-                  <span>{flow.desc}</span>
-                </Link>
-              );
-            })}
+          <CardContent className="data-table compact">
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Partner</th>
+                  <th>Jenis</th>
+                  <th>Status</th>
+                  <th className="right">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.map((row) => (
+                  <tr key={row.no}>
+                    <td>{row.no}</td>
+                    <td>{row.customer}</td>
+                    <td>{row.channel}</td>
+                    <td><Badge variant={row.status === "Lunas" ? "success" : "outline"}>{row.status}</Badge></td>
+                    <td className="right">{formatRupiah(row.amount)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </CardContent>
         </Card>
 
         <Card className="span-5">
           <CardHeader>
-            <CardTitle>Ringkasan stok gudang</CardTitle>
-            <CardDescription>Dummy stok per lokasi untuk bahan diskusi.</CardDescription>
+            <CardTitle>Akses Cepat</CardTitle>
+            <CardDescription>Modul yang paling sering digunakan operator.</CardDescription>
           </CardHeader>
-          <CardContent className="stock-list">
-            {stockRows.map((row) => (
-              <div className="stock-row" key={row.sku}>
-                <div>
-                  <span>{row.sku}</span>
-                  <strong>{row.item}</strong>
-                </div>
-                <div className="stock-numbers">
-                  <span>Toko {row.toko}</span>
-                  <span>Gudang {row.gudang}</span>
-                </div>
-                <Badge variant={row.status === "Aman" ? "success" : "warning"}>{row.status}</Badge>
-              </div>
-            ))}
+          <CardContent className="shortcut-list">
+            {shortcuts.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link href={item.href} key={item.title}>
+                  <Icon size={17} />
+                  <div>
+                    <strong>{item.title}</strong>
+                    <span>{item.desc}</span>
+                  </div>
+                  <ArrowRight size={15} />
+                </Link>
+              );
+            })}
           </CardContent>
         </Card>
       </section>
@@ -130,33 +131,51 @@ export default function DashboardClient() {
       <section className="dashboard-grid">
         <Card className="span-7">
           <CardHeader>
-            <CardTitle>Transaksi terbaru</CardTitle>
-            <CardDescription>Sample data untuk menggambarkan kondisi toko hari ini.</CardDescription>
+            <CardTitle>Persediaan Perlu Perhatian</CardTitle>
+            <CardDescription>Barang dengan saldo rendah atau perlu restock.</CardDescription>
           </CardHeader>
-          <CardContent className="transaction-list">
-            {transactions.map((trx) => (
-              <div className="transaction-row" key={trx.no}>
-                <div>
-                  <span>{trx.no} · {trx.type}</span>
-                  <strong>{trx.name}</strong>
-                </div>
-                <Badge variant={trx.status === "Lunas" ? "success" : "outline"}>{trx.status}</Badge>
-                <b>{formatRupiah(trx.amount)}</b>
-              </div>
-            ))}
+          <CardContent className="data-table compact">
+            <table>
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Barang</th>
+                  <th>Lokasi</th>
+                  <th>Saldo</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {inventory.map((row) => (
+                  <tr key={row.sku}>
+                    <td>{row.sku}</td>
+                    <td>{row.item}</td>
+                    <td>{row.location}</td>
+                    <td>{row.qty}</td>
+                    <td><Badge variant={row.status === "Aman" ? "success" : "warning"}>{row.status}</Badge></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </CardContent>
         </Card>
 
         <Card className="span-5">
           <CardHeader>
-            <CardTitle>Yang perlu client lihat</CardTitle>
-            <CardDescription>Checklist presentasi demo.</CardDescription>
+            <CardTitle>Kas & Profitabilitas</CardTitle>
+            <CardDescription>Ringkasan arus kas dan margin hari ini.</CardDescription>
           </CardHeader>
-          <CardContent className="checklist">
-            <div><PackageCheck size={16} /> Stok berubah setelah POS/pembelian.</div>
-            <div><WalletCards size={16} /> Piutang dan hutang punya status jelas.</div>
-            <div><Truck size={16} /> Delivery bisa partial, sisa tetap terlacak.</div>
-            <div><ReceiptText size={16} /> Laporan owner memakai angka dummy.</div>
+          <CardContent className="finance-list">
+            {finance.map((row) => {
+              const Icon = row.icon;
+              return (
+                <div key={row.label}>
+                  <Icon size={17} />
+                  <span>{row.label}</span>
+                  <strong>{formatRupiah(row.value)}</strong>
+                </div>
+              );
+            })}
           </CardContent>
         </Card>
       </section>

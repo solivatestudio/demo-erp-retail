@@ -31,7 +31,7 @@ const NAV = [
   { href: "/inventory/repack", label: "Repack", icon: Repeat2 },
   { href: "/reprints", label: "Cetak Nota", icon: Printer },
   { href: "/reports", label: "Laporan", icon: BarChart3 },
-  { href: "/settings/demo", label: "Pengaturan", icon: ClipboardList },
+  { href: "/settings", label: "Pengaturan", icon: ClipboardList },
 ];
 
 export default function Sidebar() {
@@ -42,8 +42,8 @@ export default function Sidebar() {
       <Link href="/" className="sidebar-brand">
         <span>RD</span>
         <div>
-          <strong>Retail Demo</strong>
-          <small>ERP Store Demo</small>
+          <strong>RetailOS</strong>
+          <small>Store Management</small>
         </div>
       </Link>
 
@@ -70,8 +70,8 @@ export default function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
-        <span>Demo script</span>
-        <strong>POS → Stok → Laporan</strong>
+        <span>Operator</span>
+        <strong>Admin Toko</strong>
       </div>
     </aside>
   );

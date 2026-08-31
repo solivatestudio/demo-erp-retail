@@ -17,8 +17,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <Store size={18} />
             </div>
             <div>
-              <span>Demo Retail ERP</span>
-              <strong>Retail Demo Store</strong>
+              <span>Retail ERP</span>
+              <strong>RetailOS</strong>
             </div>
           </div>
 
@@ -27,7 +27,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <Search size={15} />
               <span>Cari nota, SKU, customer...</span>
             </div>
-            <Badge variant="success">Dummy data</Badge>
+            <Badge variant="success">Online</Badge>
             <Button variant="outline" size="icon" aria-label="Notifikasi">
               <Bell size={16} />
             </Button>
