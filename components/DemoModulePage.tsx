@@ -545,13 +545,13 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                 {rows.map((row, index) => (
                   <tr key={index}>
                     {config.columns.map((column) => (
-                      <td key={column}>
+                      <td key={column} data-label={column}>
                         {column === "status"
                           ? <Badge variant={badgeVariant(String(row[column]))}>{row[column]}</Badge>
                           : formatCell(column, row[column] ?? "-")}
                       </td>
                     ))}
-                    <td className="right">
+                    <td className="right" data-label="aksi">
                       <div className="row-actions">
                         <Button variant="ghost" size="sm" onClick={() => openEdit(row)}><Pencil size={14} /> Edit</Button>
                         <Button variant="ghost" size="sm" onClick={() => deleteRecord(row)}><Trash2 size={14} /> Hapus</Button>

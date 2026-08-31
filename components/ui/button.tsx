@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
 import { cn } from "../../lib/utils/format";
 
 type ButtonVariant = "default" | "secondary" | "outline" | "ghost" | "destructive";
@@ -18,14 +17,21 @@ export function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  children,
   ...props
 }: ButtonProps) {
-  const Comp = asChild ? Slot : "button";
+  const computedClassName = cn("ui-button", `ui-button--${variant}`, `ui-button-size--${size}`, className);
+
+  if (asChild && React.isValidElement(children)) {
+    const child = children as React.ReactElement<{ className?: string }>;
+    return React.cloneElement(child, {
+      className: cn(computedClassName, child.props.className),
+    });
+  }
 
   return (
-    <Comp
-      className={cn("ui-button", `ui-button--${variant}`, `ui-button-size--${size}`, className)}
-      {...props}
-    />
+    <button className={computedClassName} {...props}>
+      {children}
+    </button>
   );
 }

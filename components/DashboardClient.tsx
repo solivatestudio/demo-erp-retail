@@ -93,11 +93,11 @@ export default function DashboardClient() {
               <tbody>
                 {transactions.map((row) => (
                   <tr key={row.no}>
-                    <td>{row.no}</td>
-                    <td>{row.customer}</td>
-                    <td>{row.channel}</td>
-                    <td><Badge variant={row.status === "Lunas" ? "success" : "outline"}>{row.status}</Badge></td>
-                    <td className="right">{formatRupiah(row.amount)}</td>
+                    <td data-label="No">{row.no}</td>
+                    <td data-label="Partner">{row.customer}</td>
+                    <td data-label="Jenis">{row.channel}</td>
+                    <td data-label="Status"><Badge variant={row.status === "Lunas" ? "success" : "outline"}>{row.status}</Badge></td>
+                    <td data-label="Total" className="right">{formatRupiah(row.amount)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -148,11 +148,11 @@ export default function DashboardClient() {
               <tbody>
                 {inventory.map((row) => (
                   <tr key={row.sku}>
-                    <td>{row.sku}</td>
-                    <td>{row.item}</td>
-                    <td>{row.location}</td>
-                    <td>{row.qty}</td>
-                    <td><Badge variant={row.status === "Aman" ? "success" : "warning"}>{row.status}</Badge></td>
+                    <td data-label="SKU">{row.sku}</td>
+                    <td data-label="Barang">{row.item}</td>
+                    <td data-label="Lokasi">{row.location}</td>
+                    <td data-label="Saldo">{row.qty}</td>
+                    <td data-label="Status"><Badge variant={row.status === "Aman" ? "success" : "warning"}>{row.status}</Badge></td>
                   </tr>
                 ))}
               </tbody>

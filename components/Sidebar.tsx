@@ -19,10 +19,10 @@ import {
 } from "lucide-react";
 
 const NAV = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/pos", label: "POS Kasir", icon: ShoppingCart },
-  { href: "/inventory/stock", label: "Stok Gudang", icon: Warehouse },
-  { href: "/sales", label: "Penjualan", icon: ReceiptText },
+  { href: "/", label: "Dashboard", icon: LayoutDashboard, mobile: true },
+  { href: "/pos", label: "POS Kasir", icon: ShoppingCart, mobile: true },
+  { href: "/inventory/stock", label: "Stok Gudang", icon: Warehouse, mobile: true },
+  { href: "/sales", label: "Penjualan", icon: ReceiptText, mobile: true },
   { href: "/purchases", label: "Pembelian", icon: PackageOpen },
   { href: "/delivery", label: "Delivery", icon: Truck },
   { href: "/receivables", label: "Piutang", icon: CreditCard },
@@ -30,7 +30,7 @@ const NAV = [
   { href: "/master/products", label: "Produk & Harga", icon: Boxes },
   { href: "/inventory/repack", label: "Repack", icon: Repeat2 },
   { href: "/reprints", label: "Cetak Nota", icon: Printer },
-  { href: "/reports", label: "Laporan", icon: BarChart3 },
+  { href: "/reports", label: "Laporan", icon: BarChart3, mobile: true },
   { href: "/settings", label: "Pengaturan", icon: ClipboardList },
 ];
 
@@ -61,7 +61,7 @@ export default function Sidebar() {
           const Icon = item.icon;
 
           return (
-            <Link key={item.href} href={item.href} className={active ? "active" : ""}>
+            <Link key={item.href} href={item.href} className={`${active ? "active" : ""} ${item.mobile ? "mobile-primary" : "mobile-secondary"}`}>
               <Icon size={16} />
               <span>{item.label}</span>
             </Link>

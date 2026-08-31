@@ -178,7 +178,7 @@ export default function PosClient() {
         </div>
       </section>
 
-      <aside className="cart-panel">
+      <aside className={`cart-panel ${cart.length === 0 ? "is-empty" : "has-items"}`}>
         <Card>
           <CardHeader>
             <div className="cart-heading">
