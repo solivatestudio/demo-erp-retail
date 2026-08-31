@@ -51,6 +51,7 @@ export default function PosClient() {
   const [query, setQuery] = useState("");
   const [paid, setPaid] = useState(0);
   const [receipt, setReceipt] = useState<SalesReceipt | null>(null);
+  const [mobileCartOpen, setMobileCartOpen] = useState(false);
 
   useEffect(() => {
     const savedStock = getStockSnapshot();
@@ -155,8 +156,8 @@ export default function PosClient() {
               </Badge>
               <Badge variant="outline">Toko Utama</Badge>
             </div>
-            <h1>POS Kasir</h1>
-            <p>Pilih pelanggan, scan atau klik barang, lalu selesaikan pembayaran di kasir.</p>
+            <h1>Point of Sale</h1>
+            <p>Tambah produk ke transaksi dengan klik atau scan barcode.</p>
           </div>
           <div className="pos-selectors">
             <select value={customerId} onChange={(event) => setCustomerId(event.target.value)}>
@@ -180,7 +181,7 @@ export default function PosClient() {
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Ketik nama produk, SKU, barcode (contoh: Cup 16oz, Mika Bento, Kresek 15)..."
+                placeholder="Cari produk, SKU, atau scan barcode..."
               />
             </div>
             <div className="category-tabs">
@@ -233,8 +234,8 @@ export default function PosClient() {
         </div>
       </section>
 
-      {/* POS Cart Sidebar */}
-      <aside className={`cart-panel ${cart.length === 0 ? "is-empty" : "has-items"}`}>
+      {mobileCartOpen && <button className="mobile-cart-backdrop" aria-label="Tutup keranjang" onClick={() => setMobileCartOpen(false)} />}
+      <aside className={`cart-panel ${cart.length === 0 ? "is-empty" : "has-items"} ${mobileCartOpen ? "mobile-open" : ""}`}>
         <Card className="cart-card-container">
           <CardHeader className="cart-card-header">
             <div className="cart-heading">
@@ -245,7 +246,7 @@ export default function PosClient() {
                 </CardDescription>
               </div>
               <div className="cart-header-icon">
-                <ShoppingCart size={18} />
+                <ShoppingCart size={18} /><button className="mobile-cart-close" onClick={() => setMobileCartOpen(false)} aria-label="Tutup"><X size={18}/></button>
               </div>
             </div>
           </CardHeader>
@@ -348,6 +349,8 @@ export default function PosClient() {
           </CardContent>
         </Card>
       </aside>
+
+      {cart.length > 0 && <div className="mobile-cart-bar"><div><span>{itemCount} item</span><strong>{formatRupiah(total)}</strong></div><Button onClick={() => setMobileCartOpen(true)}>Lihat Keranjang <ShoppingCart size={16}/></Button></div>}
 
       {/* Nota / Receipt Print Preview Modal */}
       {receipt && (

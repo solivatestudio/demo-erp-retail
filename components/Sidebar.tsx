@@ -2,77 +2,41 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  BarChart3,
-  Boxes,
-  ClipboardList,
-  CreditCard,
-  LayoutDashboard,
-  PackageOpen,
-  ReceiptText,
-  Repeat2,
-  Printer,
-  ShoppingCart,
-  Truck,
-  WalletCards,
-  Warehouse,
-} from "lucide-react";
+import { BarChart3, Boxes, ChevronDown, CircleDollarSign, ClipboardCheck, CreditCard, LayoutDashboard, PackageOpen, ReceiptText, Repeat2, Settings, ShoppingCart, Truck, Users, WalletCards, Warehouse } from "lucide-react";
 
-const NAV = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard, mobile: true },
-  { href: "/pos", label: "POS Kasir", icon: ShoppingCart, mobile: true },
-  { href: "/inventory/stock", label: "Stok Gudang", icon: Warehouse, mobile: true },
-  { href: "/sales", label: "Penjualan", icon: ReceiptText, mobile: true },
-  { href: "/purchases", label: "Pembelian", icon: PackageOpen },
-  { href: "/delivery", label: "Delivery", icon: Truck },
-  { href: "/receivables", label: "Piutang", icon: CreditCard },
-  { href: "/payables", label: "Hutang", icon: WalletCards },
-  { href: "/master/products", label: "Produk & Harga", icon: Boxes },
-  { href: "/inventory/repack", label: "Repack", icon: Repeat2 },
-  { href: "/reprints", label: "Cetak Nota", icon: Printer },
-  { href: "/reports", label: "Laporan", icon: BarChart3, mobile: true },
-  { href: "/settings", label: "Pengaturan", icon: ClipboardList },
+const GROUPS = [
+  { label: "Operasional", items: [
+    { href: "/", label: "Dashboard", icon: LayoutDashboard, mobile: true }, { href: "/pos", label: "POS", icon: ShoppingCart, mobile: true },
+    { href: "/sales", label: "Penjualan", icon: ReceiptText, mobile: true }, { href: "/purchases", label: "Pembelian", icon: PackageOpen },
+    { href: "/delivery", label: "Delivery", icon: Truck },
+  ]},
+  { label: "Persediaan", items: [
+    { href: "/inventory/stock", label: "Inventory", icon: Boxes, mobile: true }, { href: "/inventory/transfers", label: "Transfer Gudang", icon: Warehouse },
+    { href: "/inventory/repack", label: "Repack", icon: Repeat2 }, { href: "/inventory/adjustments", label: "Stock Opname", icon: ClipboardCheck },
+  ]},
+  { label: "Keuangan", items: [
+    { href: "/receivables", label: "Piutang", icon: CreditCard }, { href: "/payables", label: "Hutang", icon: WalletCards }, { href: "/cash/in", label: "Kas", icon: CircleDollarSign },
+  ]},
+  { label: "Analisis", items: [{ href: "/reports", label: "Laporan", icon: BarChart3, mobile: true }]},
+  { label: "Pengaturan", items: [
+    { href: "/master/products", label: "Master Data", icon: Users }, { href: "/master/warehouses", label: "Outlet & Gudang", icon: Warehouse }, { href: "/settings", label: "User & Akses", icon: Settings },
+  ]},
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
-
+  const isActive = (href: string) => pathname === href || (href !== "/" && Boolean(pathname?.startsWith(href + "/"))) || (href === "/" && pathname === "/dashboard");
   return (
     <aside className="app-sidebar">
-      <Link href="/" className="sidebar-brand">
-        <span>KL</span>
-        <div>
-          <strong>Kelolain</strong>
-          <small>Retail & Wholesale ERP</small>
-        </div>
-      </Link>
-
-      <div className="sidebar-context">
-        <strong>Toko Utama</strong>
-        <span>Kasir, gudang, owner dashboard</span>
-      </div>
-
+      <Link href="/" className="sidebar-brand"><span>KA</span><div><strong>Kelolain</strong><small>Akurat dan Aktif</small></div></Link>
+      <button className="sidebar-context" type="button"><span><small>Outlet aktif</small><strong>Semua Outlet</strong></span><ChevronDown size={15} /></button>
       <nav className="sidebar-nav" aria-label="Navigasi aplikasi">
-        {NAV.map((item) => {
-          const active =
-            pathname === item.href ||
-            (item.href !== "/" && Boolean(pathname?.startsWith(item.href + "/"))) ||
-            (item.href === "/" && pathname === "/dashboard");
-          const Icon = item.icon;
-
-          return (
-            <Link key={item.href} href={item.href} className={`${active ? "active" : ""} ${item.mobile ? "mobile-primary" : "mobile-secondary"}`}>
-              <Icon size={16} />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+        {GROUPS.map((group) => <div className="nav-group" key={group.label}>
+          <span className="nav-group-label">{group.label}</span>
+          {group.items.map((item) => { const Icon = item.icon; return <Link key={item.href} href={item.href} className={`${isActive(item.href) ? "active" : ""} ${item.mobile ? "mobile-primary" : "mobile-secondary"}`}><Icon size={17} /><span>{item.label}</span></Link>; })}
+        </div>)}
       </nav>
-
-      <div className="sidebar-footer">
-        <span>Operator</span>
-        <strong>Admin Toko</strong>
-      </div>
+      <div className="sidebar-footer"><span className="avatar">OA</span><div><strong>Okky Aditya</strong><small>Owner</small></div></div>
     </aside>
   );
 }

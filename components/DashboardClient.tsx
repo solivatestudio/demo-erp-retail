@@ -1,185 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { Archive, ArrowRight, Banknote, ReceiptText, ShoppingCart, Truck, WalletCards } from "lucide-react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, CalendarDays, CreditCard, PackageX, ReceiptText } from "lucide-react";
 import { formatRupiah } from "../lib/utils/format";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 
 const kpis = [
-  { label: "Penjualan Hari Ini", value: 18750000, note: "+12,4%", variant: "success" },
-  { label: "Nota POS", value: "42", note: "3 kasir", variant: "default" },
-  { label: "Piutang Jatuh Tempo", value: 7420000, note: "5 pelanggan", variant: "warning" },
-  { label: "Stok Kritis", value: "8 SKU", note: "perlu restock", variant: "warning" },
+  { label: "Omzet hari ini", value: "Rp18,75 jt", delta: "+12,4%", up: true, caption: "dibanding kemarin" },
+  { label: "Laba kotor", value: "Rp4,32 jt", delta: "+8,1%", up: true, caption: "margin 23,0%" },
+  { label: "Piutang usaha", value: "Rp37,8 jt", delta: "Rp7,4 jt", up: false, caption: "jatuh tempo minggu ini" },
+  { label: "Stok kritis", value: "18 SKU", delta: "+3", up: false, caption: "perlu ditindaklanjuti" },
 ];
-
-const shortcuts = [
-  { title: "Transaksi POS", desc: "Kasir toko", href: "/pos", icon: ShoppingCart },
-  { title: "Pembelian", desc: "Nota supplier", href: "/purchases", icon: ReceiptText },
-  { title: "Stok Gudang", desc: "Saldo persediaan", href: "/inventory/stock", icon: Archive },
-  { title: "Delivery", desc: "Status pengiriman", href: "/delivery", icon: Truck },
-];
-
+const sales = [42, 49, 46, 61, 56, 67, 64, 77, 72, 86, 81, 94, 89, 104];
+const outlets = [{name:"Toko Utama",value:48,color:"#1d4ed8"},{name:"Outlet Cibubur",value:31,color:"#60a5fa"},{name:"Outlet Depok",value:21,color:"#bfdbfe"}];
 const transactions = [
-  { no: "POS-000184", customer: "Pelanggan Umum (Walk-in)", channel: "POS Kasir", status: "Lunas", amount: 168000 },
-  { no: "SAL-000091", customer: "Warung Makan Bu Aminah", channel: "Grosir", status: "Piutang", amount: 3420000 },
-  { no: "PUR-000044", customer: "PT Sinar Joyoboyo Plastik", channel: "Pembelian", status: "Partial", amount: 8450000 },
-  { no: "DLV-000027", customer: "Gatotkoco 2 (Krapyak)", channel: "Delivery / Mutasi", status: "12/12 dus", amount: 2640000 },
+  { no: "INV-260831-239", customer: "Pelanggan Umum", time: "14:42", status: "Lunas", amount: 1865000 },
+  { no: "INV-260831-238", customer: "CV Mitra Sejahtera", time: "14:18", status: "Tempo", amount: 4930000 },
+  { no: "INV-260831-237", customer: "Toko Berkah Jaya", time: "13:55", status: "Lunas", amount: 930000 },
+  { no: "INV-260831-236", customer: "PT Nusantara Niaga", time: "13:31", status: "Lunas", amount: 2745000 },
 ];
-
-const inventory = [
-  { sku: "SKU-ROLL-PE08", item: "Plastik Roll PE Bening 0.8 mm (10 kg)", location: "Toko Utama", qty: "6 roll", status: "Low" },
-  { sku: "SKU-BOX-LUNCH-M", item: "Paper Lunch Box Medium Kraft", location: "Gudang Utama", qty: "3 pack", status: "Restock" },
-  { sku: "SKU-BUBBLE-50M", item: "Bubble Wrap Roll 50m x 125cm", location: "Toko Utama", qty: "0 roll", status: "Habis" },
-  { sku: "SKU-CUP-16OZ", item: "Cup Plastik PP 16oz Oza Slim", location: "Toko Utama", qty: "45 pack", status: "Aman" },
-];
-
-const finance = [
-  { label: "Kas Masuk", value: 12850000, icon: Banknote },
-  { label: "Kas Keluar", value: 4850000, icon: WalletCards },
-  { label: "Margin Kotor", value: 3650000, icon: ReceiptText },
+const attention = [
+  { icon: PackageX, title: "18 produk stok kritis", note: "5 produk sudah habis di Toko Utama", href: "/inventory/stock", tone: "danger" },
+  { icon: CreditCard, title: "7 piutang jatuh tempo", note: "Total tagihan Rp7.420.000", href: "/receivables", tone: "warning" },
+  { icon: ReceiptText, title: "4 pembelian belum lunas", note: "Jatuh tempo dalam 3 hari", href: "/payables", tone: "neutral" },
 ];
 
 export default function DashboardClient() {
-  return (
-    <div className="dashboard-page">
-      <section className="page-header">
-        <div>
-          <span>Dashboard</span>
-          <h1>Ringkasan Operasional</h1>
-          <p>Monitor penjualan, stok, pembayaran, dan pengiriman toko dalam satu layar.</p>
-        </div>
-        <div className="header-actions">
-          <Button asChild>
-            <Link href="/pos">Buka POS</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/reports">Laporan</Link>
-          </Button>
-        </div>
-      </section>
-
-      <section className="kpi-grid">
-        {kpis.map((kpi) => (
-          <Card key={kpi.label} className="kpi-card">
-            <CardHeader>
-              <CardDescription>{kpi.label}</CardDescription>
-              <CardTitle>{typeof kpi.value === "number" ? formatRupiah(kpi.value) : kpi.value}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Badge variant={kpi.variant as "success" | "default" | "warning"}>{kpi.note}</Badge>
-            </CardContent>
-          </Card>
-        ))}
-      </section>
-
-      <section className="dashboard-grid">
-        <Card className="span-7">
-          <CardHeader>
-            <CardTitle>Transaksi Terbaru</CardTitle>
-            <CardDescription>Penjualan, pembelian, dan pengiriman terakhir.</CardDescription>
-          </CardHeader>
-          <CardContent className="data-table compact">
-            <table>
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Partner</th>
-                  <th>Jenis</th>
-                  <th>Status</th>
-                  <th className="right">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactions.map((row) => (
-                  <tr key={row.no}>
-                    <td data-label="No">{row.no}</td>
-                    <td data-label="Partner">{row.customer}</td>
-                    <td data-label="Jenis">{row.channel}</td>
-                    <td data-label="Status"><Badge variant={row.status === "Lunas" ? "success" : "outline"}>{row.status}</Badge></td>
-                    <td data-label="Total" className="right">{formatRupiah(row.amount)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-
-        <Card className="span-5">
-          <CardHeader>
-            <CardTitle>Akses Cepat</CardTitle>
-            <CardDescription>Modul yang paling sering digunakan operator.</CardDescription>
-          </CardHeader>
-          <CardContent className="shortcut-list">
-            {shortcuts.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link href={item.href} key={item.title}>
-                  <Icon size={17} />
-                  <div>
-                    <strong>{item.title}</strong>
-                    <span>{item.desc}</span>
-                  </div>
-                  <ArrowRight size={15} />
-                </Link>
-              );
-            })}
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="dashboard-grid">
-        <Card className="span-7">
-          <CardHeader>
-            <CardTitle>Persediaan Perlu Perhatian</CardTitle>
-            <CardDescription>Barang dengan saldo rendah atau perlu restock.</CardDescription>
-          </CardHeader>
-          <CardContent className="data-table compact">
-            <table>
-              <thead>
-                <tr>
-                  <th>SKU</th>
-                  <th>Barang</th>
-                  <th>Lokasi</th>
-                  <th>Saldo</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {inventory.map((row) => (
-                  <tr key={row.sku}>
-                    <td data-label="SKU">{row.sku}</td>
-                    <td data-label="Barang">{row.item}</td>
-                    <td data-label="Lokasi">{row.location}</td>
-                    <td data-label="Saldo">{row.qty}</td>
-                    <td data-label="Status"><Badge variant={row.status === "Aman" ? "success" : "warning"}>{row.status}</Badge></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-
-        <Card className="span-5">
-          <CardHeader>
-            <CardTitle>Kas & Profitabilitas</CardTitle>
-            <CardDescription>Ringkasan arus kas dan margin hari ini.</CardDescription>
-          </CardHeader>
-          <CardContent className="finance-list">
-            {finance.map((row) => {
-              const Icon = row.icon;
-              return (
-                <div key={row.label}>
-                  <Icon size={17} />
-                  <span>{row.label}</span>
-                  <strong>{formatRupiah(row.value)}</strong>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
-      </section>
-    </div>
-  );
+  const points = sales.map((v,i)=>`${(i/(sales.length-1))*100},${100-((v-35)/75)*100}`).join(" ");
+  return <div className="dashboard-page owner-dashboard">
+    <section className="owner-heading"><div><h1>Selamat sore, Pak Okky</h1><p>Berikut ringkasan operasional bisnis Anda hari ini.</p></div><div className="date-control"><CalendarDays size={15}/><span>31 Agustus 2026</span></div></section>
+    <section className="kpi-grid owner-kpis">{kpis.map((k)=><Card key={k.label} className="kpi-card"><CardHeader><CardDescription>{k.label}</CardDescription><CardTitle>{k.value}</CardTitle></CardHeader><CardContent><span className={k.up?"trend-up":"trend-alert"}>{k.up?<ArrowUpRight size={13}/>:<ArrowDownRight size={13}/>} {k.delta}</span><small>{k.caption}</small></CardContent></Card>)}</section>
+    <section className="analytics-grid">
+      <Card className="sales-chart"><CardHeader><div><CardTitle>Penjualan 14 hari</CardTitle><CardDescription>Performa omzet seluruh outlet</CardDescription></div><strong>Rp214,8 jt <small>+14,2%</small></strong></CardHeader><CardContent><div className="chart-y"><span>30 jt</span><span>20 jt</span><span>10 jt</span><span>0</span></div><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Grafik penjualan"><defs><linearGradient id="salesFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#2563eb" stopOpacity=".22"/><stop offset="1" stopColor="#2563eb" stopOpacity="0"/></linearGradient></defs><polygon points={`0,100 ${points} 100,100`} fill="url(#salesFill)"/><polyline points={points} fill="none" stroke="#2563eb" strokeWidth="2" vectorEffect="non-scaling-stroke"/></svg><div className="chart-x"><span>18 Agu</span><span>22 Agu</span><span>26 Agu</span><span>31 Agu</span></div></CardContent></Card>
+      <Card className="outlet-chart"><CardHeader><CardTitle>Penjualan per outlet</CardTitle><CardDescription>Kontribusi omzet bulan ini</CardDescription></CardHeader><CardContent><div className="donut"/><div className="outlet-total"><strong>Rp482,6 jt</strong><span>Total omzet</span></div><div className="outlet-legend">{outlets.map(o=><div key={o.name}><i style={{background:o.color}}/><span>{o.name}</span><strong>{o.value}%</strong></div>)}</div></CardContent></Card>
+    </section>
+    <section className="dashboard-grid lower-grid">
+      <Card className="span-5 attention-card"><CardHeader><CardTitle>Perlu perhatian</CardTitle><CardDescription>Prioritas operasional yang perlu ditindaklanjuti</CardDescription></CardHeader><CardContent>{attention.map(a=>{const Icon=a.icon;return <Link href={a.href} key={a.title} className={`attention-row ${a.tone}`}><span><Icon size={17}/></span><div><strong>{a.title}</strong><small>{a.note}</small></div><ArrowRight size={15}/></Link>})}</CardContent></Card>
+      <Card className="span-7"><CardHeader className="section-heading"><div><CardTitle>Transaksi terbaru</CardTitle><CardDescription>Pembaruan transaksi dari seluruh outlet</CardDescription></div><Button asChild variant="ghost" size="sm"><Link href="/sales">Lihat semua <ArrowRight size={14}/></Link></Button></CardHeader><CardContent className="data-table compact"><table><thead><tr><th>Nomor transaksi</th><th>Pelanggan</th><th>Waktu</th><th>Status</th><th className="right">Total</th></tr></thead><tbody>{transactions.map(r=><tr key={r.no}><td data-label="Transaksi"><strong>{r.no}</strong></td><td data-label="Pelanggan">{r.customer}</td><td data-label="Waktu">{r.time}</td><td data-label="Status"><Badge variant={r.status==="Lunas"?"success":"warning"}>{r.status}</Badge></td><td data-label="Total" className="right">{formatRupiah(r.amount)}</td></tr>)}</tbody></table></CardContent></Card>
+    </section>
+  </div>;
 }
