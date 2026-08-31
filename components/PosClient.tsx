@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Minus, Plus, Printer, ReceiptText, Search, ShoppingCart, Trash2, X } from "lucide-react";
+import { Banknote, Minus, Plus, Printer, ReceiptText, Search, ShoppingCart, Trash2, X } from "lucide-react";
 import { formatRupiah } from "../lib/utils/format";
 import { getStockSnapshot, SalesReceipt, saveSalesReceipt, saveStockSnapshot } from "../lib/demoFlow";
+import { calculateStockStatus } from "../lib/stockLogic";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
@@ -18,17 +19,19 @@ type Product = {
   wholesale: number;
   stockToko: number;
   stockGudang: number;
+  lowStockThreshold?: number;
+  reorderPoint?: number;
 };
 
 type CartLine = Product & { qty: number; price: number };
 
 const initialProducts: Product[] = [
-  { id: "p1", sku: "SKU-001", name: "Beras Premium 5 kg", category: "Sembako", unit: "sak", retail: 72000, wholesale: 68500, stockToko: 42, stockGudang: 120 },
-  { id: "p2", sku: "SKU-004", name: "Minyak Goreng 1 L", category: "Sembako", unit: "botol", retail: 18500, wholesale: 17000, stockToko: 260, stockGudang: 900 },
-  { id: "p3", sku: "SKU-008", name: "Susu UHT 1 L", category: "Minuman", unit: "kotak", retail: 21000, wholesale: 19500, stockToko: 18, stockGudang: 45 },
-  { id: "p4", sku: "SKU-014", name: "Mie Instan Goreng", category: "Makanan", unit: "dus", retail: 118000, wholesale: 109000, stockToko: 8, stockGudang: 36 },
-  { id: "p5", sku: "SKU-021", name: "Kopi Sachet 10 pcs", category: "Minuman", unit: "pack", retail: 16500, wholesale: 14800, stockToko: 12, stockGudang: 4 },
-  { id: "p6", sku: "SKU-026", name: "Sabun Cair 450 ml", category: "Household", unit: "botol", retail: 24500, wholesale: 22500, stockToko: 64, stockGudang: 180 },
+  { id: "p1", sku: "SKU-001", name: "Beras Premium 5 kg", category: "Sembako", unit: "sak", retail: 72000, wholesale: 68500, stockToko: 32, stockGudang: 120, lowStockThreshold: 20, reorderPoint: 10 },
+  { id: "p2", sku: "SKU-004", name: "Minyak Goreng 1 L", category: "Sembako", unit: "karton", retail: 18500, wholesale: 17000, stockToko: 16, stockGudang: 36, lowStockThreshold: 20, reorderPoint: 10 },
+  { id: "p3", sku: "SKU-008", name: "Susu UHT 1 L", category: "Minuman", unit: "kotak", retail: 21000, wholesale: 19500, stockToko: 0, stockGudang: 45, lowStockThreshold: 15, reorderPoint: 5 },
+  { id: "p4", sku: "SKU-014", name: "Mie Instan Goreng", category: "Makanan", unit: "dus", retail: 118000, wholesale: 109000, stockToko: 8, stockGudang: 36, lowStockThreshold: 20, reorderPoint: 10 },
+  { id: "p5", sku: "SKU-021", name: "Kopi Sachet 10 pcs", category: "Minuman", unit: "pack", retail: 16500, wholesale: 14800, stockToko: 7, stockGudang: 4, lowStockThreshold: 20, reorderPoint: 10 },
+  { id: "p6", sku: "SKU-026", name: "Sabun Cair 450 ml", category: "Household", unit: "botol", retail: 24500, wholesale: 22500, stockToko: 50, stockGudang: 180, lowStockThreshold: undefined, reorderPoint: undefined },
 ];
 
 const customers = [
@@ -49,15 +52,18 @@ export default function PosClient() {
   useEffect(() => {
     const savedStock = getStockSnapshot();
     if (Object.keys(savedStock).length === 0) return;
-    setProducts((current) => current.map((product) => ({
-      ...product,
-      stockToko: savedStock[product.sku] ?? product.stockToko,
-    })));
+    setProducts((current) =>
+      current.map((product) => ({
+        ...product,
+        stockToko: savedStock[product.sku] ?? product.stockToko,
+      }))
+    );
   }, []);
 
   const customer = customers.find((item) => item.id === customerId) ?? customers[0];
   const isWholesale = customer.group !== "Retail";
   const categories = ["Semua", ...Array.from(new Set(products.map((item) => item.category)))];
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return products.filter((item) => {
@@ -79,7 +85,8 @@ export default function PosClient() {
     setCart((current) => {
       const exists = current.find((item) => item.id === product.id);
       if (exists) {
-        return current.map((item) => item.id === product.id ? { ...item, qty: item.qty + 1 } : item);
+        if (exists.qty >= product.stockToko) return current; // limit by stock
+        return current.map((item) => (item.id === product.id ? { ...item, qty: item.qty + 1 } : item));
       }
       return [...current, { ...product, price, qty: 1 }];
     });
@@ -88,7 +95,12 @@ export default function PosClient() {
   const updateQty = (id: string, delta: number) => {
     setCart((current) =>
       current
-        .map((item) => item.id === id ? { ...item, qty: Math.max(0, item.qty + delta) } : item)
+        .map((item) => {
+          if (item.id !== id) return item;
+          const nextQty = item.qty + delta;
+          if (nextQty > item.stockToko) return item; // stock limit
+          return { ...item, qty: Math.max(0, nextQty) };
+        })
         .filter((item) => item.qty > 0)
     );
   };
@@ -97,13 +109,14 @@ export default function PosClient() {
     if (cart.length === 0) return;
     const paidAmount = paid || total;
     const nextProducts = products.map((product) => {
-        const line = cart.find((item) => item.id === product.id);
-        return line ? { ...product, stockToko: Math.max(0, product.stockToko - line.qty) } : product;
-      });
+      const line = cart.find((item) => item.id === product.id);
+      return line ? { ...product, stockToko: Math.max(0, product.stockToko - line.qty) } : product;
+    });
+
     const nextReceipt: SalesReceipt = {
       number: `POS-${String(Date.now()).slice(-6)}`,
       date: new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(new Date()),
-      cashier: "Admin Toko",
+      cashier: "Kasir 01 (Siti)",
       customer: customer.name,
       customerGroup: customer.group,
       warehouse: "Toko Utama",
@@ -119,6 +132,7 @@ export default function PosClient() {
         subtotal: item.qty * item.price,
       })),
     };
+
     setProducts(nextProducts);
     saveStockSnapshot(Object.fromEntries(nextProducts.map((product) => [product.sku, product.stockToko])));
     saveSalesReceipt(nextReceipt);
@@ -132,17 +146,26 @@ export default function PosClient() {
       <section className="pos-catalog">
         <div className="pos-toolbar">
           <div>
-            <Badge variant={isWholesale ? "warning" : "success"}>{isWholesale ? "Harga grosir/tempo" : "Harga retail"}</Badge>
+            <div className="flex items-center gap-2 mb-1">
+              <Badge variant={isWholesale ? "warning" : "success"}>
+                {isWholesale ? "Grosir / Mitra" : "Retail Umum"}
+              </Badge>
+              <Badge variant="outline">Toko Utama</Badge>
+            </div>
             <h1>POS Kasir</h1>
-            <p>Pilih pelanggan, scan atau cari barang, lalu selesaikan pembayaran di kasir.</p>
+            <p>Pilih pelanggan, scan atau klik barang, lalu selesaikan pembayaran di kasir.</p>
           </div>
           <div className="pos-selectors">
             <select value={customerId} onChange={(event) => setCustomerId(event.target.value)}>
-              {customers.map((item) => <option key={item.id} value={item.id}>{item.name} · {item.group}</option>)}
+              {customers.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name} ({item.group})
+                </option>
+              ))}
             </select>
             <select defaultValue="toko">
-              <option value="toko">Toko Utama</option>
-              <option value="gudang">Gudang Utama</option>
+              <option value="toko">🏪 Toko Utama</option>
+              <option value="gudang">📦 Gudang Utama</option>
             </select>
           </div>
         </div>
@@ -151,11 +174,19 @@ export default function PosClient() {
           <CardContent className="pos-filter">
             <div className="pos-search">
               <Search size={16} />
-              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari produk / scan barcode..." />
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Ketik nama produk, SKU, barcode (contoh: Beras, Bimoli, SKU-001)..."
+              />
             </div>
             <div className="category-tabs">
               {categories.map((item) => (
-                <button key={item} className={category === item ? "active" : ""} onClick={() => setCategory(item)}>
+                <button
+                  key={item}
+                  className={category === item ? "active" : ""}
+                  onClick={() => setCategory(item)}
+                >
                   {item}
                 </button>
               ))}
@@ -164,120 +195,231 @@ export default function PosClient() {
         </Card>
 
         <div className="product-grid">
-          {filtered.map((product) => (
-            <button className="product-tile" key={product.id} onClick={() => addItem(product)}>
-              <div className="product-topline">
-                <span>{product.sku}</span>
-                <Badge variant={product.stockToko <= 10 ? "warning" : "outline"}>Toko {product.stockToko}</Badge>
-              </div>
-              <strong>{product.name}</strong>
-              <small>{product.category} · Gudang {product.stockGudang} · {product.unit}</small>
-              <b>{formatRupiah(priceFor(product))}</b>
-            </button>
-          ))}
+          {filtered.map((product) => {
+            const status = calculateStockStatus({
+              currentStock: product.stockToko,
+              lowStockThreshold: product.lowStockThreshold,
+              reorderPoint: product.reorderPoint,
+              uom: product.unit,
+            });
+
+            return (
+              <button
+                className={`product-tile ${product.stockToko <= 0 ? "is-out-of-stock" : ""}`}
+                key={product.id}
+                onClick={() => addItem(product)}
+                disabled={product.stockToko <= 0}
+              >
+                <div className="product-topline">
+                  <span>{product.sku}</span>
+                  <Badge variant={status.variant}>
+                    {status.label === "HABIS" ? "Habis" : `${product.stockToko} ${product.unit}`}
+                  </Badge>
+                </div>
+                <strong>{product.name}</strong>
+                <small>
+                  {product.category} · Gd: {product.stockGudang} {product.unit}
+                </small>
+                <div className="product-price-row">
+                  <b>{formatRupiah(priceFor(product))}</b>
+                  <span className="text-xs text-zinc-400">/{product.unit}</span>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </section>
 
+      {/* POS Cart Sidebar */}
       <aside className={`cart-panel ${cart.length === 0 ? "is-empty" : "has-items"}`}>
-        <Card>
-          <CardHeader>
+        <Card className="cart-card-container">
+          <CardHeader className="cart-card-header">
             <div className="cart-heading">
               <div>
-                <CardTitle>Keranjang</CardTitle>
-                <CardDescription>{itemCount} item · {customer.name}</CardDescription>
+                <CardTitle>Keranjang Belanja</CardTitle>
+                <CardDescription>
+                  {itemCount} item · {customer.name}
+                </CardDescription>
               </div>
-              <ShoppingCart size={20} />
+              <div className="cart-header-icon">
+                <ShoppingCart size={18} />
+              </div>
             </div>
           </CardHeader>
+
           <CardContent className="cart-content">
             {cart.length === 0 ? (
               <div className="cart-empty">
-                <ReceiptText size={28} />
-                <strong>Belum ada item</strong>
-                <span>Pilih produk dari grid kiri.</span>
+                <ReceiptText size={32} />
+                <strong>Keranjang Masih Kosong</strong>
+                <span>Klik produk di sebelah kiri untuk menambahkan pesanan.</span>
               </div>
             ) : (
               <div className="cart-lines">
                 {cart.map((item) => (
                   <div className="cart-line" key={item.id}>
-                    <div>
+                    <div className="cart-line-info">
                       <strong>{item.name}</strong>
-                      <span>{formatRupiah(item.price)} / {item.unit}</span>
+                      <span className="cart-line-meta">
+                        {formatRupiah(item.price)} / {item.unit}
+                      </span>
                     </div>
-                    <div className="qty-control">
-                      <button onClick={() => updateQty(item.id, -1)}><Minus size={14} /></button>
-                      <b>{item.qty}</b>
-                      <button onClick={() => updateQty(item.id, 1)}><Plus size={14} /></button>
+
+                    <div className="cart-line-ctrl">
+                      <div className="qty-control">
+                        <button type="button" onClick={() => updateQty(item.id, -1)} aria-label="Kurang">
+                          <Minus size={13} />
+                        </button>
+                        <b>{item.qty}</b>
+                        <button type="button" onClick={() => updateQty(item.id, 1)} aria-label="Tambah">
+                          <Plus size={13} />
+                        </button>
+                      </div>
+                      <em className="cart-line-subtotal">{formatRupiah(item.qty * item.price)}</em>
                     </div>
-                    <em>{formatRupiah(item.qty * item.price)}</em>
                   </div>
                 ))}
               </div>
             )}
 
-            <div className="cart-summary">
-              <div>
-                <span>Total</span>
-                <strong>{formatRupiah(total)}</strong>
-              </div>
-              <label>
-                <span>Tunai</span>
-                <input type="number" min={0} value={paid || ""} onChange={(event) => setPaid(Number(event.target.value) || 0)} placeholder="0" />
-              </label>
-              <div>
-                <span>Kembali</span>
-                <strong>{formatRupiah(change)}</strong>
-              </div>
-            </div>
+            {/* Bottom Section: Summary & Actions */}
+            <div className="cart-bottom-section">
+              <div className="cart-summary">
+                <div className="cart-total-row">
+                  <span>Total Tagihan</span>
+                  <strong className="cart-total-amount">{formatRupiah(total)}</strong>
+                </div>
 
-            <div className="cart-actions">
-              <Button variant="outline" disabled={cart.length === 0} onClick={() => setCart([])}>
-                <Trash2 size={15} /> Kosongkan
-              </Button>
-              <Button disabled={cart.length === 0} onClick={checkout}>
-                Bayar
-              </Button>
+                <div className="cart-payment-row">
+                  <span>Uang Diterima</span>
+                  <div className="cart-pay-input-wrap">
+                    <input
+                      type="number"
+                      min={0}
+                      value={paid || ""}
+                      onChange={(event) => setPaid(Number(event.target.value) || 0)}
+                      placeholder="Rp 0"
+                    />
+                  </div>
+                </div>
+
+                {/* Quick Cash Buttons */}
+                <div className="quick-cash-row">
+                  <button type="button" onClick={() => setPaid(total)}>
+                    Pas ({formatRupiah(total)})
+                  </button>
+                  <button type="button" onClick={() => setPaid(Math.ceil(total / 10000) * 10000)}>
+                    +10k
+                  </button>
+                  <button type="button" onClick={() => setPaid(Math.ceil(total / 50000) * 50000)}>
+                    +50k
+                  </button>
+                  <button type="button" onClick={() => setPaid(Math.ceil(total / 100000) * 100000)}>
+                    +100k
+                  </button>
+                </div>
+
+                <div className="cart-change-row">
+                  <span>Kembalian</span>
+                  <strong className={change > 0 ? "text-emerald-700" : ""}>{formatRupiah(change)}</strong>
+                </div>
+              </div>
+
+              <div className="cart-actions">
+                <Button
+                  variant="outline"
+                  size="default"
+                  disabled={cart.length === 0}
+                  onClick={() => {
+                    setCart([]);
+                    setPaid(0);
+                  }}
+                >
+                  <Trash2 size={15} /> Kosongkan
+                </Button>
+                <Button size="default" disabled={cart.length === 0} onClick={checkout}>
+                  <Banknote size={16} /> Bayar & Cetak Nota
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
       </aside>
 
+      {/* Nota / Receipt Print Preview Modal */}
       {receipt && (
         <div className="receipt-overlay" onClick={() => setReceipt(null)}>
           <div className="nota-modal" onClick={(event) => event.stopPropagation()}>
             <div className="nota-actions">
-              <Button variant="outline" onClick={() => window.print()}><Printer size={15} /> Cetak</Button>
-              <Button variant="ghost" size="icon" onClick={() => setReceipt(null)} aria-label="Tutup"><X size={16} /></Button>
+              <Button variant="outline" onClick={() => window.print()}>
+                <Printer size={15} /> Cetak Nota
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => setReceipt(null)} aria-label="Tutup">
+                <X size={16} />
+              </Button>
             </div>
             <div className="nota-paper">
               <header className="nota-header">
                 <strong>Kelolain / Akuratif</strong>
                 <span>Jl. Operasional No. 10, Jakarta</span>
-                <span>Telp/WA 0812-0000-1234</span>
+                <span>Telp/WA: 0812-0000-1234</span>
               </header>
               <section className="nota-meta">
-                <div><span>No Nota</span><b>{receipt.number}</b></div>
-                <div><span>Tanggal</span><b>{receipt.date}</b></div>
-                <div><span>Pelanggan</span><b>{receipt.customer}</b></div>
-                <div><span>Grup</span><b>{receipt.customerGroup}</b></div>
-                <div><span>Gudang</span><b>{receipt.warehouse}</b></div>
-                <div><span>Kasir</span><b>{receipt.cashier}</b></div>
-              </section>
-            <div className="receipt-lines">
-              {receipt.lines.map((item) => (
-                <div key={item.sku}>
-                  <span>{item.name}</span>
-                  <em>{item.qty} {item.unit} × {formatRupiah(item.price)}</em>
-                  <b>{formatRupiah(item.subtotal)}</b>
+                <div>
+                  <span>No Nota:</span>
+                  <b>{receipt.number}</b>
                 </div>
-              ))}
-            </div>
-              <section className="nota-total">
-                <div><span>Total</span><b>{formatRupiah(receipt.total)}</b></div>
-                <div><span>Tunai</span><b>{formatRupiah(receipt.paid)}</b></div>
-                <div><span>Kembali</span><b>{formatRupiah(receipt.change)}</b></div>
+                <div>
+                  <span>Tanggal:</span>
+                  <b>{receipt.date}</b>
+                </div>
+                <div>
+                  <span>Pelanggan:</span>
+                  <b>{receipt.customer}</b>
+                </div>
+                <div>
+                  <span>Grup Harga:</span>
+                  <b>{receipt.customerGroup}</b>
+                </div>
+                <div>
+                  <span>Gudang:</span>
+                  <b>{receipt.warehouse}</b>
+                </div>
+                <div>
+                  <span>Kasir:</span>
+                  <b>{receipt.cashier}</b>
+                </div>
               </section>
-              <footer className="nota-footer">Barang yang sudah dibeli dapat ditukar sesuai kebijakan toko dengan membawa nota.</footer>
+              <div className="receipt-lines">
+                {receipt.lines.map((item) => (
+                  <div key={item.sku}>
+                    <span>{item.name}</span>
+                    <em>
+                      {item.qty} {item.unit} × {formatRupiah(item.price)}
+                    </em>
+                    <b>{formatRupiah(item.subtotal)}</b>
+                  </div>
+                ))}
+              </div>
+              <section className="nota-total">
+                <div>
+                  <span>Total Tagihan:</span>
+                  <b>{formatRupiah(receipt.total)}</b>
+                </div>
+                <div>
+                  <span>Tunai / Bayar:</span>
+                  <b>{formatRupiah(receipt.paid)}</b>
+                </div>
+                <div>
+                  <span>Kembalian:</span>
+                  <b>{formatRupiah(receipt.change)}</b>
+                </div>
+              </section>
+              <footer className="nota-footer">
+                Terima kasih atas kunjungan Anda.
+                <br />
+                Barang yang sudah dibeli dapat ditukar sesuai kebijakan toko.
+              </footer>
             </div>
           </div>
         </div>
