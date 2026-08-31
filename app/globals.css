@@ -770,184 +770,467 @@ a:focus-visible {
   gap: 12px;
 }
 
-/* Multi-Warehouse Filter Pills */
-.warehouse-filter-card {
-  margin-bottom: 16px;
-  border-radius: 16px;
-  background: #ffffff;
+/* ========================================================
+   Multi-Warehouse Inventory & Clean Stock Management
+   ======================================================== */
+.stock-warehouse-dashboard {
+  margin-bottom: 18px;
 }
 
-.warehouse-filter-content {
-  padding: 14px 18px;
+.warehouse-selector-card {
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.warehouse-selector-body {
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
-.warehouse-filter-header {
+.warehouse-nav-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.warehouse-pills {
-  display: flex;
+  gap: 16px;
   flex-wrap: wrap;
-  gap: 8px;
 }
 
-.warehouse-pill {
+.warehouse-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.warehouse-icon-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #f4f4f5;
+  color: #18181b;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.warehouse-segmented-control {
+  display: flex;
+  background: #f4f4f5;
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+  border: 1px solid #e4e4e7;
+}
+
+.segmented-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
-  border-radius: 10px;
+  padding: 7px 14px;
+  border-radius: 9px;
+  border: 0;
+  background: transparent;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #71717a;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.segmented-btn:hover {
+  color: #18181b;
+}
+
+.segmented-btn.active {
+  background: #ffffff;
+  color: #18181b;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Quick Stock Status Filter Pills */
+.stock-status-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #f4f4f5;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
   border: 1px solid var(--border);
   background: #fbfbfa;
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 750;
   color: #52525b;
+  cursor: pointer;
   transition: all 0.15s ease;
 }
 
-.warehouse-pill:hover {
+.status-chip:hover {
+  border-color: #a1a1aa;
   background: #f4f4f5;
-  border-color: #d4d4d8;
-  color: var(--foreground);
 }
 
-.warehouse-pill.active {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--primary-foreground);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+.status-chip.active {
+  background: #18181b;
+  color: #ffffff;
+  border-color: #18181b;
 }
 
-/* Explainable Stock Status Badges & Popovers */
-.status-header-cell {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+.status-chip.active .status-dot {
+  background: #ffffff;
 }
 
-.status-info-trigger {
-  color: var(--muted-foreground);
-  cursor: help;
-  display: grid;
-  place-items: center;
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.status-badge-wrapper {
-  position: relative;
+.dot-success { background: #10b981; }
+.dot-warning { background: #f59e0b; }
+.dot-danger, .dot-destructive { background: #ef4444; }
+.dot-dark { background: #64748b; }
+.dot-secondary { background: #a1a1aa; }
+
+/* Clean Stock Table Design */
+.sku-badge {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11.5px;
+  font-weight: 750;
+  background: #f4f4f5;
+  color: #27272a;
+  padding: 3px 8px;
+  border-radius: 7px;
+  border: 1px solid #e4e4e7;
   display: inline-block;
 }
 
-.stock-badge-btn {
+.product-info-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.product-title-text {
+  font-size: 13.5px;
+  font-weight: 750;
+  color: #18181b;
+}
+
+.product-uom-tag {
+  font-size: 11px;
+  color: #71717a;
+}
+
+.category-brand-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cat-tag {
+  font-size: 12px;
+  font-weight: 650;
+  color: #3f3f46;
+}
+
+.brand-tag {
+  font-size: 11px;
+  color: #a1a1aa;
+}
+
+.stock-qty-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+.stock-main-qty b {
+  font-size: 14.5px;
+  font-weight: 850;
+  color: #18181b;
+}
+
+.stock-main-qty small {
+  font-size: 12px;
+  font-weight: 650;
+  color: #71717a;
+  margin-left: 2px;
+}
+
+.warehouse-breakdown-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.wh-chip {
+  font-size: 10px;
+  font-weight: 700;
+  background: #f4f4f5;
+  color: #52525b;
+  border: 1px solid #e4e4e7;
+  padding: 1px 5px;
+  border-radius: 5px;
+}
+
+.threshold-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11.5px;
+  align-items: flex-end;
+}
+
+.threshold-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.threshold-row small {
+  color: #71717a;
+  font-size: 10.5px;
+}
+
+.threshold-row b {
+  color: #27272a;
+}
+
+.hpp-price {
+  font-size: 12.5px;
+  font-weight: 750;
+  color: #27272a;
+}
+
+/* Status Badges */
+.stock-status-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  padding: 4px 10px;
   border-radius: 999px;
-  padding: 3px 10px;
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: transform 0.1s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  white-space: nowrap;
 }
 
-.stock-badge-btn:hover {
-  transform: scale(1.04);
+.stock-status-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-.badge-info-icon {
-  opacity: 0.65;
-}
-
-.badge-success {
+.pill-success {
   background: #ecfdf5;
   color: #047857;
   border-color: #a7f3d0;
 }
 
-.badge-warning {
+.pill-warning {
   background: #fffbeb;
   color: #b45309;
   border-color: #fde68a;
 }
 
-.badge-destructive {
+.pill-destructive {
   background: #fef2f2;
   color: #dc2626;
   border-color: #fecaca;
 }
 
-.badge-secondary {
+.pill-secondary {
   background: #f4f4f5;
   color: #52525b;
   border-color: #e4e4e7;
 }
 
-.stock-explain-popover {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  z-index: 50;
-  width: 280px;
-  background: #18181b;
-  color: #ffffff;
-  border-radius: 12px;
-  padding: 12px 14px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-  font-size: 12px;
+.status-indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.popover-header {
+/* Dedicated Stock Analysis & Threshold Modal */
+.stock-analysis-modal-content {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.status-highlight-banner {
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid transparent;
+}
+
+.banner-success {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+}
+
+.banner-warning {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+.banner-destructive {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.banner-secondary {
+  background: #f4f4f5;
+  border-color: #e4e4e7;
+  color: #3f3f46;
+}
+
+.banner-top {
+  display: flex;
   align-items: center;
-  margin-bottom: 6px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  padding-bottom: 4px;
+  gap: 8px;
+  font-size: 13px;
 }
 
-.popover-header strong {
-  font-size: 12px;
-  letter-spacing: 0.05em;
+.banner-top strong {
+  font-size: 14px;
+  letter-spacing: 0.02em;
 }
 
-.popover-header button {
-  color: #a1a1aa;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
+.banner-loc-tag {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 750;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.popover-text {
-  margin: 0 0 8px;
-  font-size: 11.5px;
-  line-height: 1.45;
-  color: #e4e4e7;
+.banner-desc {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  opacity: 0.95;
 }
 
-.popover-breakdown {
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.analysis-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fbfbfa;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.analysis-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #18181b;
+  border-bottom: 1px solid #e4e4e7;
+  padding-bottom: 8px;
+}
+
+.analysis-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.breakdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: #52525b;
+}
+
+.breakdown-row b {
+  color: #18181b;
+}
+
+.breakdown-row.total-row {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed #d4d4d8;
+  font-size: 13.5px;
+}
+
+.breakdown-row.total-row strong {
+  color: #18181b;
+}
+
+.valuation-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.val-box {
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 3px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  padding: 6px 8px;
+}
+
+.val-box small {
   font-size: 11px;
+  color: #71717a;
+  font-weight: 700;
 }
 
-.popover-breakdown div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.val-box strong {
+  font-size: 14px;
+  color: #18181b;
 }
 
-.popover-breakdown span {
+.val-box.val-highlight {
+  background: #18181b;
+  border-color: #18181b;
+}
+
+.val-box.val-highlight small {
   color: #a1a1aa;
+}
+
+.val-box.val-highlight strong {
+  color: #ffffff;
 }
 
 .stock-list,

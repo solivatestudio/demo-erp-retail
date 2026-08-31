@@ -278,7 +278,7 @@ const CONFIG: Partial<Record<DemoKind, ModuleConfig>> = {
     stats: [{ label: "Profil Toko", value: "Lengkap" }, { label: "Template Nota", value: "Aktif" }, { label: "Global Threshold", value: "Aktif" }],
     columns: ["kode", "pengaturan", "nilai", "status"],
     rows: [
-      { kode: "STORE_NAME", pengaturan: "Nama Toko", nilai: "Kelolain / Akuratif", status: "Aktif" },
+      { kode: "STORE_NAME", pengaturan: "Nama Toko", nilai: "Kelolain", status: "Aktif" },
       { kode: "DEFAULT_LOW_STOCK", pengaturan: "Default Low Stock Threshold", nilai: "15", status: "Aktif" },
       { kode: "DEFAULT_REORDER_POINT", pengaturan: "Default Reorder Point", nilai: "5", status: "Aktif" },
       { kode: "RECEIPT_FOOTER", pengaturan: "Footer Nota", nilai: "Terima kasih atas kunjungan Anda.", status: "Aktif" },
@@ -871,7 +871,8 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
   // Inventory / Stock state
   const [stockProducts, setStockProducts] = useState<ProductStockData[]>(INITIAL_STOCK_PRODUCTS);
   const [selectedWarehouse, setSelectedWarehouse] = useState<"ALL" | "TOKO" | "GUDANG" | "CABANG">("ALL");
-  const [activeTooltipSku, setActiveTooltipSku] = useState<string | null>(null);
+  const [inspectingProduct, setInspectingProduct] = useState<ProductStockData | null>(null);
+  const [stockStatusFilter, setStockStatusFilter] = useState<string>("ALL");
 
   // General records state
   const [records, setRecords] = useState<Row[]>(config.rows);
@@ -914,23 +915,9 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
     setEditorOpen(false);
     setDetailModalOpen(false);
     setActiveTransaction(null);
+    setInspectingProduct(null);
+    setStockStatusFilter("ALL");
   }, [config, kind]);
-
-  // Filtered rows for general table
-  const rows = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return records;
-    return records.filter((row) => Object.values(row).some((value) => String(value).toLowerCase().includes(q)));
-  }, [records, query]);
-
-  // Filtered products for stock module
-  const filteredStockProducts = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return stockProducts.filter((item) => {
-      if (!q) return true;
-      return item.nama.toLowerCase().includes(q) || item.kode.toLowerCase().includes(q) || item.kategori.toLowerCase().includes(q);
-    });
-  }, [stockProducts, query]);
 
   // Function to get current stock by selected warehouse
   const getStockQtyByWarehouse = (item: ProductStockData) => {
@@ -940,6 +927,55 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
     // ALL -> aggregate
     return item.stockToko + item.stockGudang + item.stockCabang;
   };
+
+  // Filtered rows for general table
+  const rows = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return records;
+    return records.filter((row) => Object.values(row).some((value) => String(value).toLowerCase().includes(q)));
+  }, [records, query]);
+
+  // Stock status counts for quick filter chips
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = { AMAN: 0, LOW: 0, RESTOCK: 0, HABIS: 0, BELUM_DIATUR: 0 };
+    stockProducts.forEach((p) => {
+      const qty = getStockQtyByWarehouse(p);
+      const res = calculateStockStatus({
+        currentStock: qty,
+        lowStockThreshold: p.lowStockThreshold,
+        reorderPoint: p.reorderPoint,
+        uom: p.satuan,
+      });
+      if (counts[res.status] !== undefined) {
+        counts[res.status]++;
+      }
+    });
+    return counts;
+  }, [stockProducts, selectedWarehouse]);
+
+  // Filtered products for stock module
+  const filteredStockProducts = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return stockProducts.filter((item) => {
+      if (stockStatusFilter !== "ALL") {
+        const qty = getStockQtyByWarehouse(item);
+        const res = calculateStockStatus({
+          currentStock: qty,
+          lowStockThreshold: item.lowStockThreshold,
+          reorderPoint: item.reorderPoint,
+          uom: item.satuan,
+        });
+        if (res.status !== stockStatusFilter) return false;
+      }
+      if (!q) return true;
+      return (
+        item.nama.toLowerCase().includes(q) ||
+        item.kode.toLowerCase().includes(q) ||
+        item.kategori.toLowerCase().includes(q) ||
+        item.merk.toLowerCase().includes(q)
+      );
+    });
+  }, [stockProducts, query, selectedWarehouse, stockStatusFilter]);
 
   // Open Create Modal
   const openCreate = () => {
@@ -1126,49 +1162,109 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
 
       {/* Multi-Warehouse Selector for Stock Module */}
       {kind === "stock" && (
-        <Card className="warehouse-filter-card">
-          <CardContent className="warehouse-filter-content">
-            <div className="warehouse-filter-header">
-              <div className="flex items-center gap-2">
-                <Warehouse size={18} className="text-zinc-600" />
-                <strong>Pilih Lokasi Gudang:</strong>
-                <span className="text-xs text-zinc-500">
-                  (Status stok & threshold dihitung secara dinamis sesuai gudang terpilih)
-                </span>
+        <div className="stock-warehouse-dashboard">
+          <Card className="warehouse-selector-card">
+            <CardContent className="warehouse-selector-body">
+              <div className="warehouse-nav-top">
+                <div className="warehouse-title-group">
+                  <div className="warehouse-icon-badge">
+                    <Warehouse size={18} />
+                  </div>
+                  <div>
+                    <strong className="text-sm text-zinc-900 block">Filter Lokasi Gudang & Multi-Warehouse</strong>
+                    <span className="text-xs text-zinc-500">
+                      Pilih lokasi untuk melihat saldo fisik & kalkulasi threshold spesifik per cabang
+                    </span>
+                  </div>
+                </div>
+                <div className="warehouse-segmented-control">
+                  <button
+                    type="button"
+                    className={`segmented-btn ${selectedWarehouse === "ALL" ? "active" : ""}`}
+                    onClick={() => setSelectedWarehouse("ALL")}
+                  >
+                    🏢 Semua Gudang ({stockProducts.reduce((acc, p) => acc + p.stockToko + p.stockGudang + p.stockCabang, 0)} total)
+                  </button>
+                  <button
+                    type="button"
+                    className={`segmented-btn ${selectedWarehouse === "TOKO" ? "active" : ""}`}
+                    onClick={() => setSelectedWarehouse("TOKO")}
+                  >
+                    🏪 Toko Utama
+                  </button>
+                  <button
+                    type="button"
+                    className={`segmented-btn ${selectedWarehouse === "GUDANG" ? "active" : ""}`}
+                    onClick={() => setSelectedWarehouse("GUDANG")}
+                  >
+                    📦 Gudang Utama
+                  </button>
+                  <button
+                    type="button"
+                    className={`segmented-btn ${selectedWarehouse === "CABANG" ? "active" : ""}`}
+                    onClick={() => setSelectedWarehouse("CABANG")}
+                  >
+                    🚚 Gudang Cabang
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className="warehouse-pills">
-              <button
-                type="button"
-                className={`warehouse-pill ${selectedWarehouse === "ALL" ? "active" : ""}`}
-                onClick={() => setSelectedWarehouse("ALL")}
-              >
-                🏢 Semua Gudang (Total Akumulasi)
-              </button>
-              <button
-                type="button"
-                className={`warehouse-pill ${selectedWarehouse === "TOKO" ? "active" : ""}`}
-                onClick={() => setSelectedWarehouse("TOKO")}
-              >
-                🏪 Toko Utama (Kasir & Display)
-              </button>
-              <button
-                type="button"
-                className={`warehouse-pill ${selectedWarehouse === "GUDANG" ? "active" : ""}`}
-                onClick={() => setSelectedWarehouse("GUDANG")}
-              >
-                📦 Gudang Utama (Pembelian)
-              </button>
-              <button
-                type="button"
-                className={`warehouse-pill ${selectedWarehouse === "CABANG" ? "active" : ""}`}
-                onClick={() => setSelectedWarehouse("CABANG")}
-              >
-                🚚 Gudang Cabang (Transit & Buffer)
-              </button>
-            </div>
-          </CardContent>
-        </Card>
+
+              {/* Quick Stock Status Filter Pills */}
+              <div className="stock-status-chips">
+                <span className="text-xs font-semibold text-zinc-500 mr-1">Filter Status:</span>
+                <button
+                  type="button"
+                  className={`status-chip ${stockStatusFilter === "ALL" ? "active" : ""}`}
+                  onClick={() => setStockStatusFilter("ALL")}
+                >
+                  Semua ({stockProducts.length})
+                </button>
+                <button
+                  type="button"
+                  className={`status-chip ${stockStatusFilter === "AMAN" ? "active" : ""}`}
+                  onClick={() => setStockStatusFilter(stockStatusFilter === "AMAN" ? "ALL" : "AMAN")}
+                >
+                  <span className="status-dot dot-success" />
+                  Aman ({statusCounts.AMAN})
+                </button>
+                <button
+                  type="button"
+                  className={`status-chip ${stockStatusFilter === "LOW" ? "active" : ""}`}
+                  onClick={() => setStockStatusFilter(stockStatusFilter === "LOW" ? "ALL" : "LOW")}
+                >
+                  <span className="status-dot dot-warning" />
+                  Menipis / Low ({statusCounts.LOW})
+                </button>
+                <button
+                  type="button"
+                  className={`status-chip ${stockStatusFilter === "RESTOCK" ? "active" : ""}`}
+                  onClick={() => setStockStatusFilter(stockStatusFilter === "RESTOCK" ? "ALL" : "RESTOCK")}
+                >
+                  <span className="status-dot dot-danger" />
+                  Perlu Restock ({statusCounts.RESTOCK})
+                </button>
+                <button
+                  type="button"
+                  className={`status-chip ${stockStatusFilter === "HABIS" ? "active" : ""}`}
+                  onClick={() => setStockStatusFilter(stockStatusFilter === "HABIS" ? "ALL" : "HABIS")}
+                >
+                  <span className="status-dot dot-dark" />
+                  Stok Habis ({statusCounts.HABIS})
+                </button>
+                {statusCounts.BELUM_DIATUR > 0 && (
+                  <button
+                    type="button"
+                    className={`status-chip ${stockStatusFilter === "BELUM_DIATUR" ? "active" : ""}`}
+                    onClick={() => setStockStatusFilter(stockStatusFilter === "BELUM_DIATUR" ? "ALL" : "BELUM_DIATUR")}
+                  >
+                    <span className="status-dot dot-secondary" />
+                    Belum Diatur ({statusCounts.BELUM_DIATUR})
+                  </button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* Main Table Layout */}
@@ -1218,24 +1314,18 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
               <table>
                 <thead>
                   <tr>
-                    <th>Kode SKU</th>
-                    <th>Nama Produk</th>
-                    <th>Kategori / Merk</th>
-                    <th className="right">
-                      {selectedWarehouse === "ALL" ? "Total Stok" : `Stok (${selectedWarehouse})`}
+                    <th style={{ width: "110px" }}>Kode SKU</th>
+                    <th>Informasi Produk</th>
+                    <th>Kategori & Merk</th>
+                    <th className="right" style={{ minWidth: "150px" }}>
+                      {selectedWarehouse === "ALL"
+                        ? "Saldo Multi-Gudang"
+                        : `Stok (${selectedWarehouse === "TOKO" ? "Toko" : selectedWarehouse === "GUDANG" ? "Gudang" : "Cabang"})`}
                     </th>
-                    <th className="right">Batas Low</th>
-                    <th className="right">Reorder Point</th>
-                    <th className="right">HPP</th>
-                    <th>
-                      <div className="status-header-cell">
-                        <span>Status</span>
-                        <div className="status-info-trigger" title="Status stok dihitung berdasarkan jumlah stok saat ini, batas minimum stok, dan reorder point produk.">
-                          <HelpCircle size={13} />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="right">Aksi</th>
+                    <th className="right" style={{ width: "130px" }}>Ambang Batas</th>
+                    <th className="right" style={{ width: "110px" }}>HPP</th>
+                    <th style={{ width: "140px" }}>Status Stok</th>
+                    <th className="right" style={{ width: "110px" }}>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1251,102 +1341,67 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                     return (
                       <tr key={product.kode}>
                         <td data-label="Kode SKU">
-                          <span className="font-mono font-bold text-xs">{product.kode}</span>
+                          <span className="sku-badge">{product.kode}</span>
                         </td>
-                        <td data-label="Nama Produk">
-                          <strong>{product.nama}</strong>
-                          <span className="block text-xs text-zinc-500">{product.satuan}</span>
+                        <td data-label="Produk">
+                          <div className="product-info-cell">
+                            <strong className="product-title-text">{product.nama}</strong>
+                            <span className="product-uom-tag">Satuan: {product.satuan}</span>
+                          </div>
                         </td>
                         <td data-label="Kategori / Merk">
-                          <span className="text-xs text-zinc-700 font-medium">{product.kategori}</span>
-                          <span className="block text-xs text-zinc-400">{product.merk}</span>
+                          <div className="category-brand-cell">
+                            <span className="cat-tag">{product.kategori}</span>
+                            <span className="brand-tag">{product.merk}</span>
+                          </div>
                         </td>
-                        <td className="right" data-label="Stok">
-                          <b className="text-sm">
-                            {currentQty} {product.satuan}
-                          </b>
-                          {selectedWarehouse === "ALL" && (
-                            <small className="block text-xs text-zinc-400">
-                              (Toko: {product.stockToko} | Gd: {product.stockGudang} | Cb: {product.stockCabang})
-                            </small>
-                          )}
-                        </td>
-                        <td className="right" data-label="Batas Low">
-                          <span className="text-xs text-zinc-600">
-                            {product.lowStockThreshold != null ? `${product.lowStockThreshold} ${product.satuan}` : "-"}
-                          </span>
-                        </td>
-                        <td className="right" data-label="Reorder Point">
-                          <span className="text-xs text-zinc-600">
-                            {product.reorderPoint != null ? `≤ ${product.reorderPoint} ${product.satuan}` : "-"}
-                          </span>
-                        </td>
-                        <td className="right" data-label="HPP">
-                          <span className="font-medium text-xs">{formatRupiah(product.hpp)}</span>
-                        </td>
-                        <td data-label="Status">
-                          <div className="status-badge-wrapper">
-                            <button
-                              type="button"
-                              className={`stock-badge-btn badge-${statusRes.variant}`}
-                              onClick={() =>
-                                setActiveTooltipSku(activeTooltipSku === product.kode ? null : product.kode)
-                              }
-                            >
-                              {statusRes.label}
-                              <Info size={11} className="badge-info-icon" />
-                            </button>
-
-                            {/* Explainable Popover on Hover / Click */}
-                            {activeTooltipSku === product.kode && (
-                              <div className="stock-explain-popover">
-                                <div className="popover-header">
-                                  <strong>{statusRes.label}</strong>
-                                  <button onClick={() => setActiveTooltipSku(null)}>
-                                    <X size={12} />
-                                  </button>
-                                </div>
-                                <p className="popover-text">{statusRes.explanation}</p>
-                                <div className="popover-breakdown">
-                                  <div>
-                                    <span>Stok ({selectedWarehouse}):</span>
-                                    <b>{currentQty} {product.satuan}</b>
-                                  </div>
-                                  <div>
-                                    <span>Batas Low:</span>
-                                    <b>{product.lowStockThreshold ?? "Belum diatur"}</b>
-                                  </div>
-                                  <div>
-                                    <span>Reorder Point:</span>
-                                    <b>{product.reorderPoint != null ? `≤ ${product.reorderPoint}` : "Belum diatur"}</b>
-                                  </div>
-                                </div>
+                        <td className="right" data-label="Saldo Stok">
+                          <div className="stock-qty-cell">
+                            <span className="stock-main-qty">
+                              <b>{currentQty}</b> <small>{product.satuan}</small>
+                            </span>
+                            {selectedWarehouse === "ALL" && (
+                              <div className="warehouse-breakdown-tags">
+                                <span className="wh-chip">Toko: {product.stockToko}</span>
+                                <span className="wh-chip">Gd: {product.stockGudang}</span>
+                                <span className="wh-chip">Cb: {product.stockCabang}</span>
                               </div>
                             )}
                           </div>
                         </td>
+                        <td className="right" data-label="Ambang Batas">
+                          <div className="threshold-cell">
+                            <span className="threshold-row">
+                              <small>Min:</small> <b>{product.lowStockThreshold != null ? `${product.lowStockThreshold} ${product.satuan}` : "-"}</b>
+                            </span>
+                            <span className="threshold-row">
+                              <small>Reorder:</small> <b>{product.reorderPoint != null ? `≤ ${product.reorderPoint} ${product.satuan}` : "-"}</b>
+                            </span>
+                          </div>
+                        </td>
+                        <td className="right" data-label="HPP">
+                          <span className="hpp-price">{formatRupiah(product.hpp)}</span>
+                        </td>
+                        <td data-label="Status">
+                          <button
+                            type="button"
+                            className={`stock-status-pill pill-${statusRes.variant}`}
+                            onClick={() => setInspectingProduct(product)}
+                            title="Klik untuk melihat rincian & analisis status stok"
+                          >
+                            <span className={`status-indicator-dot dot-${statusRes.variant}`} />
+                            <span>{statusRes.label}</span>
+                            <Info size={11} className="opacity-60 ml-0.5" />
+                          </button>
+                        </td>
                         <td className="right" data-label="Aksi">
                           <div className="row-actions">
                             <Button
-                              variant="ghost"
+                              variant="outline"
                               size="sm"
-                              onClick={() => {
-                                setForm({
-                                  kode: product.kode,
-                                  nama: product.nama,
-                                  kategori: product.kategori,
-                                  merk: product.merk,
-                                  satuan: product.satuan,
-                                  hpp: product.hpp,
-                                  ecer: product.ecer,
-                                  grosir: product.grosir,
-                                  minStock: product.lowStockThreshold ?? "",
-                                  reorderPoint: product.reorderPoint ?? "",
-                                });
-                                setEditorOpen(true);
-                              }}
+                              onClick={() => setInspectingProduct(product)}
                             >
-                              <Sliders size={14} /> Atur Threshold
+                              <Sliders size={13} /> Detail
                             </Button>
                           </div>
                         </td>
@@ -1594,7 +1649,184 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
       )}
 
       {/* ======================================================================== */}
-      {/* 2. CREATE / EDIT DATA MODAL (WITH MANAJEMEN STOK THRESHOLDS)             */}
+      {/* 2. DEDICATED STOCK ANALYSIS & INSPECTION MODAL (NO CLIPPING/OVERFLOW)   */}
+      {/* ======================================================================== */}
+      {inspectingProduct && (
+        <div className="crud-overlay" onClick={() => setInspectingProduct(null)}>
+          <div
+            className="large-modal-dialog"
+            onClick={(event) => event.stopPropagation()}
+            style={{ maxWidth: "840px" }}
+          >
+            {/* Modal Header */}
+            <div className="modal-header">
+              <div className="modal-title-box">
+                <div className="modal-badge-icon">
+                  <Boxes size={20} />
+                </div>
+                <div>
+                  <h2 className="modal-title">Analisis Status & Persediaan Stok</h2>
+                  <p className="modal-subtitle">
+                    Kode SKU: <b className="font-mono text-zinc-900">{inspectingProduct.kode}</b> · {inspectingProduct.nama}
+                  </p>
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setInspectingProduct(null)} aria-label="Tutup">
+                <X size={18} />
+              </Button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="modal-body-scrollable">
+              {(() => {
+                const qty = getStockQtyByWarehouse(inspectingProduct);
+                const statusRes = calculateStockStatus({
+                  currentStock: qty,
+                  lowStockThreshold: inspectingProduct.lowStockThreshold,
+                  reorderPoint: inspectingProduct.reorderPoint,
+                  uom: inspectingProduct.satuan,
+                });
+
+                return (
+                  <div className="stock-analysis-modal-content">
+                    {/* Highlight Banner */}
+                    <div className={`status-highlight-banner banner-${statusRes.variant}`}>
+                      <div className="banner-top">
+                        <span className={`status-indicator-dot dot-${statusRes.variant}`} />
+                        <strong>STATUS PERSEDIAAN: {statusRes.label}</strong>
+                        <span className="banner-loc-tag">
+                          Lokasi: {selectedWarehouse === "ALL" ? "Semua Gudang (Akumulasi)" : selectedWarehouse === "TOKO" ? "Toko Utama" : selectedWarehouse === "GUDANG" ? "Gudang Utama" : "Gudang Cabang"}
+                        </span>
+                      </div>
+                      <p className="banner-desc">{statusRes.explanation}</p>
+                    </div>
+
+                    <div className="analysis-grid">
+                      {/* Saldo Multi-Gudang */}
+                      <div className="analysis-card">
+                        <div className="analysis-card-title">
+                          <Warehouse size={15} />
+                          <span>Rincian Saldo Multi-Gudang</span>
+                        </div>
+                        <div className="analysis-card-body">
+                          <div className="breakdown-row">
+                            <span>🏪 Toko Utama (Kasir/Display):</span>
+                            <b>{inspectingProduct.stockToko} {inspectingProduct.satuan}</b>
+                          </div>
+                          <div className="breakdown-row">
+                            <span>📦 Gudang Utama (Pusat Pembelian):</span>
+                            <b>{inspectingProduct.stockGudang} {inspectingProduct.satuan}</b>
+                          </div>
+                          <div className="breakdown-row">
+                            <span>🚚 Gudang Cabang (Transit & Buffer):</span>
+                            <b>{inspectingProduct.stockCabang} {inspectingProduct.satuan}</b>
+                          </div>
+                          <div className="breakdown-row total-row">
+                            <strong>Total Saldo Akumulasi:</strong>
+                            <strong>{inspectingProduct.stockToko + inspectingProduct.stockGudang + inspectingProduct.stockCabang} {inspectingProduct.satuan}</strong>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Konfigurasi Threshold */}
+                      <div className="analysis-card">
+                        <div className="analysis-card-title">
+                          <Sliders size={15} />
+                          <span>Ambang Batas & Target Restock</span>
+                        </div>
+                        <div className="analysis-card-body">
+                          <div className="breakdown-row">
+                            <span>Batas Minimum (Low Stock):</span>
+                            <b>{inspectingProduct.lowStockThreshold != null ? `${inspectingProduct.lowStockThreshold} ${inspectingProduct.satuan}` : "Belum diatur"}</b>
+                          </div>
+                          <div className="breakdown-row">
+                            <span>Reorder Point (Pesan Ulang):</span>
+                            <b>{inspectingProduct.reorderPoint != null ? `≤ ${inspectingProduct.reorderPoint} ${inspectingProduct.satuan}` : "Belum diatur"}</b>
+                          </div>
+                          <div className="breakdown-row">
+                            <span>Satuan Dasar (UOM):</span>
+                            <b>{inspectingProduct.satuan}</b>
+                          </div>
+                          <div className="breakdown-row total-row">
+                            <span>Kebutuhan Restock:</span>
+                            <b className={qty <= (inspectingProduct.reorderPoint ?? 0) ? "text-rose-600 font-bold" : "text-emerald-600 font-medium"}>
+                              {qty <= (inspectingProduct.reorderPoint ?? 0)
+                                ? `Perlu Restock (+${Math.max(1, (inspectingProduct.lowStockThreshold ?? 20) - qty)} ${inspectingProduct.satuan})`
+                                : "Stok Masih Aman"}
+                            </b>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Valuasi & Harga */}
+                      <div className="analysis-card" style={{ gridColumn: "span 2" }}>
+                        <div className="analysis-card-title">
+                          <Layers size={15} />
+                          <span>Valuasi Persediaan & Skema Harga</span>
+                        </div>
+                        <div className="analysis-card-body valuation-grid">
+                          <div className="val-box">
+                            <small>Harga Pokok (HPP)</small>
+                            <strong>{formatRupiah(inspectingProduct.hpp)}</strong>
+                          </div>
+                          <div className="val-box">
+                            <small>Harga Jual Eceran</small>
+                            <strong>{formatRupiah(inspectingProduct.ecer)}</strong>
+                          </div>
+                          <div className="val-box">
+                            <small>Harga Jual Grosir</small>
+                            <strong>{formatRupiah(inspectingProduct.grosir)}</strong>
+                          </div>
+                          <div className="val-box val-highlight">
+                            <small>Total Nilai Aset Stok</small>
+                            <strong>
+                              {formatRupiah(
+                                (inspectingProduct.stockToko + inspectingProduct.stockGudang + inspectingProduct.stockCabang) *
+                                  inspectingProduct.hpp
+                              )}
+                            </strong>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="modal-footer-sticky">
+              <Button variant="outline" onClick={() => setInspectingProduct(null)}>
+                Tutup
+              </Button>
+              <Button
+                onClick={() => {
+                  const p = inspectingProduct;
+                  setInspectingProduct(null);
+                  setForm({
+                    kode: p.kode,
+                    nama: p.nama,
+                    kategori: p.kategori,
+                    merk: p.merk,
+                    satuan: p.satuan,
+                    hpp: p.hpp,
+                    ecer: p.ecer,
+                    grosir: p.grosir,
+                    minStock: p.lowStockThreshold ?? "",
+                    reorderPoint: p.reorderPoint ?? "",
+                  });
+                  setEditorOpen(true);
+                }}
+              >
+                <Sliders size={15} /> Atur Ambang Batas & Stok
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================================== */}
+      {/* 3. CREATE / EDIT DATA MODAL (WITH MANAJEMEN STOK THRESHOLDS)             */}
       {/* ======================================================================== */}
       {editorOpen && (
         <div className="crud-overlay" onClick={() => setEditorOpen(false)}>

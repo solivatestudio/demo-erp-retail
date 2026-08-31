@@ -17,9 +17,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <Store size={18} />
             </div>
             <div>
-              <span>Kelolain</span>
-              <strong>Akuratif</strong>
-              <small>Akurat dan Aktif</small>
+              <span>Retail Management System</span>
+              <strong>Kelolain</strong>
             </div>
           </div>
 

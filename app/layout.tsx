@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Kelolain / Akuratif",
-  description: "Sistem manajemen toko yang akurat dan aktif",
+  title: "Kelolain · Retail & Wholesale ERP",
+  description: "Sistem Manajemen Terintegrasi Penjualan, Pembelian, Multi-Gudang & Inventaris",
 };
 
 export default function RootLayout({

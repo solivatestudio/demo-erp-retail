@@ -360,9 +360,9 @@ export default function PosClient() {
             </div>
             <div className="nota-paper">
               <header className="nota-header">
-                <strong>Kelolain / Akuratif</strong>
-                <span>Jl. Operasional No. 10, Jakarta</span>
-                <span>Telp/WA: 0812-0000-1234</span>
+                <strong>Kelolain · Retail & Wholesale</strong>
+                <span>Pusat Packaging, Plastik & Perlengkapan Usaha</span>
+                <span>Telp/WA: 0877-4426-2104</span>
               </header>
               <section className="nota-meta">
                 <div>

@@ -40,10 +40,10 @@ export default function Sidebar() {
   return (
     <aside className="app-sidebar">
       <Link href="/" className="sidebar-brand">
-        <span>KA</span>
+        <span>KL</span>
         <div>
           <strong>Kelolain</strong>
-          <small>Akuratif · Akurat dan Aktif</small>
+          <small>Retail & Wholesale ERP</small>
         </div>
       </Link>
 
