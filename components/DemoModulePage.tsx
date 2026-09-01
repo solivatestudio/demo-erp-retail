@@ -1292,28 +1292,28 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                     className={`segmented-btn ${selectedWarehouse === "ALL" ? "active" : ""}`}
                     onClick={() => setSelectedWarehouse("ALL")}
                   >
-                    <Building2 size={14} /> Semua ({stockProducts.reduce((acc, p) => acc + p.stockToko + p.stockGudang + p.stockCabang, 0)})
+                    <Building2 size={14} /> Semua Gudang ({stockProducts.length} SKU)
                   </button>
                   <button
                     type="button"
                     className={`segmented-btn ${selectedWarehouse === "TOKO" ? "active" : ""}`}
                     onClick={() => setSelectedWarehouse("TOKO")}
                   >
-                    <Store size={14} /> Toko Utama
+                    <Store size={14} /> Toko Utama (Irian)
                   </button>
                   <button
                     type="button"
                     className={`segmented-btn ${selectedWarehouse === "GUDANG" ? "active" : ""}`}
                     onClick={() => setSelectedWarehouse("GUDANG")}
                   >
-                    <Warehouse size={14} /> Gudang Utama
+                    <Warehouse size={14} /> Gudang Logistik Pusat
                   </button>
                   <button
                     type="button"
                     className={`segmented-btn ${selectedWarehouse === "CABANG" ? "active" : ""}`}
                     onClick={() => setSelectedWarehouse("CABANG")}
                   >
-                    <Truck size={14} /> Gudang Cabang
+                    <Truck size={14} /> Gatotkoco 2 (Krapyak)
                   </button>
                 </div>
               </div>
@@ -1342,7 +1342,7 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                   onClick={() => setStockStatusFilter(stockStatusFilter === "LOW" ? "ALL" : "LOW")}
                 >
                   <span className="status-dot dot-warning" />
-                  Menipis / Low ({statusCounts.LOW})
+                  Menipis ({statusCounts.LOW})
                 </button>
                 <button
                   type="button"
@@ -1357,17 +1357,17 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                   className={`status-chip ${stockStatusFilter === "HABIS" ? "active" : ""}`}
                   onClick={() => setStockStatusFilter(stockStatusFilter === "HABIS" ? "ALL" : "HABIS")}
                 >
-                  <span className="status-dot dot-dark" />
-                  Stok Habis ({statusCounts.HABIS})
+                  <span className="status-dot dot-neutral" />
+                  Habis ({statusCounts.HABIS})
                 </button>
-                {statusCounts.BELUM_DIATUR > 0 && (
+                {statusCounts.UNCONFIGURED > 0 && (
                   <button
                     type="button"
-                    className={`status-chip ${stockStatusFilter === "BELUM_DIATUR" ? "active" : ""}`}
-                    onClick={() => setStockStatusFilter(stockStatusFilter === "BELUM_DIATUR" ? "ALL" : "BELUM_DIATUR")}
+                    className={`status-chip ${stockStatusFilter === "UNCONFIGURED" ? "active" : ""}`}
+                    onClick={() => setStockStatusFilter(stockStatusFilter === "UNCONFIGURED" ? "ALL" : "UNCONFIGURED")}
                   >
-                    <span className="status-dot dot-secondary" />
-                    Belum Diatur ({statusCounts.BELUM_DIATUR})
+                    <span className="status-dot dot-neutral" />
+                    Belum Diatur ({statusCounts.UNCONFIGURED})
                   </button>
                 )}
               </div>
@@ -1388,10 +1388,10 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                         selectedWarehouse === "ALL"
                           ? "Semua Gudang"
                           : selectedWarehouse === "TOKO"
-                          ? "Toko Utama"
+                          ? "Toko Irian"
                           : selectedWarehouse === "GUDANG"
-                          ? "Gudang Utama"
-                          : "Gudang Cabang"
+                          ? "Gudang Pusat"
+                          : "Krapyak"
                       }`
                     : title || config.section}
                 </CardTitle>
@@ -1420,21 +1420,20 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
           <CardContent className="data-table">
             {kind === "stock" ? (
               /* DEDICATED INVENTORY / STOCK TABLE WITH DYNAMIC STATUS */
-              <table>
+              <table className="stock-clean-table">
                 <thead>
                   <tr>
-                    <th style={{ width: "110px" }}>Kode SKU</th>
-                    <th>Informasi Produk</th>
-                    <th>Kategori & Merk</th>
-                    <th className="right" style={{ minWidth: "150px" }}>
+                    <th style={{ width: "130px" }}>Kode SKU</th>
+                    <th>Nama Produk</th>
+                    <th style={{ width: "190px" }}>Kategori / Merk</th>
+                    <th className="right" style={{ width: "180px" }}>
                       {selectedWarehouse === "ALL"
                         ? "Saldo Multi-Gudang"
-                        : `Stok (${selectedWarehouse === "TOKO" ? "Toko" : selectedWarehouse === "GUDANG" ? "Gudang" : "Cabang"})`}
+                        : `Stok (${selectedWarehouse === "TOKO" ? "Toko Irian" : selectedWarehouse === "GUDANG" ? "Gudang Pusat" : "Krapyak"})`}
                     </th>
-                    <th className="right" style={{ width: "130px" }}>Ambang Batas</th>
-                    <th className="right" style={{ width: "110px" }}>HPP</th>
-                    <th style={{ width: "140px" }}>Status Stok</th>
-                    <th className="right" style={{ width: "110px" }}>Aksi</th>
+                    <th className="right" style={{ width: "120px" }}>HPP</th>
+                    <th style={{ width: "170px" }}>Status Persediaan</th>
+                    <th className="right" style={{ width: "100px" }}>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1455,7 +1454,6 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                         <td data-label="Produk">
                           <div className="product-info-cell">
                             <strong className="product-title-text">{product.nama}</strong>
-                            <span className="product-uom-tag">Satuan: {product.satuan}</span>
                           </div>
                         </td>
                         <td data-label="Kategori / Merk">
@@ -1478,25 +1476,15 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                             )}
                           </div>
                         </td>
-                        <td className="right" data-label="Ambang Batas">
-                          <div className="threshold-cell">
-                            <span className="threshold-row">
-                              <small>Min:</small> <b>{product.lowStockThreshold != null ? `${product.lowStockThreshold} ${product.satuan}` : "-"}</b>
-                            </span>
-                            <span className="threshold-row">
-                              <small>Reorder:</small> <b>{product.reorderPoint != null ? `≤ ${product.reorderPoint} ${product.satuan}` : "-"}</b>
-                            </span>
-                          </div>
-                        </td>
                         <td className="right" data-label="HPP">
                           <span className="hpp-price">{formatRupiah(product.hpp)}</span>
                         </td>
-                        <td data-label="Status">
+                        <td data-label="Status Persediaan">
                           <button
                             type="button"
                             className={`stock-status-pill pill-${statusRes.variant}`}
                             onClick={() => setInspectingProduct(product)}
-                            title="Klik untuk melihat rincian & analisis status stok"
+                            title={`Ambang batas: Min ${product.lowStockThreshold ?? '-'} ${product.satuan}, Reorder ≤ ${product.reorderPoint ?? '-'} ${product.satuan}. Klik untuk analisis.`}
                           >
                             <span className={`status-indicator-dot dot-${statusRes.variant}`} />
                             <span>{statusRes.label}</span>

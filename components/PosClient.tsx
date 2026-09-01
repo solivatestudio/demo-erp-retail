@@ -1,7 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Banknote, Minus, Plus, Printer, ReceiptText, Search, ShoppingCart, Trash2, X } from "lucide-react";
+import {
+  Banknote,
+  Coffee,
+  DatabaseZap,
+  Layers,
+  Minus,
+  Package,
+  Plus,
+  Printer,
+  ReceiptText,
+  Search,
+  ShoppingCart,
+  Sparkles,
+  Trash2,
+  UtensilsCrossed,
+  X,
+} from "lucide-react";
 import { formatRupiah } from "../lib/utils/format";
 import { getStockSnapshot, SalesReceipt, saveSalesReceipt, saveStockSnapshot } from "../lib/demoFlow";
 import { calculateStockStatus } from "../lib/stockLogic";
@@ -43,6 +59,21 @@ const customers = [
   { id: "tempo", name: "Catering Berkah Klaten", group: "Tempo" },
 ];
 
+const getCategoryVisual = (category: string) => {
+  switch (category) {
+    case "Cup & Minuman":
+      return { icon: Coffee, tagClass: "tag-cup", label: "Cup & Minuman" };
+    case "Kemasan Makanan":
+      return { icon: UtensilsCrossed, tagClass: "tag-food", label: "Kemasan Makanan" };
+    case "Plastik & Kresek":
+      return { icon: Layers, tagClass: "tag-plastic", label: "Plastik & Kresek" };
+    case "Perlengkapan Packing":
+      return { icon: Package, tagClass: "tag-packing", label: "Perlengkapan Packing" };
+    default:
+      return { icon: Sparkles, tagClass: "tag-default", label: category };
+  }
+};
+
 export default function PosClient() {
   const [products, setProducts] = useState(initialProducts);
   const [cart, setCart] = useState<CartLine[]>([]);
@@ -83,16 +114,17 @@ export default function PosClient() {
 
   const priceFor = (product: Product) => (isWholesale ? product.wholesale : product.retail);
 
-  const addItem = (product: Product) => {
+  const addItem = (product: Product, quantityToAdd: number = 1) => {
     if (product.stockToko <= 0) return;
     const price = priceFor(product);
     setCart((current) => {
       const exists = current.find((item) => item.id === product.id);
       if (exists) {
-        if (exists.qty >= product.stockToko) return current; // limit by stock
-        return current.map((item) => (item.id === product.id ? { ...item, qty: item.qty + 1 } : item));
+        const nextQty = Math.min(product.stockToko, exists.qty + quantityToAdd);
+        return current.map((item) => (item.id === product.id ? { ...item, qty: nextQty } : item));
       }
-      return [...current, { ...product, price, qty: 1 }];
+      const initialQty = Math.min(product.stockToko, quantityToAdd);
+      return [...current, { ...product, price, qty: initialQty }];
     });
   };
 
@@ -102,8 +134,20 @@ export default function PosClient() {
         .map((item) => {
           if (item.id !== id) return item;
           const nextQty = item.qty + delta;
-          if (nextQty > item.stockToko) return item; // stock limit
+          if (nextQty > item.stockToko) return item;
           return { ...item, qty: Math.max(0, nextQty) };
+        })
+        .filter((item) => item.qty > 0)
+    );
+  };
+
+  const setExactQty = (id: string, nextQty: number) => {
+    setCart((current) =>
+      current
+        .map((item) => {
+          if (item.id !== id) return item;
+          const validQty = Math.min(item.stockToko, Math.max(1, nextQty));
+          return { ...item, qty: validQty };
         })
         .filter((item) => item.qty > 0)
     );
@@ -123,7 +167,7 @@ export default function PosClient() {
       cashier: "Kasir 01 (Siti)",
       customer: customer.name,
       customerGroup: customer.group,
-      warehouse: "Toko Utama",
+      warehouse: "Toko Utama (Jl. Irian)",
       total,
       paid: paidAmount,
       change: Math.max(0, paidAmount - total),
@@ -152,24 +196,27 @@ export default function PosClient() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Badge variant={isWholesale ? "warning" : "success"}>
-                {isWholesale ? "Grosir / Mitra" : "Retail Umum"}
+                {isWholesale ? `Mode ${customer.group} (Harga Grosir)` : "Mode Retail Eceran"}
               </Badge>
-              <Badge variant="outline">Toko Utama</Badge>
+              <Badge variant="outline">Toko Utama (Irian)</Badge>
+              <span className="text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 font-semibold inline-flex items-center gap-1">
+                <DatabaseZap size={11} /> POS Aktif
+              </span>
             </div>
-            <h1>Point of Sale</h1>
-            <p>Tambah produk ke transaksi dengan klik atau scan barcode.</p>
+            <h1>Point of Sale Kasir</h1>
+            <p>Pilih produk dengan cepat, sesuaikan kuantiti grosir/eceran, dan cetak nota transaksi.</p>
           </div>
           <div className="pos-selectors">
-            <select value={customerId} onChange={(event) => setCustomerId(event.target.value)}>
+            <select value={customerId} onChange={(event) => setCustomerId(event.target.value)} title="Pilih Pelanggan & Skema Harga">
               {customers.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.name} ({item.group})
                 </option>
               ))}
             </select>
-            <select defaultValue="toko">
-              <option value="toko">Toko Utama</option>
-              <option value="gudang">Gudang Utama</option>
+            <select defaultValue="toko" title="Pilih Lokasi Kasir">
+              <option value="toko">🏪 Toko Utama (Irian)</option>
+              <option value="krapyak">🚚 Gatotkoco 2 (Krapyak)</option>
             </select>
           </div>
         </div>
@@ -181,19 +228,24 @@ export default function PosClient() {
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Cari produk, SKU, atau scan barcode..."
+                placeholder="Cari produk, SKU, barcode (contoh: Cup 16oz, Mika Bento, Kresek 15)..."
               />
             </div>
             <div className="category-tabs">
-              {categories.map((item) => (
-                <button
-                  key={item}
-                  className={category === item ? "active" : ""}
-                  onClick={() => setCategory(item)}
-                >
-                  {item}
-                </button>
-              ))}
+              {categories.map((item) => {
+                const visual = item !== "Semua" ? getCategoryVisual(item) : null;
+                const Icon = visual?.icon;
+                return (
+                  <button
+                    key={item}
+                    className={`${category === item ? "active" : ""} ${visual ? visual.tagClass : ""}`}
+                    onClick={() => setCategory(item)}
+                  >
+                    {Icon && <Icon size={13} className="inline mr-1 opacity-80" />}
+                    {item}
+                  </button>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
@@ -206,29 +258,47 @@ export default function PosClient() {
               reorderPoint: product.reorderPoint,
               uom: product.unit,
             });
+            const visual = getCategoryVisual(product.category);
+            const CatIcon = visual.icon;
 
             return (
-              <button
-                className={`product-tile ${product.stockToko <= 0 ? "is-out-of-stock" : ""}`}
+              <div
+                className={`product-tile-card ${visual.tagClass} ${product.stockToko <= 0 ? "is-out-of-stock" : ""}`}
                 key={product.id}
                 onClick={() => addItem(product)}
-                disabled={product.stockToko <= 0}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === "Enter" && addItem(product)}
               >
                 <div className="product-topline">
-                  <span>{product.sku}</span>
+                  <div className="product-cat-badge">
+                    <CatIcon size={13} />
+                    <span>{product.sku}</span>
+                  </div>
                   <Badge variant={status.variant}>
                     {status.label === "HABIS" ? "Habis" : `${product.stockToko} ${product.unit}`}
                   </Badge>
                 </div>
-                <strong>{product.name}</strong>
-                <small>
-                  {product.category} · Gd: {product.stockGudang} {product.unit}
-                </small>
-                <div className="product-price-row">
-                  <b>{formatRupiah(priceFor(product))}</b>
-                  <span className="text-xs text-zinc-400">/{product.unit}</span>
+
+                <strong className="product-tile-name">{product.name}</strong>
+
+                <div className="product-tile-meta">
+                  <span className="cat-text-pill">{product.category}</span>
+                  <small>Gd. Pusat: {product.stockGudang} {product.unit}</small>
                 </div>
-              </button>
+
+                <div className="product-price-row">
+                  <div>
+                    <b>{formatRupiah(priceFor(product))}</b>
+                    <span className="text-xs text-zinc-400">/{product.unit}</span>
+                  </div>
+                  {isWholesale && (
+                    <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">
+                      Grosir
+                    </span>
+                  )}
+                </div>
+              </div>
             );
           })}
         </div>
@@ -240,9 +310,9 @@ export default function PosClient() {
           <CardHeader className="cart-card-header">
             <div className="cart-heading">
               <div>
-                <CardTitle>Keranjang Belanja</CardTitle>
+                <CardTitle>Keranjang Kasir</CardTitle>
                 <CardDescription>
-                  {itemCount} item · {customer.name}
+                  {itemCount} unit barang · {customer.name}
                 </CardDescription>
               </div>
               <div className="cart-header-icon">
@@ -256,37 +326,78 @@ export default function PosClient() {
               <div className="cart-empty">
                 <ReceiptText size={32} />
                 <strong>Keranjang Masih Kosong</strong>
-                <span>Klik produk di sebelah kiri untuk menambahkan pesanan.</span>
+                <span>Klik item produk di katalog kiri untuk memasukkan pesanan.</span>
               </div>
             ) : (
               <div className="cart-lines">
-                {cart.map((item) => (
-                  <div className="cart-line" key={item.id}>
-                    <div className="cart-line-info">
-                      <strong>{item.name}</strong>
-                      <span className="cart-line-meta">
-                        {formatRupiah(item.price)} / {item.unit}
-                      </span>
-                    </div>
+                {cart.map((item) => {
+                  const visual = getCategoryVisual(item.category);
+                  const Icon = visual.icon;
 
-                    <div className="cart-line-ctrl">
-                      <div className="qty-control">
-                        <button type="button" onClick={() => updateQty(item.id, -1)} aria-label="Kurang">
-                          <Minus size={13} />
-                        </button>
-                        <b>{item.qty}</b>
-                        <button type="button" onClick={() => updateQty(item.id, 1)} aria-label="Tambah">
-                          <Plus size={13} />
-                        </button>
+                  return (
+                    <div className="cart-line-enhanced" key={item.id}>
+                      <div className="cart-line-header">
+                        <div className="cart-line-info">
+                          <div className="flex items-center gap-1.5">
+                            <span className={`cart-cat-dot ${visual.tagClass}`}>
+                              <Icon size={11} />
+                            </span>
+                            <strong>{item.name}</strong>
+                          </div>
+                          <span className="cart-line-meta">
+                            {formatRupiah(item.price)} / {item.unit} · Stok Toko: {item.stockToko} {item.unit}
+                          </span>
+                        </div>
+                        <em className="cart-line-subtotal">{formatRupiah(item.qty * item.price)}</em>
                       </div>
-                      <em className="cart-line-subtotal">{formatRupiah(item.qty * item.price)}</em>
+
+                      <div className="cart-ctrl-row">
+                        <div className="qty-control-input-group">
+                          <button type="button" onClick={() => updateQty(item.id, -1)} aria-label="Kurangi 1">
+                            <Minus size={13} />
+                          </button>
+                          <input
+                            type="number"
+                            min="1"
+                            max={item.stockToko}
+                            value={item.qty}
+                            onChange={(e) => setExactQty(item.id, parseInt(e.target.value) || 1)}
+                            className="qty-number-input"
+                            title="Ketik jumlah langsung"
+                          />
+                          <button type="button" onClick={() => updateQty(item.id, 1)} aria-label="Tambah 1">
+                            <Plus size={13} />
+                          </button>
+                        </div>
+
+                        <div className="quick-qty-chips">
+                          {[5, 10, 20, 50].map((preset) => (
+                            <button
+                              key={preset}
+                              type="button"
+                              className="qty-preset-btn"
+                              onClick={() => setExactQty(item.id, item.qty + preset)}
+                              title={`Tambah +${preset} ${item.unit}`}
+                            >
+                              +{preset}
+                            </button>
+                          ))}
+                          <button
+                            type="button"
+                            className="qty-preset-btn text-rose-600 hover:bg-rose-100 hover:border-rose-300"
+                            onClick={() => updateQty(item.id, -item.qty)}
+                            title="Hapus baris ini"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
-            {/* Bottom Section: Summary & Actions */}
             <div className="cart-bottom-section">
               <div className="cart-summary">
                 <div className="cart-total-row">

@@ -69,7 +69,7 @@ export default function Sidebar() {
           { href: "/menu", label: "Menu", icon: Menu },
         ].map((item) => { const Icon = item.icon; return <Link key={item.href} href={item.href} className={isActive(item.href) ? "active" : ""}><Icon /><span>{item.label}</span></Link>; })}
       </nav>
-      <div className="sidebar-footer"><span className="avatar">OA</span><div><strong>Okky Aditya</strong><small>Owner</small></div></div>
+      <div className="sidebar-footer"><span className="avatar">SA</span><div><strong>Super Admin</strong><small>Administrator</small></div></div>
     </aside>
   );
 }
