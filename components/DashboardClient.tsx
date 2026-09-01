@@ -1,36 +1,111 @@
 "use client";
 
 import Link from "next/link";
-import { AlertTriangle, ArrowDownRight, ArrowRight, ArrowUpRight, CalendarDays, CreditCard, DatabaseZap, PackageX, ReceiptText } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowDownRight,
+  ArrowRight,
+  ArrowUpRight,
+  Boxes,
+  Building2,
+  CalendarDays,
+  CreditCard,
+  DatabaseZap,
+  PackageOpen,
+  PackageX,
+  ReceiptText,
+  ShoppingCart,
+  TrendingUp,
+  Truck,
+} from "lucide-react";
 import { formatRupiah } from "../lib/utils/format";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 
 const kpis = [
-  { label: "Omzet hari ini", value: "Rp18,75 jt", delta: "+12,4%", up: true, caption: "dibanding kemarin" },
-  { label: "Laba kotor", value: "Rp4,32 jt", delta: "+8,1%", up: true, caption: "margin 23,0%" },
-  { label: "Piutang usaha", value: "Rp7,42 jt", delta: "4 UMKM", up: false, caption: "jatuh tempo minggu ini" },
-  { label: "Stok kritis", value: "2 SKU", delta: "+3 menipis", up: false, caption: "1 habis, 1 perlu restock" },
+  {
+    label: "Omzet Hari Ini",
+    value: "Rp18.750.000",
+    delta: "+12,4%",
+    up: true,
+    caption: "vs hari kemarin",
+    accent: "border-t-blue-500",
+  },
+  {
+    label: "Estimasi Laba Kotor",
+    value: "Rp4.320.000",
+    delta: "+8,1%",
+    up: true,
+    caption: "margin kotor 23,0%",
+    accent: "border-t-emerald-500",
+  },
+  {
+    label: "Piutang Usaha Tempo",
+    value: "Rp7.420.000",
+    delta: "4 Mitra UMKM",
+    up: false,
+    caption: "jatuh tempo minggu ini",
+    accent: "border-t-amber-500",
+  },
+  {
+    label: "Stok Kritis / Habis",
+    value: "2 SKU",
+    delta: "+3 menipis",
+    up: false,
+    caption: "1 habis, 1 perlu restock",
+    accent: "border-t-rose-500",
+  },
 ];
+
 const sales = [42, 49, 46, 61, 56, 67, 64, 77, 72, 86, 81, 94, 89, 104];
+
 const outlets = [
-  { name: "Toko Utama (Irian)", value: 52, color: "#1d4ed8" },
-  { name: "Gatotkoco 2 (Krapyak)", value: 33, color: "#10b981" },
-  { name: "Gudang Logistik Pusat", value: 15, color: "#6366f1" },
+  { name: "Toko Utama (Jl. Irian)", revenue: "Rp250.950.000", value: 52, color: "#2563eb" },
+  { name: "Gatotkoco 2 (Krapyak)", revenue: "Rp159.250.000", value: 33, color: "#10b981" },
+  { name: "Gudang Logistik Pusat", revenue: "Rp72.400.000", value: 15, color: "#8b5cf6" },
 ];
+
 const transactions = [
-  { no: "SAL-202608-0091", customer: "Warung Makan Bu Aminah", time: "14:42", status: "Lunas", amount: 1865000 },
-  { no: "SAL-202608-0090", customer: "Kedai Kopi Selaras", time: "14:18", status: "Tempo", amount: 4930000 },
-  { no: "SAL-202608-0089", customer: "Pelanggan Umum (Walk-in)", time: "13:55", status: "Lunas", amount: 930000 },
-  { no: "SAL-202608-0088", customer: "Catering Berkah Klaten", time: "13:31", status: "Lunas", amount: 2745000 },
+  { no: "SAL-202608-0091", customer: "Warung Makan Bu Aminah", type: "Grosir", time: "14:42", status: "Lunas", amount: 1865000 },
+  { no: "SAL-202608-0090", customer: "Kedai Kopi Selaras", type: "Grosir", time: "14:18", status: "Tempo", amount: 4930000 },
+  { no: "SAL-202608-0089", customer: "Pelanggan Umum (Walk-in)", type: "Eceran", time: "13:55", status: "Lunas", amount: 930000 },
+  { no: "SAL-202608-0088", customer: "Catering Berkah Klaten", type: "Grosir", time: "13:31", status: "Lunas", amount: 2745000 },
 ];
+
 const attention = [
-  { icon: PackageX, title: "2 produk stok kritis & habis", note: "Paper Lunch Box & Bubble Wrap 50m perlu PO", href: "/inventory/stock", tone: "danger" },
-  { icon: AlertTriangle, title: "1 SKU belum diatur threshold", note: "SKU-SEDOTAN-STR belum ada ambang batas restock", href: "/inventory/stock", tone: "warning" },
-  { icon: CreditCard, title: "4 piutang tempo UMKM", note: "Total tagihan Rp7.420.000 (jatuh tempo minggu ini)", href: "/receivables", tone: "warning" },
-  { icon: ReceiptText, title: "3 pembelian pabrik belum lunas", note: "PT Sinar Joyoboyo & CV Starindo", href: "/payables", tone: "neutral" },
-  { icon: ArrowRight, title: "2 pengiriman armada toko", note: "Truk delivery Klaten Tengah & Selatan", href: "/delivery", tone: "neutral" },
+  {
+    icon: PackageX,
+    title: "2 produk stok kritis & habis",
+    note: "Paper Lunch Box Medium & Bubble Wrap 50m perlu PO",
+    href: "/inventory/stock",
+    tone: "danger",
+    badge: "Restock Segera",
+  },
+  {
+    icon: CreditCard,
+    title: "4 tagihan piutang tempo UMKM",
+    note: "Total tagihan Rp7.420.000 (jatuh tempo minggu ini)",
+    href: "/receivables",
+    tone: "warning",
+    badge: "Follow-up",
+  },
+  {
+    icon: ReceiptText,
+    title: "3 pembelian pabrik belum lunas",
+    note: "Tagihan supplier PT Sinar Joyoboyo & CV Starindo",
+    href: "/payables",
+    tone: "neutral",
+    badge: "Keuangan",
+  },
+  {
+    icon: Truck,
+    title: "2 rute delivery aktif hari ini",
+    note: "Armada pengiriman area Klaten Tengah & Klaten Selatan",
+    href: "/delivery",
+    tone: "neutral",
+    badge: "Logistik",
+  },
 ];
 
 export default function DashboardClient() {
@@ -38,146 +113,146 @@ export default function DashboardClient() {
 
   return (
     <div className="dashboard-page owner-dashboard">
+      {/* Top Header */}
       <section className="owner-heading">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-              <DatabaseZap size={11} /> Data Simulasi Terverifikasi
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+              <DatabaseZap size={12} /> Dashboard Eksekutif
             </span>
+            <span className="text-slate-400 text-xs">· Toko Plastik & Packaging Gatotkoco Klaten</span>
           </div>
-          <h1>Selamat Datang di Kelolain</h1>
-          <p>Ringkasan performa penjualan, stok gudang, dan piutang toko retail & grosir hari ini.</p>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Ringkasan Operasional & Bisnis</h1>
+          <p className="text-slate-500 text-sm mt-0.5">
+            Pantau arus kas, realisasi penjualan grosir/eceran, dan kesehatan stok inventaris secara real-time.
+          </p>
         </div>
-        <div className="date-control">
-          <CalendarDays size={15} />
-          <span>31 Agustus 2026</span>
+        <div className="flex items-center gap-2">
+          <div className="date-control">
+            <CalendarDays size={14} className="text-slate-400" />
+            <span>31 Agustus 2026</span>
+          </div>
+          <Button asChild size="sm">
+            <Link href="/pos">
+              <ShoppingCart size={15} /> Buka POS Kasir
+            </Link>
+          </Button>
         </div>
       </section>
 
-      <section className="kpi-grid owner-kpis">
+      {/* 4 Metric KPI Cards */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
         {kpis.map((k) => (
-          <Card key={k.label} className="kpi-card">
-            <CardHeader>
-              <CardDescription>{k.label}</CardDescription>
-              <CardTitle>{k.value}</CardTitle>
+          <Card key={k.label} className={`border-t-4 ${k.accent} shadow-sm hover:shadow-md transition-shadow bg-white`}>
+            <CardHeader className="p-4 pb-2">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
+                <span>{k.label}</span>
+                <span className={`inline-flex items-center gap-0.5 font-bold px-1.5 py-0.5 rounded text-[10px] ${k.up ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}>
+                  {k.up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />} {k.delta}
+                </span>
+              </div>
+              <div className="text-2xl font-extrabold text-slate-900 font-mono mt-1 tracking-tight">{k.value}</div>
             </CardHeader>
-            <CardContent>
-              <span className={k.up ? "trend-up" : "trend-alert"}>
-                {k.up ? <ArrowUpRight size={13} /> : <ArrowDownRight size={13} />} {k.delta}
-              </span>
-              <small>{k.caption}</small>
+            <CardContent className="p-4 pt-0">
+              <span className="text-[11px] text-slate-400">{k.caption}</span>
             </CardContent>
           </Card>
         ))}
       </section>
 
-      <section className="dashboard-content-grid">
-        <Card className="sales-chart">
-          <CardHeader>
+      {/* Charts & Analytics Grid */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
+        {/* Sales Trendline (Span 8) */}
+        <Card className="lg:col-span-8 shadow-sm bg-white">
+          <CardHeader className="p-5 pb-2 flex flex-row items-center justify-between border-b border-slate-100">
             <div>
-              <CardTitle>Penjualan 14 hari</CardTitle>
-              <CardDescription>Performa omzet seluruh outlet & toko</CardDescription>
+              <CardTitle className="text-base font-bold text-slate-900">Tren Penjualan 14 Hari Terakhir</CardTitle>
+              <CardDescription className="text-xs text-slate-500">Omzet kumulatif seluruh gerai & pemesanan grosir</CardDescription>
             </div>
-            <strong>
-              Rp214,8 jt <small>+14,2%</small>
-            </strong>
-          </CardHeader>
-          <CardContent>
-            <div className="chart-y">
-              <span>30 jt</span>
-              <span>20 jt</span>
-              <span>10 jt</span>
-              <span>0</span>
+            <div className="text-right">
+              <strong className="text-lg font-black text-slate-900 font-mono">Rp214,8 jt</strong>
+              <span className="block text-[11px] text-emerald-600 font-bold">+14,2% vs periode lalu</span>
             </div>
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Grafik penjualan">
-              <defs>
-                <linearGradient id="salesFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stopColor="#2563eb" stopOpacity=".22" />
-                  <stop offset="1" stopColor="#2563eb" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <polygon points={`0,100 ${points} 100,100`} fill="url(#salesFill)" />
-              <polyline points={points} fill="none" stroke="#2563eb" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-            </svg>
-            <div className="chart-x">
-              <span>18 Agu</span>
-              <span>22 Agu</span>
-              <span>26 Agu</span>
-              <span>31 Agu</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="span-5 attention-card">
-          <CardHeader>
-            <CardTitle>Perlu perhatian</CardTitle>
-            <CardDescription>Prioritas operasional stok & piutang (9 SKU terdaftar)</CardDescription>
           </CardHeader>
-          <CardContent>
-            {attention.map((a) => {
-              const Icon = a.icon;
-              return (
-                <Link href={a.href} key={a.title} className={`attention-row ${a.tone}`}>
-                  <span>
-                    <Icon size={17} />
-                  </span>
-                  <div>
-                    <strong>{a.title}</strong>
-                    <small>{a.note}</small>
-                  </div>
-                  <ArrowRight size={15} />
-                </Link>
-              );
-            })}
-          </CardContent>
-        </Card>
-
-        <Card className="outlet-chart">
-          <CardHeader>
-            <CardTitle>Performa outlet</CardTitle>
-            <CardDescription>Kontribusi omzet per cabang bulan ini</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="donut-wrap">
-              <div className="donut" />
-              <div className="outlet-total">
-                <strong>Rp482,6 jt</strong>
-                <span>Total omzet</span>
+          <CardContent className="p-5">
+            <div className="sales-chart-wrap relative h-[210px] w-full">
+              <div className="chart-y">
+                <span>30 jt</span>
+                <span>20 jt</span>
+                <span>10 jt</span>
+                <span>0</span>
+              </div>
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-[160px] overflow-visible border-b border-slate-200">
+                <defs>
+                  <linearGradient id="salesFillNew" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#2563eb" stopOpacity="0.25" />
+                    <stop offset="100%" stopColor="#2563eb" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+                <polygon points={`0,100 ${points} 100,100`} fill="url(#salesFillNew)" />
+                <polyline points={points} fill="none" stroke="#2563eb" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
+              </svg>
+              <div className="chart-x flex justify-between text-[11px] text-slate-400 mt-2 font-mono">
+                <span>18 Agu</span>
+                <span>22 Agu</span>
+                <span>26 Agu</span>
+                <span>31 Agu</span>
               </div>
             </div>
-            <div className="outlet-legend">
+          </CardContent>
+        </Card>
+
+        {/* Outlet Share (Span 4) */}
+        <Card className="lg:col-span-4 shadow-sm bg-white flex flex-col justify-between">
+          <CardHeader className="p-5 pb-2 border-b border-slate-100">
+            <CardTitle className="text-base font-bold text-slate-900">Kontribusi Penjualan Cabang</CardTitle>
+            <CardDescription className="text-xs text-slate-500">Distribusi omzet bulan berjalan</CardDescription>
+          </CardHeader>
+          <CardContent className="p-5 space-y-4">
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-center">
+              <span className="text-xs text-slate-500 font-semibold block">Total Akumulasi Omzet</span>
+              <strong className="text-2xl font-black text-slate-900 font-mono">Rp482.600.000</strong>
+            </div>
+
+            <div className="space-y-3">
               {outlets.map((o) => (
-                <div key={o.name}>
-                  <i style={{ background: o.color }} />
-                  <span>{o.name}</span>
-                  <strong>{o.value}%</strong>
-                  <span className="outlet-progress">
-                    <i style={{ width: `${o.value}%`, background: o.color }} />
-                  </span>
+                <div key={o.name} className="space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="font-semibold text-slate-700">{o.name}</span>
+                    <span className="font-mono font-bold text-slate-900">{o.value}% ({o.revenue})</span>
+                  </div>
+                  <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-all" style={{ width: `${o.value}%`, backgroundColor: o.color }} />
+                  </div>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
+      </section>
 
-        <Card className="span-7">
-          <CardHeader className="section-heading">
+      {/* Lower Section: Recent Transactions & Alerts */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* Recent Transactions (Span 7) */}
+        <Card className="lg:col-span-7 shadow-sm bg-white">
+          <CardHeader className="p-5 pb-3 border-b border-slate-100 flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Transaksi terbaru</CardTitle>
-              <CardDescription>Pembaruan nota penjualan grosir & eceran</CardDescription>
+              <CardTitle className="text-base font-bold text-slate-900">Transaksi Penjualan Terbaru</CardTitle>
+              <CardDescription className="text-xs text-slate-500">Pembaruan nota penjualan grosir & eceran hari ini</CardDescription>
             </div>
             <Button asChild variant="ghost" size="sm">
-              <Link href="/sales">
-                Lihat semua <ArrowRight size={14} />
+              <Link href="/sales" className="text-blue-600 font-bold text-xs">
+                Lihat Semua <ArrowRight size={13} className="ml-1" />
               </Link>
             </Button>
           </CardHeader>
-          <CardContent className="data-table compact">
+          <CardContent className="p-0 data-table">
             <table>
               <thead>
                 <tr>
-                  <th>Nomor transaksi</th>
+                  <th>No. Transaksi</th>
                   <th>Pelanggan</th>
+                  <th>Tipe</th>
                   <th>Waktu</th>
                   <th>Status</th>
                   <th className="right">Total</th>
@@ -185,16 +260,21 @@ export default function DashboardClient() {
               </thead>
               <tbody>
                 {transactions.map((r) => (
-                  <tr key={r.no}>
-                    <td data-label="Transaksi">
+                  <tr key={r.no} className="hover:bg-slate-50/70 transition-colors">
+                    <td>
                       <span className="sku-badge">{r.no}</span>
                     </td>
-                    <td data-label="Pelanggan">{r.customer}</td>
-                    <td data-label="Waktu">{r.time}</td>
-                    <td data-label="Status">
+                    <td className="font-semibold text-slate-800">{r.customer}</td>
+                    <td>
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                        {r.type}
+                      </span>
+                    </td>
+                    <td className="text-xs text-slate-500 font-mono">{r.time}</td>
+                    <td>
                       <Badge variant={r.status === "Lunas" ? "success" : "warning"}>{r.status}</Badge>
                     </td>
-                    <td data-label="Total" className="right">
+                    <td className="right font-mono font-bold text-slate-900">
                       {formatRupiah(r.amount)}
                     </td>
                   </tr>
@@ -204,20 +284,49 @@ export default function DashboardClient() {
           </CardContent>
         </Card>
 
-        <section className="mobile-shortcuts">
-          <h2>Aksi cepat</h2>
-          <div>
-            <Link href="/pos">
-              Buka POS Kasir <ArrowRight size={14} />
-            </Link>
-            <Link href="/purchases">
-              Buat PO Pabrik <ArrowRight size={14} />
-            </Link>
-            <Link href="/inventory/stock">
-              Cek Stok Gudang <ArrowRight size={14} />
-            </Link>
-          </div>
-        </section>
+        {/* Priority Attention (Span 5) */}
+        <Card className="lg:col-span-5 shadow-sm bg-white">
+          <CardHeader className="p-5 pb-3 border-b border-slate-100">
+            <CardTitle className="text-base font-bold text-slate-900">Perlu Perhatian Operasional</CardTitle>
+            <CardDescription className="text-xs text-slate-500">Tindakan prioritas stok, piutang, dan logistik</CardDescription>
+          </CardHeader>
+          <CardContent className="p-4 space-y-2.5">
+            {attention.map((a) => {
+              const Icon = a.icon;
+              return (
+                <Link
+                  href={a.href}
+                  key={a.title}
+                  className="flex items-start gap-3 p-3 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-all group"
+                >
+                  <span
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                      a.tone === "danger"
+                        ? "bg-rose-50 text-rose-600"
+                        : a.tone === "warning"
+                        ? "bg-amber-50 text-amber-600"
+                        : "bg-slate-100 text-slate-600"
+                    }`}
+                  >
+                    <Icon size={18} />
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <strong className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                        {a.title}
+                      </strong>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
+                        {a.badge}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-0.5 truncate">{a.note}</p>
+                  </div>
+                  <ArrowRight size={14} className="text-slate-300 group-hover:text-blue-600 mt-2 transition-colors" />
+                </Link>
+              );
+            })}
+          </CardContent>
+        </Card>
       </section>
     </div>
   );

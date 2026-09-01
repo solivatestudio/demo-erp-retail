@@ -52,14 +52,44 @@ export default function Sidebar() {
   }, [pathname]);
   return (
     <aside className="app-sidebar">
-      <Link href="/" className="sidebar-brand"><span>KA</span><div><strong>Kelolain</strong><small>Akurat dan Aktif</small></div></Link>
-      <button className="sidebar-context" type="button"><span><small>Outlet aktif</small><strong>Semua Outlet</strong></span><ChevronDown size={15} /></button>
+      <Link href="/" className="sidebar-brand">
+        <span className="brand-logo-badge">KL</span>
+        <div>
+          <strong>Kelolain</strong>
+          <small>ERP Retail & Grosir</small>
+        </div>
+      </Link>
+
+      <button className="sidebar-context" type="button">
+        <span>
+          <small>Area Operasional</small>
+          <strong>Semua Cabang Toko</strong>
+        </span>
+        <ChevronDown size={14} className="text-slate-400" />
+      </button>
+
       <nav ref={navRef} className="sidebar-nav" aria-label="Navigasi aplikasi">
-        {GROUPS.map((group) => <div className="nav-group" key={group.label}>
-          <span className="nav-group-label">{group.label}</span>
-          {group.items.map((item) => { const Icon = item.icon; return <Link onClick={rememberScroll} key={item.href} href={item.href} className={`${isActive(item.href) ? "active" : ""} ${item.mobile ? "mobile-primary" : "mobile-secondary"}`}><Icon size={17} /><span>{item.label}</span></Link>; })}
-        </div>)}
+        {GROUPS.map((group) => (
+          <div className="nav-group" key={group.label}>
+            <span className="nav-group-label">{group.label}</span>
+            {group.items.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  onClick={rememberScroll}
+                  key={item.href}
+                  href={item.href}
+                  className={`${isActive(item.href) ? "active" : ""} ${item.mobile ? "mobile-primary" : "mobile-secondary"}`}
+                >
+                  <Icon size={16} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
+
       <nav className="mobile-bottom-nav" aria-label="Navigasi utama mobile">
         {[
           { href: "/", label: "Home", icon: LayoutDashboard },
@@ -67,9 +97,24 @@ export default function Sidebar() {
           { href: "/inventory/stock", label: "Inventory", icon: Boxes },
           { href: "/sales", label: "Transaksi", icon: ReceiptText },
           { href: "/menu", label: "Menu", icon: Menu },
-        ].map((item) => { const Icon = item.icon; return <Link key={item.href} href={item.href} className={isActive(item.href) ? "active" : ""}><Icon /><span>{item.label}</span></Link>; })}
+        ].map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link key={item.href} href={item.href} className={isActive(item.href) ? "active" : ""}>
+              <Icon size={18} />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
       </nav>
-      <div className="sidebar-footer"><span className="avatar">SA</span><div><strong>Super Admin</strong><small>Administrator</small></div></div>
+
+      <div className="sidebar-footer">
+        <span className="avatar">SA</span>
+        <div>
+          <strong>Super Admin</strong>
+          <small>Gatotkoco Klaten</small>
+        </div>
+      </div>
     </aside>
   );
 }

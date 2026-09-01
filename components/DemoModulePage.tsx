@@ -1376,8 +1376,8 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
         </div>
       )}
 
-      {/* Main Table Layout */}
-      <section className="module-layout">
+      {/* Full-width Main Table Card */}
+      <section className="module-layout-full">
         <Card className="module-table-card">
           <CardHeader>
             <div className="table-header">
@@ -1398,7 +1398,7 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                 <CardDescription>
                   {kind === "stock"
                     ? `${filteredStockProducts.length} produk · Status diperbarui berdasarkan batas minimum stok`
-                    : `${rows.length} data tersedia`}
+                    : `${rows.length} data tercatat dalam sistem`}
                 </CardDescription>
               </div>
               <div className="table-tools">
@@ -1410,8 +1410,11 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                     placeholder={getSearchPlaceholder(kind, title)}
                   />
                 </div>
-                <Button variant="outline" size="icon" aria-label="Cetak" onClick={() => window.print()}>
-                  <Printer size={15} />
+                <Button variant="outline" size="sm" onClick={() => window.print()}>
+                  <Printer size={15} /> Cetak
+                </Button>
+                <Button size="sm" onClick={openCreate}>
+                  <Plus size={15} /> {config.primaryAction}
                 </Button>
               </div>
             </div>
@@ -1426,13 +1429,9 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                     <th style={{ width: "130px" }}>Kode SKU</th>
                     <th>Nama Produk</th>
                     <th style={{ width: "190px" }}>Kategori / Merk</th>
-                    <th className="right" style={{ width: "180px" }}>
-                      {selectedWarehouse === "ALL"
-                        ? "Saldo Multi-Gudang"
-                        : `Stok (${selectedWarehouse === "TOKO" ? "Toko Irian" : selectedWarehouse === "GUDANG" ? "Gudang Pusat" : "Krapyak"})`}
-                    </th>
+                    <th className="right" style={{ width: "180px" }}>Stok Tersedia</th>
                     <th className="right" style={{ width: "120px" }}>HPP</th>
-                    <th style={{ width: "170px" }}>Status Persediaan</th>
+                    <th style={{ width: "170px" }}>Status</th>
                     <th className="right" style={{ width: "100px" }}>Aksi</th>
                   </tr>
                 </thead>
@@ -1458,38 +1457,25 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                         </td>
                         <td data-label="Kategori / Merk">
                           <div className="category-brand-cell">
-                            <span className="cat-tag">{product.kategori}</span>
-                            <span className="brand-tag">{product.merk}</span>
+                            <span className="cell-category-tag">{product.kategori}</span>
+                            <small className="cell-brand-text">{product.merk}</small>
                           </div>
                         </td>
-                        <td className="right" data-label="Saldo Stok">
-                          <div className="stock-qty-cell">
-                            <span className="stock-main-qty">
-                              <b>{currentQty}</b> <small>{product.satuan}</small>
-                            </span>
-                            {selectedWarehouse === "ALL" && (
-                              <div className="warehouse-breakdown-tags">
-                                <span className="wh-chip">Toko: {product.stockToko}</span>
-                                <span className="wh-chip">Gd: {product.stockGudang}</span>
-                                <span className="wh-chip">Cb: {product.stockCabang}</span>
-                              </div>
-                            )}
+                        <td className="right" data-label="Stok Tersedia">
+                          <div className="stock-figure-cell">
+                            <strong className="stock-qty-num">{currentQty}</strong>
+                            <span className="stock-uom-tag">{product.satuan}</span>
                           </div>
                         </td>
-                        <td className="right" data-label="HPP">
-                          <span className="hpp-price">{formatRupiah(product.hpp)}</span>
+                        <td className="right font-mono" data-label="HPP">
+                          {formatRupiah(product.hpp)}
                         </td>
-                        <td data-label="Status Persediaan">
-                          <button
-                            type="button"
-                            className={`stock-status-pill pill-${statusRes.variant}`}
-                            onClick={() => setInspectingProduct(product)}
-                            title={`Ambang batas: Min ${product.lowStockThreshold ?? '-'} ${product.satuan}, Reorder ≤ ${product.reorderPoint ?? '-'} ${product.satuan}. Klik untuk analisis.`}
-                          >
-                            <span className={`status-indicator-dot dot-${statusRes.variant}`} />
-                            <span>{statusRes.label}</span>
-                            <Info size={11} className="opacity-60 ml-0.5" />
-                          </button>
+                        <td data-label="Status">
+                          <div className="stock-status-cell">
+                            <Badge variant={statusRes.variant}>
+                              {statusRes.label}
+                            </Badge>
+                          </div>
                         </td>
                         <td className="right" data-label="Aksi">
                           <div className="row-actions">
@@ -1497,6 +1483,7 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                               variant="outline"
                               size="sm"
                               onClick={() => setInspectingProduct(product)}
+                              title="Inspeksi Multi-Gudang & Threshold"
                             >
                               <Sliders size={13} /> Detail
                             </Button>
@@ -1551,7 +1538,7 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                         <div className="row-actions">
                           {isTransactionModule && (
                             <Button variant="outline" size="sm" onClick={() => openTransactionDetail(row)}>
-                              <Eye size={14} /> Detail / Kelola
+                              <Eye size={14} /> Detail
                             </Button>
                           )}
                           <Button variant="ghost" size="sm" onClick={() => openEdit(row)}>
@@ -1570,21 +1557,23 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
           </CardContent>
         </Card>
 
-        {/* Sidebar Info Card */}
-        <Card className="module-side-card">
-          <CardHeader>
-            <CardTitle>{config.sideTitle}</CardTitle>
-            <CardDescription>Informasi penting untuk menjalankan proses dengan benar.</CardDescription>
-          </CardHeader>
-          <CardContent className="side-list">
-            {config.sideItems.map((item) => (
-              <div key={item} className="side-list-item">
-                <CheckCircle2 size={15} className="text-emerald-600 flex-shrink-0" />
-                <span>{item}</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        {/* Optional Guidelines Ribbon at bottom */}
+        {config.sideItems && config.sideItems.length > 0 && (
+          <div className="module-guideline-ribbon">
+            <div className="flex items-center gap-2 text-slate-700 font-bold text-xs uppercase tracking-wider mb-2">
+              <Info size={14} className="text-blue-600" />
+              <span>SOP & Petunjuk Operasional: {config.sideTitle}</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {config.sideItems.map((item) => (
+                <div key={item} className="flex items-start gap-2 text-xs text-slate-600 bg-white p-3 rounded-lg border border-slate-200">
+                  <CheckCircle2 size={14} className="text-emerald-600 flex-shrink-0 mt-0.5" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* ======================================================================== */}
