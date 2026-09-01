@@ -27,5 +27,40 @@ const groups = [
 ];
 
 export default function MenuPage() {
-  return <AppShell><main className="more-page"><header><span>Semua fitur</span><h1>Menu</h1><p>Akses modul operasional dan pengaturan lainnya.</p></header>{groups.map(group=><section key={group.title}><h2>{group.title}</h2><div className="more-list">{group.items.map(item=>{const Icon=item.icon;return <Link href={item.href} key={item.href}><span className="more-icon"><Icon size={19}/></span><div><strong>{item.label}</strong><small>{item.note}</small></div><ChevronRight size={17}/></Link>})}</div></section>)}</main></AppShell>;
+  return (
+    <AppShell>
+      <main className="more-page">
+        <header className="page-header mb-6">
+          <div>
+            <span className="text-blue-600 font-bold uppercase text-xs tracking-wider">Navigasi Sistem</span>
+            <h1 className="text-2xl font-black text-slate-900 mt-1">Peta Menu & Modul</h1>
+            <p className="text-slate-500 text-sm mt-1">Akses cepat seluruh modul operasional, persediaan, keuangan, dan pengaturan toko.</p>
+          </div>
+        </header>
+
+        {groups.map((group) => (
+          <section key={group.title} className="mb-6">
+            <h2 className="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2.5 px-1">{group.title}</h2>
+            <div className="more-list">
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link href={item.href} key={item.href}>
+                    <span className="more-icon">
+                      <Icon size={19} />
+                    </span>
+                    <div>
+                      <strong>{item.label}</strong>
+                      <small>{item.note}</small>
+                    </div>
+                    <ChevronRight size={17} className="text-slate-400" />
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+      </main>
+    </AppShell>
+  );
 }

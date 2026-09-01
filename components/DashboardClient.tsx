@@ -187,7 +187,7 @@ export default function DashboardClient() {
                 {transactions.map((r) => (
                   <tr key={r.no}>
                     <td data-label="Transaksi">
-                      <strong>{r.no}</strong>
+                      <span className="sku-badge">{r.no}</span>
                     </td>
                     <td data-label="Pelanggan">{r.customer}</td>
                     <td data-label="Waktu">{r.time}</td>
