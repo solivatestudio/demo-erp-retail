@@ -192,63 +192,65 @@ export default function PosClient() {
   return (
     <div className="pos-page">
       <section className="pos-catalog">
-        <div className="pos-toolbar">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Badge variant={isWholesale ? "warning" : "success"}>
-                {isWholesale ? `Mode ${customer.group} (Harga Grosir)` : "Mode Retail Eceran"}
-              </Badge>
-              <Badge variant="outline">Toko Utama (Irian)</Badge>
-              <span className="text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 font-semibold inline-flex items-center gap-1">
-                <DatabaseZap size={11} /> POS Aktif
-              </span>
+        <div className="pos-top-fixed">
+          <div className="pos-toolbar">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Badge variant={isWholesale ? "warning" : "success"}>
+                  {isWholesale ? `Mode ${customer.group} (Harga Grosir)` : "Mode Retail Eceran"}
+                </Badge>
+                <Badge variant="outline">Toko Utama (Irian)</Badge>
+                <span className="text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 font-semibold inline-flex items-center gap-1">
+                  <DatabaseZap size={11} /> POS Aktif
+                </span>
+              </div>
+              <h1>Point of Sale Kasir</h1>
+              <p>Pilih produk dengan cepat, sesuaikan kuantiti grosir/eceran, dan cetak nota transaksi.</p>
             </div>
-            <h1>Point of Sale Kasir</h1>
-            <p>Pilih produk dengan cepat, sesuaikan kuantiti grosir/eceran, dan cetak nota transaksi.</p>
+            <div className="pos-selectors">
+              <select value={customerId} onChange={(event) => setCustomerId(event.target.value)} title="Pilih Pelanggan & Skema Harga">
+                {customers.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name} ({item.group})
+                  </option>
+                ))}
+              </select>
+              <select defaultValue="toko" title="Pilih Lokasi Kasir">
+                <option value="toko">🏪 Toko Utama (Irian)</option>
+                <option value="krapyak">🚚 Gatotkoco 2 (Krapyak)</option>
+              </select>
+            </div>
           </div>
-          <div className="pos-selectors">
-            <select value={customerId} onChange={(event) => setCustomerId(event.target.value)} title="Pilih Pelanggan & Skema Harga">
-              {customers.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name} ({item.group})
-                </option>
-              ))}
-            </select>
-            <select defaultValue="toko" title="Pilih Lokasi Kasir">
-              <option value="toko">🏪 Toko Utama (Irian)</option>
-              <option value="krapyak">🚚 Gatotkoco 2 (Krapyak)</option>
-            </select>
-          </div>
-        </div>
 
-        <Card>
-          <CardContent className="pos-filter">
-            <div className="pos-search">
-              <Search size={16} />
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Cari produk, SKU, barcode (contoh: Cup 16oz, Mika Bento, Kresek 15)..."
-              />
-            </div>
-            <div className="category-tabs">
-              {categories.map((item) => {
-                const visual = item !== "Semua" ? getCategoryVisual(item) : null;
-                const Icon = visual?.icon;
-                return (
-                  <button
-                    key={item}
-                    className={`${category === item ? "active" : ""} ${visual ? visual.tagClass : ""}`}
-                    onClick={() => setCategory(item)}
-                  >
-                    {Icon && <Icon size={13} className="inline mr-1 opacity-80" />}
-                    {item}
-                  </button>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+          <Card className="pos-filter-card">
+            <CardContent className="pos-filter">
+              <div className="pos-search">
+                <Search size={16} />
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Cari produk, SKU, barcode (contoh: Cup 16oz, Mika Bento, Kresek 15)..."
+                />
+              </div>
+              <div className="category-tabs">
+                {categories.map((item) => {
+                  const visual = item !== "Semua" ? getCategoryVisual(item) : null;
+                  const Icon = visual?.icon;
+                  return (
+                    <button
+                      key={item}
+                      className={`${category === item ? "active" : ""} ${visual ? visual.tagClass : ""}`}
+                      onClick={() => setCategory(item)}
+                    >
+                      {Icon && <Icon size={13} className="inline mr-1 opacity-80" />}
+                      {item}
+                    </button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="product-grid">
           {filtered.map((product) => {

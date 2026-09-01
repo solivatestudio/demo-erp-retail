@@ -1454,19 +1454,41 @@ a:focus-visible {
   font-weight: 650;
 }
 
+.app-content:has(.pos-page) {
+  overflow: hidden !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+}
+
 .pos-page {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 390px;
+  grid-template-columns: minmax(0, 1fr) 420px;
   gap: 16px;
   height: 100%;
-  padding: 18px;
+  max-height: 100%;
+  min-height: 0;
+  padding: 16px 20px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .pos-catalog {
   min-width: 0;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow: hidden;
+}
+
+.pos-top-fixed {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .pos-toolbar {
@@ -1477,18 +1499,18 @@ a:focus-visible {
 }
 
 .pos-toolbar h1 {
-  margin: 10px 0 4px;
-  font-size: 30px;
-  line-height: 1;
-  letter-spacing: -.04em;
+  margin: 6px 0 2px;
+  font-size: 26px;
+  line-height: 1.1;
+  letter-spacing: -.03em;
 }
 
 .pos-toolbar p {
   margin: 0;
   max-width: 620px;
   color: var(--muted-foreground);
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 12.5px;
+  line-height: 1.45;
 }
 
 .pos-selectors {
@@ -1510,18 +1532,24 @@ a:focus-visible {
   font-weight: 650;
 }
 
+.pos-filter-card {
+  border-radius: 14px;
+}
+
+.pos-filter-card .ui-card-content,
 .pos-filter {
   display: grid;
-  gap: 12px;
+  gap: 10px;
+  padding: 12px 14px;
 }
 
 .pos-search {
-  height: 42px;
+  height: 40px;
   display: flex;
   align-items: center;
   gap: 9px;
   border: 1px solid var(--input);
-  border-radius: 11px;
+  border-radius: 10px;
   padding: 0 12px;
   background: #fbfbfa;
 }
@@ -1532,6 +1560,7 @@ a:focus-visible {
   outline: 0;
   background: transparent;
   color: var(--foreground);
+  font-size: 13px;
 }
 
 .category-tabs {
@@ -1545,9 +1574,10 @@ a:focus-visible {
   border-radius: 999px;
   background: var(--card);
   color: var(--muted-foreground);
-  padding: 7px 12px;
-  font-size: 12px;
+  padding: 6px 12px;
+  font-size: 11.5px;
   font-weight: 760;
+  transition: all 0.12s ease;
 }
 
 .category-tabs button.active {
@@ -1564,8 +1594,8 @@ a:focus-visible {
   color: #92400e;
   border: 1px solid #fde68a;
   border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 11.5px;
+  padding: 3px 9px;
+  font-size: 11px;
   font-weight: 750;
   letter-spacing: 0.01em;
 }
@@ -1580,23 +1610,49 @@ a:focus-visible {
 .category-tabs button.tag-packing.active { background: #4f46e5; border-color: #4f46e5; color: #fff; }
 
 .product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
+  flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
+  padding-right: 6px;
+  padding-bottom: 8px;
+  align-content: start;
+}
+
+.product-grid::-webkit-scrollbar,
+.cart-lines::-webkit-scrollbar {
+  width: 6px;
+}
+
+.product-grid::-webkit-scrollbar-track,
+.cart-lines::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.product-grid::-webkit-scrollbar-thumb,
+.cart-lines::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.product-grid::-webkit-scrollbar-thumb:hover,
+.cart-lines::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .product-tile-card {
   text-align: left;
-  min-height: 160px;
+  min-height: 150px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   border: 1px solid var(--border);
   border-radius: 14px;
   background: var(--card);
-  padding: 14px;
-  box-shadow: 0 1px 3px rgba(24, 24, 27, 0.05);
+  padding: 13px;
+  box-shadow: 0 1px 3px rgba(24, 24, 27, 0.04);
   cursor: pointer;
   transition: all 0.15s ease;
   position: relative;
@@ -1640,7 +1696,7 @@ a:focus-visible {
 }
 
 .product-tile-name {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 750;
   line-height: 1.3;
   color: var(--foreground);
@@ -1682,11 +1738,16 @@ a:focus-visible {
 .cart-panel {
   min-width: 0;
   height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .cart-card-container,
 .cart-panel > .ui-card {
   height: 100%;
+  max-height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   background: #ffffff;
@@ -1695,7 +1756,7 @@ a:focus-visible {
 }
 
 .cart-card-header {
-  padding: 16px 18px 12px;
+  padding: 14px 18px 12px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
@@ -1723,7 +1784,7 @@ a:focus-visible {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 14px 18px 18px !important;
+  padding: 14px 16px 16px !important;
   overflow: hidden;
 }
 
@@ -1749,7 +1810,17 @@ a:focus-visible {
   flex-direction: column;
   gap: 8px;
   padding-right: 4px;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
+}
+
+.cart-bottom-section {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 /* Enhanced Cart Lines with Direct Qty and Quick Wholesale Chips */
@@ -2208,6 +2279,11 @@ a:focus-visible {
   .app-content {
     overflow: visible;
     padding-bottom: 104px;
+  }
+
+  .app-content:has(.pos-page) {
+    overflow: visible !important;
+    padding-bottom: 104px !important;
   }
 
   .kpi-grid,
