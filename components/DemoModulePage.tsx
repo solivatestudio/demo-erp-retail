@@ -1525,7 +1525,7 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                       {config.columns.map((column) => (
                         <td
                           key={column}
-                          data-label={column}
+                          data-label={getFieldLabel(kind, column)}
                           className={["total", "hpp", "ecer", "grosir", "terbayar", "sisa", "jumlah"].includes(column) ? "right" : ""}
                         >
                           {column === "status" ? (
@@ -1548,7 +1548,7 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                             <Pencil size={14} /> Edit
                           </Button>
                           <Button variant="ghost" size="sm" aria-label={`Hapus ${String(row.nama ?? row.no ?? row.kode ?? "data")}`} onClick={() => deleteRecord(row)}>
-                            <Trash2 size={14} />
+                            <Trash2 size={14} /> Hapus
                           </Button>
                         </div>
                       </td>
@@ -1912,9 +1912,9 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                   </div>
                   <div>
                     <h2 className="modal-title">
-                      {editingIndex === null ? `Tambah Data ${title || config.section}` : `Edit Data ${title || config.section}`}
+                      {editingIndex === null ? config.primaryAction : `Edit ${title || config.section}`}
                     </h2>
-                    <p className="modal-subtitle">Lengkapi atribut data dan konfigurasi stok.</p>
+                    <p className="modal-subtitle">Isi informasi yang diperlukan, lalu simpan perubahan.</p>
                   </div>
                 </div>
               </div>

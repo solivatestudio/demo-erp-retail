@@ -258,20 +258,20 @@ export default function DashboardClient() {
               <tbody>
                 {transactions.map((r) => (
                   <tr key={r.no} className="hover:bg-slate-50/70 transition-colors">
-                    <td>
+                    <td data-label="Nomor nota">
                       <span className="sku-badge">{r.no}</span>
                     </td>
-                    <td className="font-semibold text-slate-800">{r.customer}</td>
-                    <td>
+                    <td data-label="Pelanggan" className="font-semibold text-slate-800">{r.customer}</td>
+                    <td data-label="Tipe">
                       <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
                         {r.type}
                       </span>
                     </td>
-                    <td className="text-xs text-slate-500 font-mono">{r.time}</td>
-                    <td>
+                    <td data-label="Waktu" className="text-xs text-slate-500 font-mono">{r.time}</td>
+                    <td data-label="Status">
                       <Badge variant={r.status === "Lunas" ? "success" : "warning"}>{r.status}</Badge>
                     </td>
-                    <td className="right font-mono font-bold text-slate-900">
+                    <td data-label="Total" className="right font-mono font-bold text-slate-900">
                       {formatRupiah(r.amount)}
                     </td>
                   </tr>
