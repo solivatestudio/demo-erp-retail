@@ -52,7 +52,7 @@ export default function Sidebar() {
   }, [pathname]);
   return (
     <aside className="app-sidebar">
-      <Link href="/" className="sidebar-brand"><span>KA</span><div><strong>Kelolain</strong><small>Akurat dan Aktif</small></div></Link>
+      <Link href="/" className="sidebar-brand"><span>KA</span><div><strong>Kelolain</strong><small>Retail & Grosir ERP</small></div></Link>
       <button className="sidebar-context" type="button"><span><small>Outlet aktif</small><strong>Semua Outlet</strong></span><ChevronDown size={15} /></button>
       <nav ref={navRef} className="sidebar-nav" aria-label="Navigasi aplikasi">
         {GROUPS.map((group) => <div className="nav-group" key={group.label}>
