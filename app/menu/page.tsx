@@ -30,7 +30,7 @@ export default function MenuPage() {
   return (
     <AppShell>
       <main className="more-page">
-        <header className="page-header mb-6">
+        <header className="page-header more-page-header">
           <div>
             <span className="text-blue-600 font-bold uppercase text-xs tracking-wider">Navigasi Sistem</span>
             <h1 className="text-2xl font-black text-slate-900 mt-1">Peta Menu & Modul</h1>
@@ -39,8 +39,8 @@ export default function MenuPage() {
         </header>
 
         {groups.map((group) => (
-          <section key={group.title} className="mb-6">
-            <h2 className="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2.5 px-1">{group.title}</h2>
+          <section key={group.title} className="more-section">
+            <h2>{group.title}</h2>
             <div className="more-list">
               {group.items.map((item) => {
                 const Icon = item.icon;

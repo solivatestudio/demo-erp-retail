@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Banknote,
   Coffee,
-  DatabaseZap,
   Layers,
   Minus,
   Package,
@@ -200,24 +199,21 @@ export default function PosClient() {
                   {isWholesale ? `Mode ${customer.group} (Harga Grosir)` : "Mode Retail Eceran"}
                 </Badge>
                 <Badge variant="outline">Toko Utama (Irian)</Badge>
-                <span className="text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 font-semibold inline-flex items-center gap-1">
-                  <DatabaseZap size={11} /> POS Aktif
-                </span>
               </div>
               <h1>Point of Sale Kasir</h1>
               <p>Pilih produk dengan cepat, sesuaikan kuantiti grosir/eceran, dan cetak nota transaksi.</p>
             </div>
             <div className="pos-selectors">
-              <select value={customerId} onChange={(event) => setCustomerId(event.target.value)} title="Pilih Pelanggan & Skema Harga">
+              <select aria-label="Pilih pelanggan dan skema harga" value={customerId} onChange={(event) => setCustomerId(event.target.value)} title="Pilih Pelanggan & Skema Harga">
                 {customers.map((item) => (
                   <option key={item.id} value={item.id}>
                     {item.name} ({item.group})
                   </option>
                 ))}
               </select>
-              <select defaultValue="toko" title="Pilih Lokasi Kasir">
-                <option value="toko">🏪 Toko Utama (Irian)</option>
-                <option value="krapyak">🚚 Gatotkoco 2 (Krapyak)</option>
+              <select aria-label="Pilih lokasi kasir" defaultValue="toko" title="Pilih Lokasi Kasir">
+                <option value="toko">Toko Utama (Irian)</option>
+                <option value="krapyak">Gatotkoco 2 (Krapyak)</option>
               </select>
             </div>
           </div>
@@ -227,9 +223,12 @@ export default function PosClient() {
               <div className="pos-search">
                 <Search size={16} />
                 <input
+                  aria-label="Cari produk"
+                  name="product-search"
+                  autoComplete="off"
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Cari produk, SKU, barcode (contoh: Cup 16oz, Mika Bento, Kresek 15)..."
+                  placeholder="Cari produk, SKU, atau barcode…"
                 />
               </div>
               <div className="category-tabs">
@@ -264,13 +263,13 @@ export default function PosClient() {
             const CatIcon = visual.icon;
 
             return (
-              <div
+              <button
+                type="button"
                 className={`product-tile-card ${visual.tagClass} ${product.stockToko <= 0 ? "is-out-of-stock" : ""}`}
                 key={product.id}
                 onClick={() => addItem(product)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => e.key === "Enter" && addItem(product)}
+                disabled={product.stockToko <= 0}
+                aria-label={`Tambahkan ${product.name}, harga ${formatRupiah(priceFor(product))}, stok ${product.stockToko} ${product.unit}`}
               >
                 <div className="product-topline">
                   <div className="product-cat-badge">
@@ -300,7 +299,7 @@ export default function PosClient() {
                     </span>
                   )}
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
@@ -359,6 +358,8 @@ export default function PosClient() {
                             <Minus size={13} />
                           </button>
                           <input
+                            aria-label={`Jumlah ${item.name}`}
+                            name={`quantity-${item.id}`}
                             type="number"
                             min="1"
                             max={item.stockToko}
@@ -389,6 +390,7 @@ export default function PosClient() {
                             className="qty-preset-btn text-rose-600 hover:bg-rose-100 hover:border-rose-300"
                             onClick={() => updateQty(item.id, -item.qty)}
                             title="Hapus baris ini"
+                            aria-label={`Hapus ${item.name} dari keranjang`}
                           >
                             <Trash2 size={12} />
                           </button>
@@ -411,6 +413,9 @@ export default function PosClient() {
                   <span>Uang Diterima</span>
                   <div className="cart-pay-input-wrap">
                     <input
+                      aria-label="Uang diterima"
+                      name="payment-received"
+                      autoComplete="off"
                       type="text"
                       inputMode="numeric"
                       value={paid ? new Intl.NumberFormat("id-ID").format(paid) : ""}
@@ -490,7 +495,7 @@ export default function PosClient() {
               <div className="nota-paper">
                 <header className="nota-header">
                   <strong>Kelolain · Retail & Wholesale</strong>
-                  <span>Pusat Packaging, Plastik & Perlengkapan Usaha</span>
+                  <span>Solusi operasional toko dan distribusi</span>
                   <span>Jl. Irian No.8, Klaten Tengah · Telp/WA: 0877-4426-2104</span>
                 </header>
                 <section className="nota-meta">

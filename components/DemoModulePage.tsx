@@ -7,13 +7,11 @@ import {
   ArrowRight,
   Boxes,
   Building2,
-  CheckCircle2,
   ChevronDown,
   Download,
   Eye,
   FileText,
   HelpCircle,
-  Info,
   Layers,
   Pencil,
   Plus,
@@ -792,13 +790,13 @@ function getFieldPlaceholder(kind: DemoKind, column: string): string {
   if (kind === "adjustments") {
     if (column === "qtySistem") return "Contoh: 24 pcs (stok tercatat di sistem)";
     if (column === "qtyFisik") return "Contoh: 20 pcs (hasil hitung fisik di rak)";
-    if (column === "produk") return "Contoh: Cup Plastik PP 16oz Oza / Mika Bento 4 Sekat";
+    if (column === "produk") return "Contoh: Minyak Goreng 1 L / Kopi Bubuk 200 gr";
     if (column === "gudang") return "Contoh: Toko Utama (Irian) / Gudang Logistik Pusat";
   }
 
   if (kind === "repack") {
-    if (column === "input") return "Contoh: 1 Dus Cup Plastik 16oz (isi 20 pack)";
-    if (column === "output") return "Contoh: 20 Pack (1.000 Pcs kemasan ecer)";
+    if (column === "input") return "Contoh: 1 karton produk (isi 20 pack)";
+    if (column === "output") return "Contoh: 20 pack satuan jual";
     if (column === "nilai") return "Contoh: 240000 (alokasi HPP bahan)";
   }
 
@@ -815,7 +813,7 @@ function getFieldPlaceholder(kind: DemoKind, column: string): string {
 
   if (kind === "suppliers") {
     if (column === "kode") return "Contoh: SUP-001";
-    if (column === "nama") return "Contoh: PT Sinar Joyoboyo Plastik / CV Starindo";
+    if (column === "nama") return "Contoh: PT Sumber Makmur / CV Mitra Niaga";
     if (column === "alamat") return "Contoh: Kawasan Industri Rungkut / Palur Raya";
     if (column === "kota") return "Contoh: Surabaya / Surakarta / Semarang";
     if (column === "telp") return "Contoh: 0812-3000-1122 / (0271) 654-321";
@@ -845,10 +843,10 @@ function getFieldPlaceholder(kind: DemoKind, column: string): string {
   }
 
   if (kind === "products" || kind === "stock") {
-    if (column === "kode") return "Contoh: SKU-CUP-16OZ / 8991001 (Barcode)";
-    if (column === "nama") return "Contoh: Cup Plastik PP 16oz Oza Slim (Isi 50 pcs)";
-    if (column === "kategori") return "Contoh: Cup & Minuman / Kemasan Makanan";
-    if (column === "merk") return "Contoh: Oza Pack / Starindo / Bawang / Daimaru";
+    if (column === "kode") return "Contoh: SKU-MINYAK-1L / 8991001 (Barcode)";
+    if (column === "nama") return "Contoh: Minyak Goreng Premium 1 Liter";
+    if (column === "kategori") return "Contoh: Sembako / Minuman / Rumah Tangga";
+    if (column === "merk") return "Contoh: Merek Utama / Merek Lokal";
     if (column === "satuan") return "Contoh: Pack / Dus / Roll / Ball / Pcs / Kg";
     if (column === "hpp") return "Contoh: 12000 (Harga beli supplier)";
     if (column === "ecer") return "Contoh: 15000 (Harga eceran kasir)";
@@ -857,7 +855,7 @@ function getFieldPlaceholder(kind: DemoKind, column: string): string {
 
   if (kind === "purchases") {
     if (column === "no") return "Contoh: PUR-202608-0044";
-    if (column === "supplier") return "Contoh: PT Sinar Joyoboyo Plastik";
+    if (column === "supplier") return "Contoh: PT Sumber Makmur";
     if (column === "faktur") return "Contoh: INV-SJP-9941/VIII/2026";
     if (column === "top") return "Contoh: TOP 30 Hari / TOP 14 Hari / Tunai";
     if (column === "gudang") return "Contoh: Gudang Logistik Pusat / Toko Utama";
@@ -1220,6 +1218,8 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
   };
 
   const deleteRecord = (row: Row) => {
+    const recordName = String(row.nama ?? row.no ?? row.kode ?? "data ini");
+    if (!window.confirm(`Hapus ${recordName}? Tindakan ini tidak dapat dibatalkan.`)) return;
     setRecords((current) => current.filter((record) => record !== row));
     setSaved(true);
   };
@@ -1267,7 +1267,7 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
         ))}
       </section>
 
-      {saved && <div className="system-alert">Perubahan berhasil disimpan.</div>}
+      {saved && <div className="system-alert" role="status" aria-live="polite">Perubahan berhasil disimpan.</div>}
 
       {/* Multi-Warehouse Selector for Stock Module */}
       {kind === "stock" && (
@@ -1405,6 +1405,9 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                 <div className="table-search">
                   <Search size={15} />
                   <input
+                    aria-label="Cari data"
+                    name="module-search"
+                    autoComplete="off"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder={getSearchPlaceholder(kind, title)}
@@ -1544,7 +1547,7 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                           <Button variant="ghost" size="sm" onClick={() => openEdit(row)}>
                             <Pencil size={14} /> Edit
                           </Button>
-                          <Button variant="ghost" size="sm" onClick={() => deleteRecord(row)}>
+                          <Button variant="ghost" size="sm" aria-label={`Hapus ${String(row.nama ?? row.no ?? row.kode ?? "data")}`} onClick={() => deleteRecord(row)}>
                             <Trash2 size={14} />
                           </Button>
                         </div>
@@ -1557,23 +1560,6 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
           </CardContent>
         </Card>
 
-        {/* Optional Guidelines Ribbon at bottom */}
-        {config.sideItems && config.sideItems.length > 0 && (
-          <div className="module-guideline-ribbon">
-            <div className="flex items-center gap-2 text-slate-700 font-bold text-xs uppercase tracking-wider mb-2">
-              <Info size={14} className="text-blue-600" />
-              <span>SOP & Petunjuk Operasional: {config.sideTitle}</span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {config.sideItems.map((item) => (
-                <div key={item} className="flex items-start gap-2 text-xs text-slate-600 bg-white p-3 rounded-lg border border-slate-200">
-                  <CheckCircle2 size={14} className="text-emerald-600 flex-shrink-0 mt-0.5" />
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </section>
 
       {/* ======================================================================== */}
@@ -1953,6 +1939,8 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                         <span className="field-label">{getFieldLabel(kind, column)}</span>
                         {column === "status" ? (
                           <select
+                            name={column}
+                            autoComplete="off"
                             className="field-input"
                             value={form[column] ?? "Aktif"}
                             onChange={(event) => setForm((curr) => ({ ...curr, [column]: event.target.value }))}
@@ -1967,6 +1955,8 @@ export default function DemoModulePage({ kind, title, description }: { kind: Dem
                           </select>
                         ) : (
                           <input
+                            name={column}
+                            autoComplete="off"
                             type="text"
                             inputMode={isMonetaryField(kind, column) || ["sku", "jumlahSku"].includes(column) ? "numeric" : undefined}
                             className="field-input"

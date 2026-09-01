@@ -10,7 +10,6 @@ import {
   Building2,
   CalendarDays,
   CreditCard,
-  DatabaseZap,
   PackageOpen,
   PackageX,
   ReceiptText,
@@ -116,11 +115,9 @@ export default function DashboardClient() {
       {/* Top Header */}
       <section className="owner-heading">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-              <DatabaseZap size={12} /> Dashboard Eksekutif
-            </span>
-            <span className="text-slate-400 text-xs">· Toko Plastik & Packaging Gatotkoco Klaten</span>
+          <div className="owner-heading-meta">
+            <span className="owner-heading-label"><Building2 size={14} /> Dashboard Pemilik</span>
+            <span className="owner-heading-outlet">Toko Utama · Klaten</span>
           </div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">Ringkasan Operasional & Bisnis</h1>
           <p className="text-slate-500 text-sm mt-0.5">
@@ -141,9 +138,9 @@ export default function DashboardClient() {
       </section>
 
       {/* 4 Metric KPI Cards */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
+      <section className="owner-kpi-grid" aria-label="Ringkasan kinerja bisnis">
         {kpis.map((k) => (
-          <Card key={k.label} className={`border-t-4 ${k.accent} shadow-sm hover:shadow-md transition-shadow bg-white`}>
+          <Card key={k.label} className={`owner-kpi-card ${k.up ? "is-positive" : "is-attention"}`}>
             <CardHeader className="p-4 pb-2">
               <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
                 <span>{k.label}</span>
@@ -161,9 +158,9 @@ export default function DashboardClient() {
       </section>
 
       {/* Charts & Analytics Grid */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
+      <section className="owner-analytics-grid">
         {/* Sales Trendline (Span 8) */}
-        <Card className="lg:col-span-8 shadow-sm bg-white">
+        <Card className="owner-sales-card">
           <CardHeader className="p-5 pb-2 flex flex-row items-center justify-between border-b border-slate-100">
             <div>
               <CardTitle className="text-base font-bold text-slate-900">Tren Penjualan 14 Hari Terakhir</CardTitle>
@@ -203,7 +200,7 @@ export default function DashboardClient() {
         </Card>
 
         {/* Outlet Share (Span 4) */}
-        <Card className="lg:col-span-4 shadow-sm bg-white flex flex-col justify-between">
+        <Card className="owner-outlet-card">
           <CardHeader className="p-5 pb-2 border-b border-slate-100">
             <CardTitle className="text-base font-bold text-slate-900">Kontribusi Penjualan Cabang</CardTitle>
             <CardDescription className="text-xs text-slate-500">Distribusi omzet bulan berjalan</CardDescription>
@@ -232,9 +229,9 @@ export default function DashboardClient() {
       </section>
 
       {/* Lower Section: Recent Transactions & Alerts */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <section className="owner-lower-grid">
         {/* Recent Transactions (Span 7) */}
-        <Card className="lg:col-span-7 shadow-sm bg-white">
+        <Card className="owner-transactions-card">
           <CardHeader className="p-5 pb-3 border-b border-slate-100 flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-base font-bold text-slate-900">Transaksi Penjualan Terbaru</CardTitle>
@@ -285,7 +282,7 @@ export default function DashboardClient() {
         </Card>
 
         {/* Priority Attention (Span 5) */}
-        <Card className="lg:col-span-5 shadow-sm bg-white">
+        <Card className="owner-attention-card">
           <CardHeader className="p-5 pb-3 border-b border-slate-100">
             <CardTitle className="text-base font-bold text-slate-900">Perlu Perhatian Operasional</CardTitle>
             <CardDescription className="text-xs text-slate-500">Tindakan prioritas stok, piutang, dan logistik</CardDescription>

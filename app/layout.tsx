@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import "./accessibility.css";
 
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -11,6 +12,10 @@ const jakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Kelolain · Retail & Wholesale ERP",
   description: "Sistem Manajemen Terintegrasi Penjualan, Pembelian, Multi-Gudang & Inventaris",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f8fafc",
 };
 
 export default function RootLayout({
